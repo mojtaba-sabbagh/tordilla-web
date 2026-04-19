@@ -1,11 +1,20 @@
 export type Product = {
   slug: string;
   title: string;
+  image: string;
   shortDescription: string;
   description: string;
   features: string[];
   packaging: string;
   audience: string;
+  nutrition: {
+    serving: string;
+    energy: string;
+    sugar: string;
+    fat: string;
+    salt: string;
+    transFat: string;
+  };
 };
 
 export type Post = {

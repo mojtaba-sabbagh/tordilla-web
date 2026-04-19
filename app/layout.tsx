@@ -1,8 +1,32 @@
+// app/layout.tsx
 import type { Metadata } from "next";
+import localFont from "next/font/local";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { siteMeta } from "@/lib/seed-content";
 import "./globals.css";
+
+const yekan = localFont({
+  src: [
+    {
+      path: "../public/fonts/Yekan.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/Yekan.woff",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/Yekan.ttf",
+      weight: "400",
+      style: "normal",
+    },
+  ],
+  display: "swap",
+  variable: "--font-yekan",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteMeta.url),
@@ -19,11 +43,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fa" dir="rtl">
-      <body>
-        <div className="site-shell">
+    <html data-scroll-behavior="smooth" dir="rtl" lang="fa">
+      <body className={yekan.className}>
+        <div className="site-shell min-h-screen flex flex-col">
           <SiteHeader />
-          <main>{children}</main>
+          <main className="flex-1">{children}</main>
           <SiteFooter />
         </div>
       </body>

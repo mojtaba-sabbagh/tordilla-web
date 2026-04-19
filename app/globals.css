@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
   --bg: #f7efe4;
   --surface: rgba(255, 251, 245, 0.82);
@@ -31,7 +33,7 @@ body {
     radial-gradient(circle at top right, rgba(33, 76, 63, 0.14), transparent 22%),
     linear-gradient(180deg, #fbf5ec 0%, var(--bg) 48%, #f2e5d5 100%);
   color: var(--text);
-  font-family: Tahoma, "Segoe UI", sans-serif;
+  font-family: var(--font-yekan), Tahoma, "Segoe UI", sans-serif;
 }
 
 a {

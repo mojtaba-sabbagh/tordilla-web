@@ -9,14 +9,20 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "lucide-react": "^1.8.0",
     "next": "latest",
+    "nodemailer": "^8.0.5",
     "react": "latest",
     "react-dom": "latest"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.2.2",
     "@types/node": "latest",
+    "@types/nodemailer": "^8.0.0",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "postcss": "^8.5.10",
+    "tailwindcss": "^4.2.2",
     "typescript": "latest"
   }
 }
