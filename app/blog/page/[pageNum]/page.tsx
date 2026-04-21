@@ -1,9 +1,10 @@
 // app/blog/page/[pageNum]/page.tsx
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { blogPosts } from "@/lib/blog-data";
+import { getPaginatedBlogPosts, getCategories } from "@/lib/blog-data";
 import { BlogPostsGrid } from "../../BlogPostsGrid";
 import { Pagination } from "../../Pagination";
+import { CategorySidebar } from "../../CategorySidebar";
 
 const POSTS_PER_PAGE = 8;
 
@@ -20,7 +21,10 @@ export async function generateMetadata({ params }: PaginatedPageProps) {
 }
 
 export async function generateStaticParams() {
-  const totalPages = Math.ceil(blogPosts.length / POSTS_PER_PAGE);
+  // Get total count of published posts
+  const { totalPages } = await getPaginatedBlogPosts(1, POSTS_PER_PAGE);
+  
+  // Generate static params for pages 2 through totalPages
   return Array.from({ length: totalPages - 1 }, (_, i) => ({
     pageNum: String(i + 2),
   }));
@@ -29,14 +33,20 @@ export async function generateStaticParams() {
 export default async function PaginatedBlogPage({ params }: PaginatedPageProps) {
   const { pageNum } = await params;
   const currentPage = parseInt(pageNum, 10);
-  const totalPages = Math.ceil(blogPosts.length / POSTS_PER_PAGE);
+  
+  // Fetch posts for this page
+  const { posts: currentPosts, totalPages } = await getPaginatedBlogPosts(
+    currentPage,
+    POSTS_PER_PAGE
+  );
+  
+  // Fetch categories for sidebar
+  const categories = await getCategories();
 
+  // Validate page number
   if (isNaN(currentPage) || currentPage < 2 || currentPage > totalPages) {
     notFound();
   }
-
-  const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
-  const currentPosts = blogPosts.slice(startIndex, startIndex + POSTS_PER_PAGE);
 
   return (
     <div className="bg-white">
@@ -68,7 +78,12 @@ export default async function PaginatedBlogPage({ params }: PaginatedPageProps) 
         </div>
       </div>
 
-      {/* Blog Posts Grid - with max-width constraint */}
+      {/* Horizontal Category Bar */}
+      <section className="container mx-auto px-4 md:px-6 pb-8">
+        <CategorySidebar categories={categories} horizontal />
+      </section>
+
+      {/* Blog Posts Grid */}
       <section className="container mx-auto px-4 md:px-6 py-8 lg:py-12">
         <div className="max-w-7xl mx-auto">
           <BlogPostsGrid posts={currentPosts} />
@@ -78,7 +93,7 @@ export default async function PaginatedBlogPage({ params }: PaginatedPageProps) 
         </div>
       </section>
 
-      {/* Instagram Section */}
+      {/* Social Networks Section */}
       <section className="bg-[#8f1d1d] py-10 md:py-12 text-white">
         <div className="container mx-auto px-4 md:px-6 text-center">
           <h4 className="text-xl md:text-2xl lg:text-3xl font-black">
@@ -86,6 +101,7 @@ export default async function PaginatedBlogPage({ params }: PaginatedPageProps) 
           </h4>
           <div className="mt-6 md:mt-8 flex flex-wrap items-center justify-center gap-4 md:gap-5 lg:gap-7">
             <a
+              key="instagram"
               aria-label="اینستاگرام ترددیلا"
               className="group inline-flex h-14 w-14 md:h-[72px] md:w-[72px] items-center justify-center rounded-full transition hover:scale-105"
               href="https://instagram.com/tordillachips/"
@@ -108,6 +124,7 @@ export default async function PaginatedBlogPage({ params }: PaginatedPageProps) 
               </svg>
             </a>
             <a
+              key="twitter"
               aria-label="توییتر ترددیلا"
               className="group inline-flex h-14 w-14 md:h-[72px] md:w-[72px] items-center justify-center rounded-full transition hover:scale-105"
               href="https://twitter.com/tordillachips"
@@ -122,6 +139,7 @@ export default async function PaginatedBlogPage({ params }: PaginatedPageProps) 
               </svg>
             </a>
             <a
+              key="facebook"
               aria-label="فیسبوک ترددیلا"
               className="group inline-flex h-14 w-14 md:h-[72px] md:w-[72px] items-center justify-center rounded-full transition hover:scale-105"
               href="https://www.facebook.com/tordillachips"
@@ -136,6 +154,7 @@ export default async function PaginatedBlogPage({ params }: PaginatedPageProps) 
               </svg>
             </a>
             <a
+              key="aparat"
               aria-label="آپارات ترددیلا"
               className="group inline-flex h-14 w-14 md:h-[72px] md:w-[72px] items-center justify-center rounded-full transition hover:scale-105"
               href="https://www.aparat.com/tordilla.chips"

@@ -38,13 +38,13 @@ export default function AdminCommentsPage() {
     try {
       const response = await fetch('/api/admin/check-auth');
       if (!response.ok) {
-        router.push('/login?from=/admin/comments');
+        router.push('/adm/login?from=/admin/comments');
         return;
       }
       setIsAuthenticated(true);
       fetchComments();
     } catch (error) {
-      router.push('/login?from=/admin/comments');
+      router.push('/admin/login?from=/admin/comments');
     }
   };
 

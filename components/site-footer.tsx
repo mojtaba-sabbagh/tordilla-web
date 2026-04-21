@@ -50,12 +50,12 @@ export function SiteFooter() {
             <div className="space-y-3 text-sm">
               <p className="flex gap-2">
                 <span>📍</span>
-                <span>تهران، خیابان تیموری، نبش ابراهیمی، ساختمان مهرنگار، واحد ۱۴</span>
+                <span>رفسنجان، شهرک صنعتی شماره ۱، میدان نیلوفر، ت صناشیع غذایی کثر کویر رفسنجان</span>
               </p>
               <p className="flex gap-2">
                 <span>📞</span>
                 <a href="tel:02191072667" className="hover:text-[#ce4a28] transition">
-                  ۰۲۱-۹۱۰۷۲۶۶۷
+                  ۰۹۴۲۰۲۶۴۰۸ - داخلی ۲۰
                 </a>
               </p>
               <p className="flex gap-2">
