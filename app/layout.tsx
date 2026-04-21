@@ -43,8 +43,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html data-scroll-behavior="smooth" dir="rtl" lang="fa">
-      <body className={yekan.className}>
+    <html 
+      data-scroll-behavior="smooth" 
+      dir="rtl" 
+      lang="fa"
+      suppressHydrationWarning  // ← Add this line
+    >
+      <body className={yekan.className} suppressHydrationWarning>
         <div className="site-shell min-h-screen flex flex-col">
           <SiteHeader />
           <main className="flex-1">{children}</main>

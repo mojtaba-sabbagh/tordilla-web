@@ -67,9 +67,9 @@ export default function ContactPage() {
             </div>
             <h3 className="mb-2 text-xl font-bold text-neutral-800">آدرس</h3>
             <p className="text-neutral-600 leading-relaxed">
-              تهران، خیابان تیموری،
+              رفسنجان،  شهرک صنعتی شماره ۱
               <br />
-              نبش ابراهیمی، ساختمان مهرنگار، واحد ۱۴
+              میدان نیلوفر - شرکت صنایع غذایی کوثر کویر رفسنجان
             </p>
           </div>
 
@@ -107,9 +107,8 @@ export default function ContactPage() {
             </div>
             <h3 className="mb-2 text-xl font-bold text-neutral-800">ساعت کاری</h3>
             <p className="text-neutral-600">
-              شنبه تا چهارشنبه: ۹ تا ۱۷
+              شنبه تا پنجشنبه: ۷ تا ۲
               <br />
-              پنجشنبه: ۹ تا ۱۳
             </p>
           </div>
         </div>

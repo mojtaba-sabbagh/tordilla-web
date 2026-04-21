@@ -9,7 +9,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      NEXT_PUBLIC_SITE_URL: "https://tordillafood.com"
-      WORDPRESS_API_URL: "https://tordillafood.com"
-      PORT: "3000"
+      - DATABASE_URL=postgresql://postgres:${DB_PASSWORD}@postgres:5432/${DB_NAME}
+
+    PORT: "3000"
     restart: unless-stopped

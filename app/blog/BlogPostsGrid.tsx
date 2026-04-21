@@ -8,20 +8,29 @@ interface BlogPostsGridProps {
 }
 
 export function BlogPostsGrid({ posts }: BlogPostsGridProps) {
+  if (posts.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-neutral-500">هیچ مطلبی یافت نشد.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {posts.map((post) => (
         <article
-          key={post.slug}
-          className="group overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-md transition hover:-translate-y-1 hover:shadow-xl max-w-full"
+          key={post.id}
+          className="group overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-md transition hover:-translate-y-1 hover:shadow-xl"
         >
           <Link href={`/blog/${post.slug}`} className="block">
-            <div className="relative aspect-[4/3] w-full overflow-hidden bg-neutral-100">
+            <div className="w-full overflow-hidden bg-neutral-100">
               <Image
                 src={post.image}
                 alt={post.title}
-                fill
-                className="object-cover transition duration-500 group-hover:scale-105"
+                width={post.imageWidth || 400}
+                height={post.imageHeight || 300}
+                className="w-full h-auto object-cover transition duration-500 group-hover:scale-105"
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
               />
             </div>
@@ -36,7 +45,7 @@ export function BlogPostsGrid({ posts }: BlogPostsGridProps) {
                 {post.excerpt}
               </p>
               <div className="mt-4 flex items-center justify-between text-xs text-neutral-400">
-                <span>{post.date}</span>
+                <span>{new Date(post.date).toLocaleDateString('fa-IR')}</span>
                 <span className="text-[#8f1d1d] font-medium">خواندن ادامه ›</span>
               </div>
             </div>

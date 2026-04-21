@@ -1,3 +1,5 @@
+// lib/types.ts
+
 export type Product = {
   slug: string;
   title: string;
@@ -30,3 +32,29 @@ export type CinemaPartner = {
   venue: string;
   note: string;
 };
+
+// Add category types and function
+export type Category = {
+  name: string;
+  slug: string;
+  count: number;
+};
+
+export function getCategoriesFromPosts(posts: { category: string; categorySlug: string }[]): Category[] {
+  const categoryMap = new Map<string, Category>();
+  
+  posts.forEach(post => {
+    if (!categoryMap.has(post.categorySlug)) {
+      categoryMap.set(post.categorySlug, {
+        name: post.category,
+        slug: post.categorySlug,
+        count: 1
+      });
+    } else {
+      const existing = categoryMap.get(post.categorySlug)!;
+      existing.count++;
+    }
+  });
+  
+  return Array.from(categoryMap.values());
+}

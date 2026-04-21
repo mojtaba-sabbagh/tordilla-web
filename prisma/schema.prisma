@@ -1,0 +1,57 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model BlogPost {
+  id            String    @id @default(cuid())
+  slug          String    @unique
+  title         String
+  category      String
+  categorySlug  String
+  date          DateTime  @default(now())
+  image         String
+  imageWidth    Int       @default(800)
+  imageHeight   Int       @default(600)
+  excerpt       String    @db.Text
+  content       String    @db.Text
+  author        String
+  published     Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  comments      Comment[]
+}
+
+model Comment {
+  id            String    @id @default(cuid())
+  name          String
+  email         String
+  content       String    @db.Text
+  status        CommentStatus @default(PENDING)
+  blogPostId    String
+  blogPost      BlogPost  @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
+  createdAt     DateTime  @default(now())
+  
+  @@index([blogPostId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum CommentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Admin {
+  id            String    @id @default(cuid())
+  username      String    @unique
+  password      String    // hashed
+  createdAt     DateTime  @default(now())
+}

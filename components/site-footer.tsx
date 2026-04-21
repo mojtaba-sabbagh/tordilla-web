@@ -9,7 +9,7 @@ export function SiteFooter() {
     <footer className="border-t border-[rgba(76,50,33,0.12)] text-[#675247]">
       {/* Main Footer */}
       <div className="container mx-auto px-4 md:px-6 py-12">
-        <div className="grid gap-8 md:grid-cols-3">
+        <div className="grid gap-8 md:grid-cols-2">
           {/* About Section */}
           <div>
             <h5 className="text-lg font-bold text-[#1f140f] mb-4">درباره ترددیلا</h5>
@@ -22,7 +22,7 @@ export function SiteFooter() {
             </p>
           </div>
 
-          {/* Instagram Section */}
+          {/* Instagram Section 
           <div>
             <h5 className="text-lg font-bold text-[#1f140f] mb-4">اینستاگرام</h5>
             <div className="grid grid-cols-3 gap-2">
@@ -42,7 +42,7 @@ export function SiteFooter() {
                 </a>
               ))}
             </div>
-          </div>
+          </div> */}
 
           {/* Contact Section */}
           <div>

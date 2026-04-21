@@ -2,7 +2,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { getCategories, getPostsByCategory, blogPosts } from "@/lib/blog-data";
+import { getCategories, getPostsByCategory, getCategoriesFromPosts } from "@/lib/blog-data";
 import { CategorySidebar } from "../../CategorySidebar";
 
 interface CategoryPageProps {
@@ -11,7 +11,7 @@ interface CategoryPageProps {
 
 export async function generateMetadata({ params }: CategoryPageProps) {
   const { categorySlug } = await params;
-  const posts = getPostsByCategory(categorySlug);
+  const posts = await getPostsByCategory(categorySlug);
   
   if (posts.length === 0) {
     return {
@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: CategoryPageProps) {
 }
 
 export async function generateStaticParams() {
-  const categories = getCategories();
+  const categories = await getCategories();
   return categories.map((category) => ({
     categorySlug: category.slug,
   }));
@@ -36,8 +36,8 @@ export async function generateStaticParams() {
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { categorySlug } = await params;
-  const posts = getPostsByCategory(categorySlug);
-  const categories = getCategories();
+  const posts = await getPostsByCategory(categorySlug);
+  const allCategories = await getCategories();
   
   if (posts.length === 0) {
     notFound();
@@ -75,88 +75,61 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         </div>
       </div>
 
-      {/* Main Content - Sidebar now takes 1/4 width */}
-      <div className="container mx-auto px-4 md:px-6 py-8 lg:py-12">
-        <div className="flex flex-col gap-8 lg:flex-row">
-          {/* Main Content - Posts Grid - takes 3/4 width */}
-          <div className="lg:w-3/4">
-            {posts.length > 0 ? (
-              <div className="grid gap-6 sm:grid-cols-2">
-                {posts.map((post) => (
-                  <article
-                    key={post.slug}
-                    className="group overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-md transition hover:-translate-y-1 hover:shadow-xl"
-                  >
-                    <Link href={`/blog/${post.slug}`} className="block">
-                      <div className="relative aspect-[4/3] w-full overflow-hidden bg-neutral-100">
-                        <Image
-                          src={post.image}
-                          alt={post.title}
-                          fill
-                          className="object-cover transition duration-500 group-hover:scale-105"
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        />
-                      </div>
-                      <div className="p-4 md:p-5">
-                        <span className="inline-block rounded-full bg-[#8f1d1d]/10 px-2.5 py-1 text-xs font-medium text-[#8f1d1d]">
-                          {post.category}
-                        </span>
-                        <h2 className="mt-3 line-clamp-2 text-lg md:text-xl font-bold text-neutral-800 group-hover:text-[#8f1d1d] transition">
-                          {post.title}
-                        </h2>
-                        <p className="mt-2 line-clamp-3 text-sm text-neutral-600">
-                          {post.excerpt}
-                        </p>
-                        <div className="mt-4 flex items-center justify-between text-xs text-neutral-400">
-                          <span>{post.date}</span>
-                          <span className="text-[#8f1d1d] font-medium">خواندن ادامه ›</span>
-                        </div>
-                      </div>
-                    </Link>
-                  </article>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <p className="text-neutral-500">مطلبی در این دسته یافت نشد.</p>
-                <Link
-                  href="/blog"
-                  className="mt-4 inline-block rounded-full bg-[#8f1d1d] px-6 py-2 text-white transition hover:bg-[#6b1616]"
-                >
-                  بازگشت به همه مطالب
-                </Link>
-              </div>
-            )}
-          </div>
+      {/* Horizontal Category Bar */}
+      <section className="container mx-auto px-4 md:px-6 pb-8">
+        <CategorySidebar categories={allCategories} horizontal />
+      </section>
 
-          {/* Sidebar - takes 1/4 width */}
-          <aside className="lg:w-1/4">
-            <CategorySidebar categories={categories} />
-            
-            {/* Instagram Card */}
-            <div className="overflow-hidden rounded-2xl shadow-md mt-6">
-              <div className="relative h-48 w-full">
-                <Image
-                   src="/home/blog/insta.jpg"
-                   alt="اینستاگرام ترددیلا"
-                  fill
-                   sizes="(max-width: 1024px) 50vw, 25vw"
-                  className="object-cover"
-                />
-              </div>
-              <div className="bg-[#8f1d1d] p-4 text-center text-white">
-                <p className="mb-3 text-sm">اینستاگرام ترددیلا را دنبال کنید!</p>
-                <a
-                  href="https://instagram.com/tordillachips/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block rounded-full bg-[#39a845] px-4 py-2 text-xs font-bold transition hover:bg-[#2f8d39]"
+      {/* Main Content - Full Width Posts */}
+      <div className="container mx-auto px-4 md:px-6 py-8 lg:py-12">
+        <div className="max-w-full">
+          {posts.length > 0 ? (
+            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {posts.map((post) => (
+                <article
+                  key={post.id}
+                  className="group overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-md transition hover:-translate-y-1 hover:shadow-xl"
                 >
-                  دنبال کردن
-                </a>
-              </div>
+                  <Link href={`/blog/${post.slug}`} className="block">
+                    <div className="relative aspect-[4/3] w-full overflow-hidden bg-neutral-100">
+                      <Image
+                        src={post.image}
+                        alt={post.title}
+                        fill
+                        className="object-cover transition duration-500 group-hover:scale-105"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                      />
+                    </div>
+                    <div className="p-4 md:p-5">
+                      <span className="inline-block rounded-full bg-[#8f1d1d]/10 px-2.5 py-1 text-xs font-medium text-[#8f1d1d]">
+                        {post.category}
+                      </span>
+                      <h2 className="mt-3 line-clamp-2 text-lg md:text-xl font-bold text-neutral-800 group-hover:text-[#8f1d1d] transition">
+                        {post.title}
+                      </h2>
+                      <p className="mt-2 line-clamp-3 text-sm text-neutral-600">
+                        {post.excerpt}
+                      </p>
+                      <div className="mt-4 flex items-center justify-between text-xs text-neutral-400">
+                        <span>{typeof post.date === 'string' ? post.date : new Date(post.date).toLocaleDateString('fa-IR')}</span>
+                        <span className="text-[#8f1d1d] font-medium">خواندن ادامه ›</span>
+                      </div>
+                    </div>
+                  </Link>
+                </article>
+              ))}
             </div>
-          </aside>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-neutral-500">مطلبی در این دسته یافت نشد.</p>
+              <Link
+                href="/blog"
+                className="mt-4 inline-block rounded-full bg-[#8f1d1d] px-6 py-2 text-white transition hover:bg-[#6b1616]"
+              >
+                بازگشت به همه مطالب
+              </Link>
+            </div>
+          )}
         </div>
       </div>
 
@@ -168,6 +141,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           </h4>
           <div className="mt-6 md:mt-8 flex flex-wrap items-center justify-center gap-4 md:gap-5 lg:gap-7">
             <a
+              key="instagram"
               aria-label="اینستاگرام ترددیلا"
               className="group inline-flex h-12 w-12 md:h-14 md:w-14 lg:h-[72px] lg:w-[72px] items-center justify-center rounded-full transition hover:scale-105"
               href="https://instagram.com/tordillachips/"
@@ -190,6 +164,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
               </svg>
             </a>
             <a
+              key="twitter"
               aria-label="توییتر ترددیلا"
               className="group inline-flex h-12 w-12 md:h-14 md:w-14 lg:h-[72px] lg:w-[72px] items-center justify-center rounded-full transition hover:scale-105"
               href="https://twitter.com/tordillachips"
@@ -204,6 +179,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
               </svg>
             </a>
             <a
+              key="facebook"
               aria-label="فیسبوک ترددیلا"
               className="group inline-flex h-12 w-12 md:h-14 md:w-14 lg:h-[72px] lg:w-[72px] items-center justify-center rounded-full transition hover:scale-105"
               href="https://www.facebook.com/tordillachips"
@@ -218,6 +194,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
               </svg>
             </a>
             <a
+              key="aparat"
               aria-label="آپارات ترددیلا"
               className="group inline-flex h-12 w-12 md:h-14 md:w-14 lg:h-[72px] lg:w-[72px] items-center justify-center rounded-full transition hover:scale-105"
               href="https://www.aparat.com/tordilla.chips"

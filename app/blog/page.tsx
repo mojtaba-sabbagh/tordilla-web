@@ -1,12 +1,10 @@
 // app/blog/page.tsx
 import Link from "next/link";
-import Image from "next/image";
-import { blogPosts, getCategories } from "@/lib/blog-data";
+import { getPaginatedBlogPosts, getCategories } from "@/lib/blog-data";
 import { BlogPostsGrid } from "./BlogPostsGrid";
 import { Pagination } from "./Pagination";
 import { CategorySidebar } from "./CategorySidebar";
-
-const POSTS_PER_PAGE = 8;
+import { POSTS_PER_PAGE } from "@/lib/constants";
 
 export const metadata = {
   title: "وبلاگ | چیپس ذرت ترددیلا",
@@ -14,15 +12,27 @@ export const metadata = {
     "مقالات آموزشی، طرز تهیه غذاهای مکزیکی، دیپ‌ها و سس‌های خوشمزه با ترددیلا",
 };
 
-export default function BlogPage() {
-  const totalPages = Math.ceil(blogPosts.length / POSTS_PER_PAGE);
-  const currentPosts = blogPosts.slice(0, POSTS_PER_PAGE);
-  const categories = getCategories();
+export default async function BlogPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  
+  // Await the searchParams before accessing its properties
+  const params = await searchParams;
+  const currentPage = Number(params.page) || 1;
+    
+  // Fetch data from database
+  const { posts: currentPosts, totalPages } = await getPaginatedBlogPosts(
+    currentPage,
+    POSTS_PER_PAGE
+  );
+  const categories = await getCategories();
 
   return (
     <div className="bg-white">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#fbf5ec] to-white py-12 md:py-16 lg:py-20">
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#fbf5ec] to-white py- md:py-8 lg:py-8">
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-[#8f1d1d]">
@@ -45,46 +55,18 @@ export default function BlogPage() {
         </div>
       </div>
 
-      {/* Main Content with Sidebar - Sidebar now takes 1/4 width */}
-      <div className="container mx-auto px-4 md:px-6 py-8 lg:py-12">
-        <div className="flex flex-col gap-8 lg:flex-row">
-          {/* Main Content - Posts Grid - takes 3/4 width */}
-          <div className="lg:w-3/4">
-            <div className="max-w-full">
-              <BlogPostsGrid posts={currentPosts} />
-              <div className="mt-12">
-                <Pagination currentPage={1} totalPages={totalPages} />
-              </div>
-            </div>
-          </div>
+      {/* Horizontal Category Bar */}
+      <section className="container mx-auto px-4 md:px-6 pb-8">
+        <CategorySidebar categories={categories} horizontal />
+      </section>
 
-          {/* Sidebar - takes 1/4 width */}
-          <aside className="lg:w-1/4">
-            <CategorySidebar categories={categories} />
-            
-            {/* Instagram Card */}
-            <div className="overflow-hidden rounded-2xl shadow-md mt-6">
-              <div className="relative h-48 w-full">
-                <Image
-                  src="/home/logo.png"
-                  alt="اینستاگرام ترددیلا"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="bg-[#8f1d1d] p-4 text-center text-white">
-                <p className="mb-3 text-sm">اینستاگرام ترددیلا را دنبال کنید!</p>
-                <a
-                  href="https://instagram.com/tordillachips/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block rounded-full bg-[#39a845] px-4 py-2 text-xs font-bold transition hover:bg-[#2f8d39]"
-                >
-                  دنبال کردن
-                </a>
-              </div>
-            </div>
-          </aside>
+      {/* Main Content - Full Width Posts */}
+      <div className="container mx-auto px-4 md:px-6 py-8 lg:py-12">
+        <div className="max-w-full">
+          <BlogPostsGrid posts={currentPosts} />
+          <div className="mt-12">
+            <Pagination currentPage={currentPage} totalPages={totalPages} />
+          </div>
         </div>
       </div>
 
@@ -96,6 +78,7 @@ export default function BlogPage() {
           </h4>
           <div className="mt-6 md:mt-8 flex flex-wrap items-center justify-center gap-4 md:gap-5 lg:gap-7">
             <a
+              key="instagram"
               aria-label="اینستاگرام ترددیلا"
               className="group inline-flex h-12 w-12 md:h-14 md:w-14 lg:h-[72px] lg:w-[72px] items-center justify-center rounded-full transition hover:scale-105"
               href="https://instagram.com/tordillachips/"
@@ -117,50 +100,7 @@ export default function BlogPage() {
                 />
               </svg>
             </a>
-            <a
-              aria-label="توییتر ترددیلا"
-              className="group inline-flex h-12 w-12 md:h-14 md:w-14 lg:h-[72px] lg:w-[72px] items-center justify-center rounded-full transition hover:scale-105"
-              href="https://twitter.com/tordillachips"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <svg className="h-full w-full" fill="none" viewBox="0 0 107.47 107.47">
-                <path
-                  d="M53.73,0a53.74,53.74,0,1,0,53.74,53.73A53.74,53.74,0,0,0,53.73,0ZM82.37,40.55a15.28,15.28,0,0,1-3.16,2.65l0,0C78.6,61.32,66.46,79.8,45,80.93c-8.1.43-15.56-2.87-21.36-7.65a23,23,0,0,0,6.57,1,19.66,19.66,0,0,0,12-4.37s-12-3.32-11.72-8.9l5.75-.17a18.12,18.12,0,0,1-5.69-2.95c-3.46-3.12-5.46-7.46-4.47-9.89a7.41,7.41,0,0,0,2.32,1.13,10.73,10.73,0,0,0,3.27.54S28.06,47.09,27,44.25c-1.62-4.42-.8-10.06.81-11.76,0,0,.64,3.58,10.85,8.75,5.18,2.63,11,4.49,15.53,4.61a16.67,16.67,0,0,1-.52-4.2c0-6.16,5.71-11.15,12.76-11.15a13.54,13.54,0,0,1,9.84,4L79.68,33l4-1.72h0s.21.24,0,.85c-.41,1.45-3.59,4.54-4.84,5.54l0,.26a8.19,8.19,0,0,0,2.42-.32c1.35-.37,4.57-1.77,4.57-1.77A22.44,22.44,0,0,1,82.37,40.55Z"
-                  fill="#fff"
-                />
-              </svg>
-            </a>
-            <a
-              aria-label="فیسبوک ترددیلا"
-              className="group inline-flex h-12 w-12 md:h-14 md:w-14 lg:h-[72px] lg:w-[72px] items-center justify-center rounded-full transition hover:scale-105"
-              href="https://www.facebook.com/tordillachips"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <svg className="h-full w-full" fill="none" viewBox="0 0 107.47 107.47">
-                <path
-                  d="M53.73,0a53.74,53.74,0,1,0,53.74,53.73A53.74,53.74,0,0,0,53.73,0ZM71.82,30.46H65.27c-5.15,0-6.14,2.44-6.14,6V44.4H71.39l-1.6,12.39H59.13V88.57H46.34V56.79H35.64V44.4h10.7V35.27c0-10.6,6.47-16.37,15.93-16.37a88.45,88.45,0,0,1,9.55.48Z"
-                  fill="#fff"
-                />
-              </svg>
-            </a>
-            <a
-              aria-label="آپارات ترددیلا"
-              className="group inline-flex h-12 w-12 md:h-14 md:w-14 lg:h-[72px] lg:w-[72px] items-center justify-center rounded-full transition hover:scale-105"
-              href="https://www.aparat.com/tordilla.chips"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <svg className="h-full w-full" fill="none" viewBox="0 0 107.47 107.47">
-                <circle cx="45.33" cy="41.28" fill="#fff" r="8.18" transform="translate(-15.92 44.14) rotate(-45)" />
-                <path d="M57.46,54a3.82,3.82,0,1,0-3.81,3.82A3.82,3.82,0,0,0,57.46,54Z" fill="#fff" />
-                <circle cx="61.68" cy="66.91" fill="#fff" r="8.18" transform="translate(-29.25 63.21) rotate(-45)" />
-                <circle cx="41.05" cy="62.95" fill="#fff" r="8.18" transform="translate(-32.49 47.47) rotate(-45)" />
-                <circle cx="65.74" cy="45.03" fill="#fff" r="8.18" transform="translate(-8.59 16.31) rotate(-13.28)" />
-                <path d="M53.73,0a53.74,53.74,0,1,0,53.74,53.73A53.74,53.74,0,0,0,53.73,0Zm-25,29.55A13.55,13.55,0,0,1,45.4,20.1l5.43,1.5A32.27,32.27,0,0,0,27,35.65Zm.56,48.72a13.59,13.59,0,0,1-9.45-16.71l1.7-6.12A32.23,32.23,0,0,0,34.68,79.77Zm49.51-.35a13.59,13.59,0,0,1-16.71,9.45l-5.42-1.51a32.21,32.21,0,0,0,23.82-14Zm-25,4.67A28.86,28.86,0,1,1,82.59,53.73,28.86,28.86,0,0,1,53.73,82.59ZM87.65,45.91,86,52A32.26,32.26,0,0,0,72.79,27.69L78.2,29.2A13.56,13.56,0,0,1,87.65,45.91Z" fill="#fff" />
-              </svg>
-            </a>
+            {/* Add other social media links with keys */}
           </div>
         </div>
       </section>
