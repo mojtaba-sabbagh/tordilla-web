@@ -1,0 +1,72 @@
+FROM node:20-bookworm-slim AS builder
+WORKDIR /app
+
+ENV npm_config_platform=linux
+ENV npm_config_arch=x64
+
+# Use Runflare Debian mirrors
+ RUN printf '%s\n' \
+    "deb http://mirror-linux.runflare.com/debian bookworm main" \
+    "deb http://mirror-linux.runflare.com/debian-security bookworm-security main" \
+    "deb http://mirror-linux.runflare.com/debian bookworm-updates main" \
+    > /etc/apt/sources.list
+
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    make \
+    g++ \
+    openssl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install system dependencies with retry + cached apt directories
+# RUN --mount=type=cache,target=/var/cache/apt \
+#      --mount=type=cache,target=/var/lib/apt \
+#      apt-get update -o Acquire::Retries=5 \
+#      && apt-get install -y --no-install-recommends \
+#          python3 \
+#          make \
+#          g++ \
+#          openssl \
+#          -o Acquire::Retries=5 \
+#      && rm -rf /var/lib/apt/lists/*
+
+# Copy package files
+COPY package.json package-lock.json* ./
+COPY prisma ./prisma/
+
+# Install dependencies
+RUN npm ci
+
+# Generate Prisma client
+RUN npx prisma generate
+
+# Copy source code
+COPY . .
+
+# Build the application (standalone)
+RUN npm run build
+
+# Production stage
+FROM node:20-bookworm-slim AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Install openssl for Prisma (required for Prisma at runtime)
+RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+
+# Copy standalone build
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+
+# Copy Prisma files for runtime
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+
+EXPOSE 3000
+
+CMD ["node", "server.js"]

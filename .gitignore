@@ -27,6 +27,9 @@ yarn-error.log*
 # local env files
 .env*.local
 .env
+env*
+.env.docker
+ Dockerfile.bk
 
 # vercel
 .vercel

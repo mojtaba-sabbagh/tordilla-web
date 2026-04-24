@@ -60,8 +60,8 @@ export function SiteFooter() {
               </p>
               <p className="flex gap-2">
                 <span>✉️</span>
-                <a href="mailto:info@TordillaFood.com" className="hover:text-[#ce4a28] transition">
-                  info@TordillaFood.com
+                <a href="mailto:it@tordilla.ir" className="hover:text-[#ce4a28] transition">
+                  it@tordilla.ir
                 </a>
               </p>
             </div>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { HomeSlider } from "@/components/home-slider";
+import { generateSliderImages } from "@/lib/image-gather";
 
 const flavors = [
   {
@@ -158,10 +159,12 @@ const socials = [
   },
 ];
 
-const sliderImages = [
-  "/home/slider/where-1024x447.jpg",
-  "/home/slider/tamas-ba-ma-small-size-min-1024x447.jpg"
-];
+let sliderImages = generateSliderImages('public/home/slider');
+sliderImages = sliderImages.map((f : any) => (f.split('/').slice(1).join('/')));
+// [
+//   "/home/slider/where-1024x447.jpg",
+//   "/home/slider/tamas-ba-ma-small-size-min-1024x447.jpg"
+// ];
 
 export default function HomePage() {
   return (

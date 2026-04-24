@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import AdminNav from '../components/AdminNav'; // Import the nav component
 
 // Define the Comment type
 interface Comment {
@@ -28,6 +29,7 @@ export default function AdminCommentsPage() {
   const [error, setError] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
+  const [pendingCommentsCount, setPendingCommentsCount] = useState(0);
 
   // Check authentication on mount
   useEffect(() => {
@@ -38,7 +40,7 @@ export default function AdminCommentsPage() {
     try {
       const response = await fetch('/api/admin/check-auth');
       if (!response.ok) {
-        router.push('/adm/login?from=/admin/comments');
+        router.push('/admin/login?from=/admin/comments');
         return;
       }
       setIsAuthenticated(true);
@@ -56,8 +58,13 @@ export default function AdminCommentsPage() {
         throw new Error('Failed to fetch comments');
       }
       const data = await response.json();
-      setComments(Array.isArray(data) ? data : []);
-      setFilteredComments(Array.isArray(data) ? data : []);
+      const commentsData = Array.isArray(data) ? data : [];
+      setComments(commentsData);
+      setFilteredComments(commentsData);
+      
+      // Count pending comments
+      const pending = commentsData.filter((c: Comment) => c.status === 'PENDING').length;
+      setPendingCommentsCount(pending);
     } catch (err) {
       console.error('Error fetching comments:', err);
       setError('Failed to load comments');
@@ -129,8 +136,8 @@ export default function AdminCommentsPage() {
   // Show loading state
   if (!isAuthenticated || loading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="container mx-auto px-4">
+      <div className="min-h-screen bg-gray-50">
+        <div className="container mx-auto px-4 py-8">
           <div className="text-center py-12">
             <p className="text-neutral-600">در حال بارگذاری...</p>
           </div>
@@ -142,8 +149,8 @@ export default function AdminCommentsPage() {
   // Show error state
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="container mx-auto px-4">
+      <div className="min-h-screen bg-gray-50">
+        <div className="container mx-auto px-4 py-8">
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
             <p className="text-red-600">{error}</p>
             <button
@@ -159,8 +166,11 @@ export default function AdminCommentsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4">
+    <div className="min-h-screen bg-gray-50">
+      {/* Admin Navigation */}
+      <AdminNav pendingCommentsCount={pendingCommentsCount} />
+      
+      <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">مدیریت نظرات</h1>
           <p className="text-gray-600 mt-2">مدیریت و بررسی نظرات کاربران</p>

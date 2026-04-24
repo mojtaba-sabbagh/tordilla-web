@@ -1,48 +1,60 @@
-// app/api/comments/route.ts
+// app/api/contact/route.ts
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { name, email, content, blogPostId } = body;
+    const { name, email, phone, subject, message } = await request.json();
     
-    // Validate input
-    if (!name || !email || !content || !blogPostId) {
+    // Validate required fields
+    if (!name || !email || !subject || !message) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'لطفاً تمام فیلدهای ضروری را پر کنید' },
         { status: 400 }
       );
     }
     
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      );
-    }
-    
-    const comment = await prisma.comment.create({
+    // Save to database
+    const contact = await prisma.contactMessage.create({
       data: {
         name,
         email,
-        content,
-        blogPostId,
-        status: 'PENDING',
+        phone: phone || null,
+        subject,
+        message,
+        status: 'UNSEEN',
       },
     });
     
-    return NextResponse.json(
-      { message: 'Comment submitted for review', comment },
-      { status: 201 }
-    );
+    // Optional: Still try to send email as backup, but don't fail if email fails
+    try {
+      // You can keep the email sending code here as a backup
+      // But wrap it in try-catch so it doesn't break the main flow
+      await sendEmailNotification(name, email, phone, subject, message);
+    } catch (emailError) {
+      console.error('Email notification failed:', emailError);
+      // Don't return error to user, just log it
+    }
+    
+    return NextResponse.json({ 
+      success: true, 
+      message: 'پیام شما با موفقیت ثبت شد',
+      id: contact.id 
+    });
+    
   } catch (error) {
-    console.error('Error creating comment:', error);
+    console.error('Database error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'خطا در ثبت پیام. لطفاً مجدد تلاش کنید' },
       { status: 500 }
     );
   }
+}
+
+// Optional backup email function
+async function sendEmailNotification(name: string, email: string, phone: string | null, subject: string, message: string) {
+  // Your existing email code here, but make it optional
+  // You can skip this if you don't want email at all
 }

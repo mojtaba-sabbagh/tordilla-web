@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Mail, Phone, MapPin, Clock, Send } from "lucide-react";
 
 export default function ContactPage() {
-    const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -29,11 +29,13 @@ export default function ContactPage() {
         body: JSON.stringify(data),
       });
       
+      const result = await response.json();
+      
       if (response.ok) {
-        setSubmitStatus({ type: 'success', message: 'پیام شما با موفقیت ارسال شد. با تشکر!' });
+        setSubmitStatus({ type: 'success', message: 'پیام شما با موفقیت ثبت شد. با تشکر!' });
         e.currentTarget.reset();
       } else {
-        setSubmitStatus({ type: 'error', message: 'خطا در ارسال پیام. لطفاً مجدد تلاش کنید.' });
+        setSubmitStatus({ type: 'error', message: result.error || 'خطا در ثبت پیام. لطفاً مجدد تلاش کنید.' });
       }
     } catch (error) {
       setSubmitStatus({ type: 'error', message: 'خطا در ارتباط با سرور.' });
@@ -41,6 +43,7 @@ export default function ContactPage() {
       setIsSubmitting(false);
     }
   }
+
   return (
     <div className="bg-white">
       {/* Hero Section */}
@@ -81,8 +84,7 @@ export default function ContactPage() {
             <h3 className="mb-2 text-xl font-bold text-neutral-800">تلفن</h3>
             <p className="text-neutral-600">
               <a href="tel:09426002408" className="hover:text-[#8f1d1d] transition">
-                ۰۹۴۲۶۰۰۲۴۰۸ - 
-                داخلی  : ۲۰
+                ۰۹۴۲۶۰۰۲۴۰۸ - داخلی  : ۲۰
               </a>
             </p>
           </div>
@@ -94,7 +96,7 @@ export default function ContactPage() {
             </div>
             <h3 className="mb-2 text-xl font-bold text-neutral-800">ایمیل</h3>
             <p className="text-neutral-600">
-              <a href="mailto:info@TordillaFood.com" className="hover:text-[#8f1d1d] transition">
+              <a href="mailto:it@tordilla.ir" className="hover:text-[#8f1d1d] transition">
                 it@tordilla.ir
               </a>
             </p>
@@ -114,108 +116,121 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* Contact Form & Map Section */}
+      {/* Contact Form & Map Section - Fixed Layout */}
       <section className="py-16 md:py-20">
         <div className="container mx-auto px-4 md:px-6">
-          <div className="grid gap-12 lg:grid-cols-2">
-            {/* Contact Form */}
-            <div className="rounded-3xl bg-[#f6f1ec] p-6 md:p-8">
-              <h2 className="mb-6 text-2xl font-bold text-[#8f1d1d] md:text-3xl">
-                ارسال پیام
-              </h2>
-              <form action="#" method="POST" className="space-y-5">
-                <div>
-                  <label htmlFor="name" className="mb-2 block text-sm font-medium text-neutral-700">
-                    نام و نام خانوادگی *
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    required
-                    className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 focus:border-[#8f1d1d] focus:outline-none focus:ring-2 focus:ring-[#8f1d1d]/20 transition"
-                    placeholder="نام خود را وارد کنید"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="email" className="mb-2 block text-sm font-medium text-neutral-700">
-                    ایمیل *
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    required
-                    className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 focus:border-[#8f1d1d] focus:outline-none focus:ring-2 focus:ring-[#8f1d1d]/20 transition"
-                    placeholder="example@domain.com"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="phone" className="mb-2 block text-sm font-medium text-neutral-700">
-                    تلفن تماس
-                  </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 focus:border-[#8f1d1d] focus:outline-none focus:ring-2 focus:ring-[#8f1d1d]/20 transition"
-                    placeholder="۰۲۱-XXXXX"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="subject" className="mb-2 block text-sm font-medium text-neutral-700">
-                    موضوع *
-                  </label>
-                  <input
-                    type="text"
-                    id="subject"
-                    name="subject"
-                    required
-                    className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 focus:border-[#8f1d1d] focus:outline-none focus:ring-2 focus:ring-[#8f1d1d]/20 transition"
-                    placeholder="موضوع پیام"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="message" className="mb-2 block text-sm font-medium text-neutral-700">
-                    پیام شما *
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows={5}
-                    required
-                    className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 focus:border-[#8f1d1d] focus:outline-none focus:ring-2 focus:ring-[#8f1d1d]/20 transition resize-none"
-                    placeholder="متن پیام خود را بنویسید..."
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#8f1d1d] px-6 py-3 text-lg font-bold text-white transition hover:bg-[#6b1616] focus:outline-none focus:ring-2 focus:ring-[#8f1d1d] focus:ring-offset-2 md:w-auto"
-                >
-                  <Send className="h-5 w-5" />
+          <div className="flex flex-col lg:flex-row gap-12">
+            {/* Contact Form - Takes full width on mobile, half on desktop */}
+            <div className="w-full lg:w-1/2">
+              <div className="rounded-3xl bg-[#f6f1ec] p-6 md:p-8">
+                <h2 className="mb-6 text-2xl font-bold text-[#8f1d1d] md:text-3xl">
                   ارسال پیام
-                </button>
-              </form>
+                </h2>
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div>
+                    <label htmlFor="name" className="mb-2 block text-sm font-medium text-neutral-700">
+                      نام و نام خانوادگی *
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      required
+                      className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 focus:border-[#8f1d1d] focus:outline-none focus:ring-2 focus:ring-[#8f1d1d]/20 transition"
+                      placeholder="نام خود را وارد کنید"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="email" className="mb-2 block text-sm font-medium text-neutral-700">
+                      ایمیل *
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      required
+                      className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 focus:border-[#8f1d1d] focus:outline-none focus:ring-2 focus:ring-[#8f1d1d]/20 transition"
+                      placeholder="example@domain.com"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="phone" className="mb-2 block text-sm font-medium text-neutral-700">
+                      تلفن تماس
+                    </label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 focus:border-[#8f1d1d] focus:outline-none focus:ring-2 focus:ring-[#8f1d1d]/20 transition"
+                      placeholder="۰۲۱-XXXXX"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="subject" className="mb-2 block text-sm font-medium text-neutral-700">
+                      موضوع *
+                    </label>
+                    <input
+                      type="text"
+                      id="subject"
+                      name="subject"
+                      required
+                      className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 focus:border-[#8f1d1d] focus:outline-none focus:ring-2 focus:ring-[#8f1d1d]/20 transition"
+                      placeholder="موضوع پیام"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="message" className="mb-2 block text-sm font-medium text-neutral-700">
+                      پیام شما *
+                    </label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      rows={5}
+                      required
+                      className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 focus:border-[#8f1d1d] focus:outline-none focus:ring-2 focus:ring-[#8f1d1d]/20 transition resize-none"
+                      placeholder="متن پیام خود را بنویسید..."
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#8f1d1d] px-6 py-3 text-lg font-bold text-white transition hover:bg-[#6b1616] focus:outline-none focus:ring-2 focus:ring-[#8f1d1d] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Send className="h-5 w-5" />
+                    {isSubmitting ? 'در حال ارسال...' : 'ارسال پیام'}
+                  </button>
+                </form>
+                
+                {submitStatus && (
+                  <div className={`mt-4 p-3 rounded-lg text-center ${
+                    submitStatus.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                  }`}>
+                    {submitStatus.message}
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Map */}
-            <div className="rounded-3xl overflow-hidden shadow-lg">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3239.123456789012!2d51.3890!3d35.6892!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3f8e0143e6b3c0e1%3A0x2b9a8f0b1c2d3e4f!2sTehran%2C%20Teymouri%20Street!5e0!3m2!1sen!2sir!4v1234567890123!5m2!1sen!2sir"
-                width="100%"
-                height="100%"
-                style={{ minHeight: "400px", border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="موقعیت دفتر ترددیلا"
-                className="w-full h-full min-h-[450px] lg:min-h-[550px]"
-              />
+            {/* Map - Takes full width on mobile, half on desktop */}
+            <div className="w-full lg:w-1/2">
+              <div className="rounded-3xl overflow-hidden shadow-lg h-full">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1x3244.123456789012!2x55.3890!3x30.6892!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3f8e0143e6b3c0e1%3A0x2b9a8f0b1c2d3e4f!2sRafsanjan%2C%20Kerman%20Province%2C%20Iran!5e0!3m2!1sen!2s!4v1234567890123!5m2!1sen!2s"
+                  width="100%"
+                  height="100%"
+                  style={{ minHeight: "450px", border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="موقعیت شرکت کوثر کویر رفسنجان"
+                  className="w-full h-full"
+                />
+              </div>
             </div>
           </div>
         </div>
