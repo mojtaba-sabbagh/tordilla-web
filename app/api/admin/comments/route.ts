@@ -24,7 +24,6 @@ export async function GET(request: NextRequest) {
       },
     });
     
-    console.log(`Found ${comments.length} comments`);
     return NextResponse.json(comments);
   } catch (error) {
     return NextResponse.json(
