@@ -1,75 +1,100 @@
 // app/api/admin/posts/[id]/route.ts
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { verifyAdmin } from '@/lib/admin-auth';
+import { verifyAdminAuth } from '@/lib/admin-auth';
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> } // params is a Promise
 ) {
-  const authError = await verifyAdmin(request);
-  if (authError) return authError;
-
-  const { id } = await params;
-  const post = await prisma.blogPost.findUnique({
-    where: { id },
-  });
-
-  if (!post) {
-    return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+  const { isValid } = await verifyAdminAuth();
+  
+  if (!isValid) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-
-  return NextResponse.json(post);
+  
+  try {
+    const { id } = await params; // Await params
+    
+    const post = await prisma.blogPost.findUnique({
+      where: { id },
+      include: {
+        comments: true,
+      },
+    });
+    
+    if (!post) {
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+    }
+    
+    return NextResponse.json({ post });
+  } catch (error) {
+    console.error('Error fetching post:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch post' },
+      { status: 500 }
+    );
+  }
 }
 
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const authError = await verifyAdmin(request);
-  if (authError) return authError;
-
-  const { id } = await params;
-  const body = await request.json();
-  const { title, slug, category, categorySlug, excerpt, content, image, imageWidth, imageHeight, author, published } = body;
-
-  const post = await prisma.blogPost.update({
-    where: { id },
-    data: {
-      title,
-      slug,
-      category,
-      categorySlug,
-      excerpt,
-      content,
-      image,
-      imageWidth,
-      imageHeight,
-      author,
-      published,
-    },
-  });
-
-  return NextResponse.json(post);
+  const { isValid } = await verifyAdminAuth();
+  
+  if (!isValid) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  
+  try {
+    const { id } = await params; // Await params
+    const body = await request.json();
+    
+    const post = await prisma.blogPost.update({
+      where: { id },
+      data: body,
+    });
+    
+    return NextResponse.json({ post });
+  } catch (error) {
+    console.error('Error updating post:', error);
+    return NextResponse.json(
+      { error: 'Failed to update post' },
+      { status: 500 }
+    );
+  }
 }
 
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const authError = await verifyAdmin(request);
-  if (authError) return authError;
-
-  const { id } = await params;
+  const { isValid } = await verifyAdminAuth();
   
-  // Delete comments first
-  await prisma.comment.deleteMany({
-    where: { blogPostId: id },
-  });
+  if (!isValid) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   
-  await prisma.blogPost.delete({
-    where: { id },
-  });
-
-  return NextResponse.json({ success: true });
+  try {
+    const { id } = await params; // Await params
+    
+    // Delete all comments first (if not using cascade)
+    await prisma.comment.deleteMany({
+      where: { blogPostId: id },
+    });
+    
+    // Delete the post
+    await prisma.blogPost.delete({
+      where: { id },
+    });
+    
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting post:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete post' },
+      { status: 500 }
+    );
+  }
 }

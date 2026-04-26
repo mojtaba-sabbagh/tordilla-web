@@ -17,9 +17,13 @@ export default function AdminLoginPage() {
   // Check if already logged in
   useEffect(() => {
     const checkAuth = async () => {
-      const response = await fetch("/api/admin/check-auth");
-      if (response.ok) {
-        window.location.href = "/admin";
+      try {
+        const response = await fetch("/api/admin/check-auth");
+        if (response.ok) {
+          window.location.href = "/admin";
+        }
+      } catch (error) {
+        // Not logged in, stay on login page
       }
     };
     checkAuth();
@@ -34,7 +38,7 @@ export default function AdminLoginPage() {
       const response = await fetch("/api/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password }), // Send username
       });
 
       const data = await response.json();

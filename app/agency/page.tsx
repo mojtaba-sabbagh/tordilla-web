@@ -110,17 +110,17 @@ export default function AgencyPage() {
             <div className="text-center p-4">
               <Phone className="w-8 h-8 text-[#8f1d1d] mx-auto mb-3" />
               <p className="font-bold">تلفن</p>
-              <p className="text-neutral-600 text-sm">۰۲۱-۹۱۰۷۲۶۶۷</p>
+              <p className="text-neutral-600 text-sm">۰۹۴۲۶۰۰۲۴۰۸</p>
             </div>
             <div className="text-center p-4">
               <Mail className="w-8 h-8 text-[#8f1d1d] mx-auto mb-3" />
               <p className="font-bold">ایمیل</p>
-              <p className="text-neutral-600 text-sm">info@TordillaFood.com</p>
+              <p className="text-neutral-600 text-sm">it@tordilla.ir</p>
             </div>
             <div className="text-center p-4">
               <MapPin className="w-8 h-8 text-[#8f1d1d] mx-auto mb-3" />
               <p className="font-bold">آدرس</p>
-              <p className="text-neutral-600 text-sm">تهران، خیابان تیموری</p>
+              <p className="text-neutral-600 text-sm">رفسنجان، شهرک صنعتی شماره ۱</p>
             </div>
           </div>
         </div>

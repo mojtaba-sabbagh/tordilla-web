@@ -13,7 +13,10 @@ export default function ContactPage() {
     setIsSubmitting(true);
     setSubmitStatus(null);
     
-    const formData = new FormData(e.currentTarget);
+    // Store form element reference
+    const form = e.currentTarget;
+    
+    const formData = new FormData(form);
     const data = {
       name: formData.get('name'),
       email: formData.get('email'),
@@ -23,7 +26,7 @@ export default function ContactPage() {
     };
     
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch('/api/contact/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -32,12 +35,13 @@ export default function ContactPage() {
       const result = await response.json();
       
       if (response.ok) {
-        setSubmitStatus({ type: 'success', message: 'پیام شما با موفقیت ثبت شد. با تشکر!' });
-        e.currentTarget.reset();
+        setSubmitStatus({ type: 'success', message: result.message || 'پیام شما با موفقیت ثبت شد. با تشکر!' });
+        form.reset(); // Use stored form reference instead of e.currentTarget
       } else {
         setSubmitStatus({ type: 'error', message: result.error || 'خطا در ثبت پیام. لطفاً مجدد تلاش کنید.' });
       }
     } catch (error) {
+      console.error('Submit error:', error);
       setSubmitStatus({ type: 'error', message: 'خطا در ارتباط با سرور.' });
     } finally {
       setIsSubmitting(false);
@@ -150,7 +154,7 @@ export default function ContactPage() {
                       id="email"
                       name="email"
                       required
-                      className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 focus:border-[#8f1d1d] focus:outline-none focus:ring-2 focus:ring-[#8f1d1d]/20 transition"
+                      className="ltr w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 focus:border-[#8f1d1d] focus:outline-none focus:ring-2 focus:ring-[#8f1d1d]/20 transition"
                       placeholder="example@domain.com"
                     />
                   </div>
@@ -220,7 +224,7 @@ export default function ContactPage() {
             <div className="w-full lg:w-1/2">
               <div className="rounded-3xl overflow-hidden shadow-lg h-full">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1x3244.123456789012!2x55.3890!3x30.6892!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3f8e0143e6b3c0e1%3A0x2b9a8f0b1c2d3e4f!2sRafsanjan%2C%20Kerman%20Province%2C%20Iran!5e0!3m2!1sen!2s!4v1234567890123!5m2!1sen!2s"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3244.123456789012!2x55.3890!3x30.6892!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3f8e0143e6b3c0e1%3A0x2b9a8f0b1c2d3e4f!2sRafsanjan%2C%20Kerman%20Province%2C%20Iran!5e0!3m2!1sen!2s!4v1234567890123!5m2!1sen!2s"
                   width="100%"
                   height="100%"
                   style={{ minHeight: "450px", border: 0 }}

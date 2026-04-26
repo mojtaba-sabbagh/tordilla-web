@@ -1,60 +1,156 @@
-// app/api/contact/route.ts
-import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+// app/api/comments/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
-const prisma = new PrismaClient();
-
-export async function POST(request: Request) {
+// GET - Fetch comments for a specific blog post
+export async function GET(request: NextRequest) {
   try {
-    const { name, email, phone, subject, message } = await request.json();
+    const { searchParams } = new URL(request.url);
+    const blogPostId = searchParams.get('blogPostId');
     
-    // Validate required fields
-    if (!name || !email || !subject || !message) {
+    if (!blogPostId) {
       return NextResponse.json(
-        { error: 'لطفاً تمام فیلدهای ضروری را پر کنید' },
+        { error: 'blogPostId is required' },
         { status: 400 }
       );
     }
     
-    // Save to database
-    const contact = await prisma.contactMessage.create({
-      data: {
-        name,
-        email,
-        phone: phone || null,
-        subject,
-        message,
-        status: 'UNSEEN',
+    const comments = await prisma.comment.findMany({
+      where: {
+        blogPostId,
+        status: 'APPROVED',
+      },
+      orderBy: {
+        createdAt: 'desc',
       },
     });
     
-    // Optional: Still try to send email as backup, but don't fail if email fails
-    try {
-      // You can keep the email sending code here as a backup
-      // But wrap it in try-catch so it doesn't break the main flow
-      await sendEmailNotification(name, email, phone, subject, message);
-    } catch (emailError) {
-      console.error('Email notification failed:', emailError);
-      // Don't return error to user, just log it
-    }
-    
-    return NextResponse.json({ 
-      success: true, 
-      message: 'پیام شما با موفقیت ثبت شد',
-      id: contact.id 
-    });
-    
+    return NextResponse.json(comments);
   } catch (error) {
-    console.error('Database error:', error);
+    console.error('Error fetching comments:', error);
     return NextResponse.json(
-      { error: 'خطا در ثبت پیام. لطفاً مجدد تلاش کنید' },
+      { error: 'Failed to fetch comments' },
       { status: 500 }
     );
   }
 }
 
-// Optional backup email function
-async function sendEmailNotification(name: string, email: string, phone: string | null, subject: string, message: string) {
-  // Your existing email code here, but make it optional
-  // You can skip this if you don't want email at all
+// POST - Submit a new comment
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { name, email, content, blogPostId } = body;
+    
+    // Validate required fields
+    if (!name || !email || !content || !blogPostId) {
+      return NextResponse.json(
+        { error: 'All fields are required' },
+        { status: 400 }
+      );
+    }
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { error: 'Invalid email format' },
+        { status: 400 }
+      );
+    }
+    
+    // Check if blog post exists
+    const blogPost = await prisma.blogPost.findUnique({
+      where: { id: blogPostId },
+    });
+    
+    if (!blogPost) {
+      return NextResponse.json(
+        { error: 'Blog post not found' },
+        { status: 404 }
+      );
+    }
+    
+    // Create the comment (default status is PENDING)
+    const comment = await prisma.comment.create({
+      data: {
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        content: content.trim(),
+        blogPostId,
+        status: 'PENDING', // Comments start as pending for moderation
+      },
+    });
+    
+    console.log(`New comment submitted for post: ${blogPost.title}`);
+    
+    return NextResponse.json(
+      { 
+        success: true, 
+        message: 'نظر شما با موفقیت ثبت شد و پس از تایید نمایش داده می‌شود',
+        comment 
+      },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error('Error submitting comment:', error);
+    return NextResponse.json(
+      { error: 'Failed to submit comment' },
+      { status: 500 }
+    );
+  }
+}
+
+// PUT - Update comment status (admin only)
+export async function PUT(request: NextRequest) {
+  try {
+    // This should be protected by admin auth
+    // For now, we'll check for admin token
+    const { commentId, status } = await request.json();
+    
+    if (!commentId || !status) {
+      return NextResponse.json(
+        { error: 'Comment ID and status are required' },
+        { status: 400 }
+      );
+    }
+    
+    const comment = await prisma.comment.update({
+      where: { id: commentId },
+      data: { status },
+    });
+    
+    return NextResponse.json(comment);
+  } catch (error) {
+    console.error('Error updating comment:', error);
+    return NextResponse.json(
+      { error: 'Failed to update comment' },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE - Delete a comment (admin only)
+export async function DELETE(request: NextRequest) {
+  try {
+    const { commentId } = await request.json();
+    
+    if (!commentId) {
+      return NextResponse.json(
+        { error: 'Comment ID is required' },
+        { status: 400 }
+      );
+    }
+    
+    await prisma.comment.delete({
+      where: { id: commentId },
+    });
+    
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting comment:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete comment' },
+      { status: 500 }
+    );
+  }
 }

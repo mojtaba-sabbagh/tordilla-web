@@ -1,24 +1,30 @@
 // app/api/admin/messages/route.ts
-import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { verifyAdminAuth } from '@/lib/admin-auth';
 
-const prisma = new PrismaClient();
-
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
+    // Verify admin authentication
+    const { isValid } = await verifyAdminAuth();
+    
+    if (!isValid) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
     const limit = parseInt(searchParams.get('limit') || '50');
     const page = parseInt(searchParams.get('page') || '1');
     const skip = (page - 1) * limit;
     
-    const where = status && status !== 'ALL' ? { status: status as any } : {};
+    const where = status && status !== 'ALL' ? { status } : {};
     
     const [messages, total] = await Promise.all([
       prisma.contactMessage.findMany({
         where,
         orderBy: {
-          createdAt: 'desc', // Newest first
+          createdAt: 'desc',
         },
         skip,
         take: limit,

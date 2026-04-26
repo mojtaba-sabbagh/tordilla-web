@@ -64,9 +64,12 @@ model ContactMessage {
   phone     String?
   subject   String
   message   String   @db.Text
-  status    Status   @default(UNSEEN)
+  status    String   @default("UNSEEN")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
 }
 
 enum Status {

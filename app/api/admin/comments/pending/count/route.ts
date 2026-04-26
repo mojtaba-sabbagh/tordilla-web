@@ -1,19 +1,18 @@
+// app/api/admin/comments/pending/count/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { cookies } from 'next/headers';
+import { verifyAdminAuth } from '@/lib/admin-auth';
 
 export async function GET(request: NextRequest) {
   try {
-    // ✅ FIX: Await the cookies() function because it returns a Promise
-    const cookieStore = await cookies();
-    const token = cookieStore.get('admin_token');
+    // Check authentication
+    const { isValid } = await verifyAdminAuth();
     
-    if (!token) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    console.log("Comments pending count - Auth check:", { isValid });
+    
+    if (!isValid) {
+      return NextResponse.json({ count: 0 }, { status: 200 }); // Return 0 instead of 401
     }
-    
-    // Verify the token here if needed
-    // const decoded = verify(token.value, process.env.JWT_SECRET!);
     
     const count = await prisma.comment.count({
       where: {
@@ -21,12 +20,10 @@ export async function GET(request: NextRequest) {
       }
     });
 
+    console.log(`Pending comments count: ${count}`);
     return NextResponse.json({ count });
   } catch (error) {
     console.error('Error fetching pending comments count:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch pending comments count' },
-      { status: 500 }
-    );
+    return NextResponse.json({ count: 0 }, { status: 200 });
   }
 }

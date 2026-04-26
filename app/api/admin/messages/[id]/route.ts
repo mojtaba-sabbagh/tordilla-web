@@ -1,16 +1,26 @@
 // app/api/admin/messages/[id]/route.ts
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
+import { verifyAdminAuth } from '@/lib/admin-auth';
 
-const prisma = new PrismaClient();
-
+// IMPORTANT: The params is a Promise in Next.js 15, so we need to await it
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> } // params is a Promise
 ) {
   try {
+    // Verify admin authentication
+    const { isValid } = await verifyAdminAuth();
+    
+    if (!isValid) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    // Await params to get the id - This is the key fix!
+    const { id: paramId } = await params;
+    const id = parseInt(paramId);
+    
     const { status } = await request.json();
-    const id = parseInt(params.id);
     
     const updated = await prisma.contactMessage.update({
       where: { id },
@@ -30,10 +40,19 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> } // params is a Promise
 ) {
   try {
-    const id = parseInt(params.id);
+    // Verify admin authentication
+    const { isValid } = await verifyAdminAuth();
+    
+    if (!isValid) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    // Await params to get the id - This is the key fix!
+    const { id: paramId } = await params;
+    const id = parseInt(paramId);
     
     await prisma.contactMessage.delete({
       where: { id },

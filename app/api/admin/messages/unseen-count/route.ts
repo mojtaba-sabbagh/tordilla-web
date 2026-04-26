@@ -1,25 +1,15 @@
 // app/api/admin/messages/unseen-count/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
-
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-this";
+import { verifyAdminAuth } from "@/lib/admin-auth";
 
 export async function GET() {
   try {
     // Verify admin authentication
-    const cookieStore = cookies();
-    const token = cookieStore.get("admin_token");
-
-    if (!token) {
-      return NextResponse.json({ authenticated: false }, { status: 401 });
-    }
-
-    try {
-      jwt.verify(token.value, JWT_SECRET);
-    } catch (error) {
-      return NextResponse.json({ authenticated: false }, { status: 401 });
+    const { isValid } = await verifyAdminAuth();
+    
+    if (!isValid) {
+      return NextResponse.json({ count: 0 }, { status: 200 });
     }
 
     // Count unseen messages
@@ -32,6 +22,6 @@ export async function GET() {
     return NextResponse.json({ count });
   } catch (error) {
     console.error("Error counting messages:", error);
-    return NextResponse.json({ error: "خطا در شمارش پیام‌ها" }, { status: 500 });
+    return NextResponse.json({ count: 0 }, { status: 200 });
   }
 }

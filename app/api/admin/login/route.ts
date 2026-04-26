@@ -1,81 +1,82 @@
 // app/api/admin/login/route.ts
-import { NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { prisma } from '@/lib/prisma';
+import { NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { prisma } from "@/lib/prisma";
+
+const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-this";
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { username, password } = body;
-    
-    console.log('Login attempt for username:', username);
-    
-    // Find admin
-    const admin = await prisma.admin.findUnique({
-      where: { username: username },
+    const { username, password } = await request.json();
+
+    console.log("Login attempt for username:", username);
+
+    if (!username || !password) {
+      return NextResponse.json(
+        { error: "نام کاربری و رمز عبور الزامی است" },
+        { status: 400 }
+      );
+    }
+
+    // Find admin user by username
+    const admin = await prisma.admin.findFirst({
+      where: { username },
     });
-        
+
+    console.log("Admin found:", !!admin);
+
     if (!admin) {
       return NextResponse.json(
-        { error: 'نام کاربری یا رمز عبور نادرست است' },
+        { error: "نام کاربری یا رمز عبور اشتباه است" },
         { status: 401 }
       );
     }
-    
-    // Compare password
-    const isValid = await bcrypt.compare(password, admin.password);
-        
-    if (!isValid) {
+
+    // Verify password
+    const isValidPassword = await bcrypt.compare(password, admin.password);
+    console.log("Password valid:", isValidPassword);
+
+    if (!isValidPassword) {
       return NextResponse.json(
-        { error: 'نام کاربری یا رمز عبور نادرست است' },
+        { error: "نام کاربری یا رمز عبور اشتباه است" },
         { status: 401 }
       );
     }
-    
-    // Check JWT_SECRET
-    if (!process.env.JWT_SECRET) {
-      console.error('JWT_SECRET is not defined in environment variables');
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
-      );
-    }
-    
-    // Generate token
+
+    // Create JWT token
     const token = jwt.sign(
-      { 
-        id: admin.id, 
-        username: admin.username 
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' }
+      { id: admin.id, username: admin.username },
+      JWT_SECRET,
+      { expiresIn: "7d" }
     );
-    
-    // Create response with cookie
-    const response = NextResponse.json({ 
+
+    console.log("Token created successfully");
+
+    // Create response with cookie using NextResponse
+    const response = NextResponse.json({
       success: true,
-      redirect: '/admin'
+      message: "ورود موفقیت‌آمیز بود",
     });
-    
-    // Set cookie
+
+    // Set the cookie on the response
     response.cookies.set({
-      name: 'admin-token',
+      name: "admin_token",
       value: token,
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: false, // false for localhost (HTTP)
+      sameSite: "lax",
       maxAge: 60 * 60 * 24 * 7, // 7 days
-      path: '/',
+      path: "/",
     });
-    
-    console.log('Login successful, token set');
-    
+
+    console.log("Cookie set on response");
+
     return response;
   } catch (error) {
-    console.error('Login error:', error);
+    console.error("Login error:", error);
     return NextResponse.json(
-      { error: 'خطا در سرور. لطفاً مجدد تلاش کنید.' },
+      { error: "خطا در ورود به سیستم: " + (error as Error).message },
       { status: 500 }
     );
   }

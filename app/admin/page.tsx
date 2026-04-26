@@ -4,7 +4,11 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Plus, Edit, Trash2, Eye, MessageSquare, LogOut } from "lucide-react";
+import { 
+  Plus, Edit, Trash2, Eye, MessageSquare, LogOut, 
+  Mail, Inbox 
+} from "lucide-react";
+import AdminNav from "./components/AdminNav";
 
 interface BlogPost {
   id: string;
@@ -20,9 +24,10 @@ interface BlogPost {
 
 export default function AdminDashboard() {
   const router = useRouter();
-  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [posts, setPosts] = useState<BlogPost[]>([]); // This was missing
   const [loading, setLoading] = useState(true);
   const [pendingCommentsCount, setPendingCommentsCount] = useState(0);
+  const [unseenMessagesCount, setUnseenMessagesCount] = useState(0);
 
   useEffect(() => {
     loadData();
@@ -30,7 +35,11 @@ export default function AdminDashboard() {
 
   const loadData = async () => {
     try {
-      await Promise.all([fetchPosts(), fetchPendingCommentsCount()]);
+      await Promise.all([
+        fetchPosts(),
+        fetchPendingCommentsCount(),
+        fetchUnseenMessagesCount()
+      ]);
     } catch (error) {
       console.error("Error loading data:", error);
     } finally {
@@ -62,6 +71,18 @@ export default function AdminDashboard() {
       }
     } catch (error) {
       console.error("Error fetching comments count:", error);
+    }
+  };
+
+  const fetchUnseenMessagesCount = async () => {
+    try {
+      const response = await fetch("/api/admin/messages/unseen-count");
+      if (response.ok) {
+        const data = await response.json();
+        setUnseenMessagesCount(data.count || 0);
+      }
+    } catch (error) {
+      console.error("Error fetching messages count:", error);
     }
   };
 
@@ -102,41 +123,73 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Admin Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-4">
-              <h1 className="text-xl font-bold text-[#8f1d1d]">پنل مدیریت</h1>
-              <span className="text-sm text-neutral-500">وبلاگ ترددیلا</span>
+      <AdminNav 
+        unseenMessagesCount={unseenMessagesCount}
+        pendingCommentsCount={pendingCommentsCount}
+      />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {/* Messages Card */}
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">پیام‌های خوانده نشده</p>
+                <p className="text-3xl font-bold text-[#8f1d1d]">{unseenMessagesCount}</p>
+              </div>
+              <div className="bg-[#8f1d1d]/10 p-3 rounded-full">
+                <Mail className="h-8 w-8 text-[#8f1d1d]" />
+              </div>
             </div>
-            <div className="flex items-center gap-3">
-              <Link
-                href="/admin/comments"
-                className="relative inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-neutral-700 hover:text-[#8f1d1d] transition"
-              >
-                <MessageSquare className="h-5 w-5" />
-                نظرات
-                {pendingCommentsCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {pendingCommentsCount}
-                  </span>
-                )}
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-neutral-700 hover:text-[#8f1d1d] transition"
-              >
-                <LogOut className="h-5 w-5" />
-                خروج
-              </button>
+            <Link 
+              href="/admin/messages"
+              className="mt-4 inline-block text-sm text-[#8f1d1d] hover:underline"
+            >
+              مشاهده همه پیام‌ها →
+            </Link>
+          </div>
+
+          {/* Comments Card */}
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">نظرات در انتظار تایید</p>
+                <p className="text-3xl font-bold text-[#8f1d1d]">{pendingCommentsCount}</p>
+              </div>
+              <div className="bg-[#8f1d1d]/10 p-3 rounded-full">
+                <MessageSquare className="h-8 w-8 text-[#8f1d1d]" />
+              </div>
             </div>
+            <Link 
+              href="/admin/comments"
+              className="mt-4 inline-block text-sm text-[#8f1d1d] hover:underline"
+            >
+              مدیریت نظرات →
+            </Link>
+          </div>
+
+          {/* Posts Card */}
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">مجموع مطالب</p>
+                <p className="text-3xl font-bold text-[#8f1d1d]">{posts.length}</p>
+              </div>
+              <div className="bg-[#8f1d1d]/10 p-3 rounded-full">
+                <Inbox className="h-8 w-8 text-[#8f1d1d]" />
+              </div>
+            </div>
+            <Link 
+              href="/admin/posts/new"
+              className="mt-4 inline-block text-sm text-[#8f1d1d] hover:underline"
+            >
+              نوشتن مطلب جدید →
+            </Link>
           </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Blog Posts Table */}
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-neutral-800">لیست مطالب</h2>
           <Link
