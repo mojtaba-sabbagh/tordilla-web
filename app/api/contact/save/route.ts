@@ -3,8 +3,20 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export async function POST(request: Request) {
+  // Initialize with default values to satisfy TypeScript
+  let name: string = '';
+  let email: string = '';
+  let phone: string | undefined;
+  let subject: string = '';
+  let message: string = '';
+
   try {
-    const { name, email, phone, subject, message } = await request.json();
+    const body = await request.json();
+    name = body.name;
+    email = body.email;
+    phone = body.phone;
+    subject = body.subject;
+    message = body.message;
     
     // Validate required fields
     if (!name || !email || !subject || !message) {
@@ -79,7 +91,7 @@ export async function POST(request: Request) {
           )
         `;
         
-        // Retry the insert
+        // Retry the insert - variables are now definitely assigned
         const contactMessage = await prisma.contactMessage.create({
           data: {
             name: name.trim(),
