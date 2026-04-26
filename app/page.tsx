@@ -203,10 +203,10 @@ export default function HomePage() {
               />
 
               {item.highlighted ? (
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent p-6 text-white">
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent p-6 !text-white">
                   <h2 className="text-2xl font-extrabold">{item.title}</h2>
                   <Link
-                    className="mt-4 inline-flex min-h-11 items-center rounded-full bg-[#39a845] px-5 text-sm font-bold text-white transition hover:bg-[#2f8d39]"
+                    className="mt-4 inline-flex min-h-11 items-center rounded-full bg-[#39a845] px-5 text-sm font-bold !text-white transition hover:bg-[#2f8d39]"
                     href={item.href ?? "/products"}
                   >
                     آشنایی با این طعم
@@ -218,7 +218,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="bg-[#8f1d1d] py-6 text-white md:py-8">
+      <section className="bg-[#8f1d1d] py-6 !text-white md:py-8">
         <div className="mx-auto max-w-[760px] px-4 md:px-5">
           <div className="grid gap-3 md:grid-cols-2">
             <div className="overflow-hidden rounded-[16px] bg-white/10 p-1.5">
@@ -239,7 +239,7 @@ export default function HomePage() {
 
           <div className="mt-4 text-center">
             <Link
-              className="inline-flex min-h-9 items-center rounded-full bg-[#39a845] px-5 text-sm font-bold text-white transition hover:bg-[#2f8d39]"
+              className="inline-flex min-h-9 items-center rounded-full bg-[#39a845] px-5 text-sm font-bold !text-white transition hover:bg-[#2f8d39]"
               href="/cinema"
             >
               لیست سینماها
@@ -272,8 +272,8 @@ export default function HomePage() {
 
           <div className="mt-10 text-center">
             <Link
-              className="inline-flex min-h-12 items-center rounded-full bg-[#1f86c7] px-8 text-base font-extrabold text-white transition hover:bg-[#15689b]"
-              href="/contact"
+              className="inline-flex min-h-12 items-center rounded-full bg-[#1f86c7] px-8 text-base font-extrabold !text-white transition hover:bg-[#15689b]"
+              href="/tordilla-finder"
             >
               ترددیلا یاب
             </Link>
@@ -313,7 +313,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="bg-[#8f1d1d] py-12 text-white">
+      <section className="bg-[#8f1d1d] py-12 !!text-white">
         <div className="mx-auto max-w-[1240px] px-4 text-center md:px-6 lg:px-8">
           <h4 className="text-2xl font-black md:text-[32px]">
             ترددیلا در شبکه های اجتماعی

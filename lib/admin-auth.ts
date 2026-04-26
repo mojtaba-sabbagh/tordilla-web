@@ -23,7 +23,6 @@ export async function verifyAdminAuth(): Promise<AuthResult> {
     const decoded = jwt.verify(token.value, JWT_SECRET) as { id: number; email: string };
     return { isValid: true, userId: decoded.id };
   } catch (error) {
-    console.error('Auth verification failed:', error);
     return { isValid: false, error: 'Invalid token' };
   }
 }
