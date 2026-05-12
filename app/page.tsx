@@ -5,65 +5,50 @@ import { generateSliderImages } from "@/lib/image-gather";
 const flavors = [
   {
     title: "ترددیلا ماست موسیر",
-    image: "/home/flavors/18.jpg",
+    image: "/home/flavors/mast1.jpg",
     href: "/products/mast-o-musir",
     highlighted: true,
   },
-  {
-    title: "",
-    image: "/home/flavors/photo_2019-12-21_08-21-09.jpg",
-  },
+  
   {
     title: "ترددیلا پنیری",
-    image: "/home/flavors/17.jpg",
+    image: "/home/flavors/chees1.jpg",
     href: "/products/paniri",
     highlighted: true,
   },
   {
-    title: "",
-    image: "/home/flavors/photo_2019-12-21_08-21-09.jpg",
-  },
-  {
     title: "ترددیلا تنوری",
-    image: "/home/flavors/16.jpg",
+    image: "/home/flavors/barbiq1.jpg",
     href: "/products/tanouri",
     highlighted: true,
   },
   {
-    title: "",
-    image: "/home/flavors/photo_2019-12-21_08-21-09.jpg",
-  },
-  {
     title: "ترددیلا سالسا",
-    image: "/home/flavors/14.jpg",
+    image: "/home/flavors/salsa1.jpg",
     href: "/products/salsa",
     highlighted: true,
   },
   {
-    title: "",
-    image: "/home/flavors/photo_2019-12-21_08-21-09.jpg",
-  },
-  {
     title: "ترددیلا مکزیکی",
-    image: "/home/flavors/13.jpg",
+    image: "/home/flavors/mexican1.jpg",
     href: "/products/mexican",
     highlighted: true,
   },
   {
-    title: "ترددیلا کم نمک",
-    image: "/home/flavors/1.jpg",
-    href: "/products/low-salt",
+    title: "ترددیلا پیازجعفری",
+    image: "/home/flavors/piaz1.jpg",
+    href: "/products/piaz-jafari",
+    highlighted: true,
+  },
+  {
+    title: "ترددیلا کنجدی",
+    image: "/home/flavors/seseami.jpg",
+    href: "/products/sesame",
     highlighted: true,
   },
   {
     title: "",
     image: "/home/flavors/photo_2019-12-21_08-21-09.jpg",
-  },
-  {
-    title: "ترددیلا کنجدی",
-    image: "/home/flavors/15.jpg",
-    href: "/products/sesame",
-    highlighted: true,
   },
 ];
 
