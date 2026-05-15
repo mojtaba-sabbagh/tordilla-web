@@ -2,7 +2,45 @@
 
 import { useState, useEffect, useRef } from "react";
 
-const flavors = [
+// Type definitions
+interface Flavor {
+  title: string;
+  image: string;
+  href: string;
+  color: string;
+  accent: string;
+}
+
+interface Retailer {
+  name: string;
+  image: string;
+}
+
+interface BlogPost {
+  title: string;
+  category: string;
+  date: string;
+  image: string;
+  featured?: boolean;
+}
+
+interface AnimatedSectionProps {
+  children: React.ReactNode;
+  delay?: number;
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+interface SliderProps {
+  images: string[];
+}
+
+interface FlavorCardProps {
+  flavor: Flavor;
+  index: number;
+}
+
+const flavors: Flavor[] = [
   { title: "ماست موسیر", image: "/home/flavors/mast1.jpg", href: "/products/mast-o-musir", color: "#e8f5e9", accent: "#2e7d32" },
   { title: "پنیری", image: "/home/flavors/chees1.jpg", href: "/products/paniri", color: "#fff8e1", accent: "#f9a825" },
   { title: "تنوری", image: "/home/flavors/barbiq1.jpg", href: "/products/tanouri", color: "#fbe9e7", accent: "#bf360c" },
@@ -12,7 +50,7 @@ const flavors = [
   { title: "کنجدی", image: "/home/flavors/seseami.jpg", href: "/products/sesame", color: "#efebe9", accent: "#4e342e" },
 ];
 
-const retailers = [
+const retailers: Retailer[] = [
   { name: "دیجی‌کالا", image: "/home/brands/digikala.png" },
   { name: "مزبار", image: "/home/brands/mazbar.png" },
   { name: "شهروند", image: "/home/brands/shahrvand.png" },
@@ -21,7 +59,7 @@ const retailers = [
   { name: "روکو", image: "/home/brands/roco.png" },
 ];
 
-const blogPosts = [
+const blogPosts: BlogPost[] = [
   { title: "ترددیلا در دیجیکالا", category: "بدانیم", date: "۱۱ اکتبر ۲۰۱۸", image: "/home/blog/digikala-logo-1200x480-760x180.jpg", featured: true },
   { title: "ناچو ترددیلا در سینماهای سراسر کشور عرضه خواهد شد", category: "بدانیم", date: "۲۶ آگوست ۲۰۱۸", image: "/home/blog/b4fd571f4b9de34a1599ffdd904f3295-380x180.jpg" },
   { title: "طرز تهیه تاکو مکزیکی (مرحله به مرحله با عکس)", category: "طرز تهیه غذا", date: "۱۳ آگوست ۲۰۱۸", image: "/home/blog/1520956952-chicken-tacos-horizontal-380x180.jpg" },
@@ -29,32 +67,51 @@ const blogPosts = [
   { title: "طرز تهیه سالسا با طعم‌های متفاوت", category: "طرز تهیه دیپ", date: "۱۳ آگوست ۲۰۱۸", image: "/home/blog/OG0A1062-380x180.jpg" },
 ];
 
-const sliderImages = [
+const sliderImages: string[] = [
   "/home/slider/where-1024x447.jpg",
   "/home/slider/tamas-ba-ma-small-size-min-1024x447.jpg",
 ];
 
+// Custom hook with proper return type
 function useInView(threshold = 0.15) {
-  const ref = useRef(null);
+  const ref = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
   useEffect(() => {
-    const observer = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setInView(true); observer.disconnect(); } }, { threshold });
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          observer.disconnect();
+        }
+      },
+      { threshold }
+    );
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
   }, [threshold]);
-  return [ref, inView];
+  return [ref, inView] as const;
 }
 
-function AnimatedSection({ children, delay = 0, className = "" }) {
+// Fixed AnimatedSection with proper typing
+function AnimatedSection({ children, delay = 0, className = "", style }: AnimatedSectionProps) {
   const [ref, inView] = useInView();
   return (
-    <div ref={ref} className={className} style={{ opacity: inView ? 1 : 0, transform: inView ? "translateY(0)" : "translateY(36px)", transition: `opacity 0.75s ease ${delay}ms, transform 0.75s ease ${delay}ms` }}>
+    <div
+      ref={ref}
+      className={className}
+      style={{
+        opacity: inView ? 1 : 0,
+        transform: inView ? "translateY(0)" : "translateY(36px)",
+        transition: `opacity 0.75s ease ${delay}ms, transform 0.75s ease ${delay}ms`,
+        ...style,   // now `style` is defined
+      }}
+    >
       {children}
     </div>
   );
 }
 
-function Slider({ images }) {
+function Slider({ images }: SliderProps) {
   const [active, setActive] = useState(0);
   useEffect(() => {
     const t = setInterval(() => setActive(i => (i + 1) % images.length), 4500);
@@ -65,16 +122,53 @@ function Slider({ images }) {
     <div style={{ position: "relative", width: "100%", overflow: "hidden" }}>
       <div style={{ position: "relative", width: "100%", height: "clamp(260px, 52vw, 560px)", background: "#1a0a04" }}>
         {images.map((src, i) => (
-          <img key={src} src={src} alt={`اسلاید ${i + 1}`}
-            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: active === i ? 1 : 0, transition: "opacity 1.1s ease" }} />
+          <img
+            key={src}
+            src={src}
+            alt={`اسلاید ${i + 1}`}
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              opacity: active === i ? 1 : 0,
+              transition: "opacity 1.1s ease",
+            }}
+          />
         ))}
         {/* gradient overlay */}
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15,4,0,0.55) 0%, transparent 60%)" }} />
 
         {/* arrows */}
-        {[{ dir: "right", label: "قبلی", delta: -1 }, { dir: "left", label: "بعدی", delta: 1 }].map(({ dir, label, delta }) => (
-          <button key={dir} aria-label={`اسلاید ${label}`} onClick={() => setActive(i => (i + delta + images.length) % images.length)}
-            style={{ position: "absolute", top: "50%", [dir]: "16px", transform: "translateY(-50%)", width: 44, height: 44, borderRadius: "50%", background: "rgba(255,255,255,0.18)", backdropFilter: "blur(8px)", border: "1.5px solid rgba(255,255,255,0.35)", color: "#fff", fontSize: 22, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "background 0.2s" }}>
+        {[
+          { dir: "right", label: "قبلی", delta: -1 },
+          { dir: "left", label: "بعدی", delta: 1 },
+        ].map(({ dir, label, delta }) => (
+          <button
+            key={dir}
+            aria-label={`اسلاید ${label}`}
+            onClick={() => setActive(i => (i + delta + images.length) % images.length)}
+            style={{
+              position: "absolute",
+              top: "50%",
+              [dir]: "16px",
+              transform: "translateY(-50%)",
+              width: 44,
+              height: 44,
+              borderRadius: "50%",
+              background: "rgba(255,255,255,0.18)",
+              backdropFilter: "blur(8px)",
+              border: "1.5px solid rgba(255,255,255,0.35)",
+              color: "#fff",
+              fontSize: 22,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "background 0.2s",
+            }}
+          >
             {delta === -1 ? "›" : "‹"}
           </button>
         ))}
@@ -82,8 +176,19 @@ function Slider({ images }) {
         {/* dots */}
         <div style={{ position: "absolute", bottom: 20, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 8 }}>
           {images.map((_, i) => (
-            <button key={i} onClick={() => setActive(i)}
-              style={{ height: 8, width: active === i ? 28 : 8, borderRadius: 9999, background: active === i ? "#fff" : "rgba(255,255,255,0.45)", border: "none", cursor: "pointer", transition: "all 0.35s ease" }} />
+            <button
+              key={i}
+              onClick={() => setActive(i)}
+              style={{
+                height: 8,
+                width: active === i ? 28 : 8,
+                borderRadius: 9999,
+                background: active === i ? "#fff" : "rgba(255,255,255,0.45)",
+                border: "none",
+                cursor: "pointer",
+                transition: "all 0.35s ease",
+              }}
+            />
           ))}
         </div>
       </div>
@@ -91,18 +196,58 @@ function Slider({ images }) {
   );
 }
 
-function FlavorCard({ flavor, index }) {
+function FlavorCard({ flavor, index }: FlavorCardProps) {
   const [hovered, setHovered] = useState(false);
   return (
-    <div onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
-      style={{ position: "relative", borderRadius: 24, overflow: "hidden", cursor: "pointer", background: "#1a0a04", opacity: 0, animation: `fadeSlideUp 0.6s ease ${120 + index * 70}ms forwards`, boxShadow: hovered ? "0 24px 52px rgba(0,0,0,0.28)" : "0 6px 20px rgba(0,0,0,0.12)", transform: hovered ? "translateY(-6px)" : "translateY(0)", transition: "box-shadow 0.35s, transform 0.35s" }}>
-      <img src={flavor.image} alt={flavor.title}
-        style={{ display: "block", width: "100%", height: 240, objectFit: "cover", transition: "transform 0.6s ease", transform: hovered ? "scale(1.07)" : "scale(1)" }} />
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        position: "relative",
+        borderRadius: 24,
+        overflow: "hidden",
+        cursor: "pointer",
+        background: "#1a0a04",
+        opacity: 0,
+        animation: `fadeSlideUp 0.6s ease ${120 + index * 70}ms forwards`,
+        boxShadow: hovered ? "0 24px 52px rgba(0,0,0,0.28)" : "0 6px 20px rgba(0,0,0,0.12)",
+        transform: hovered ? "translateY(-6px)" : "translateY(0)",
+        transition: "box-shadow 0.35s, transform 0.35s",
+      }}
+    >
+      <img
+        src={flavor.image}
+        alt={flavor.title}
+        style={{
+          display: "block",
+          width: "100%",
+          height: 240,
+          objectFit: "cover",
+          transition: "transform 0.6s ease",
+          transform: hovered ? "scale(1.07)" : "scale(1)",
+        }}
+      />
       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.15) 55%, transparent 100%)" }} />
       <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "20px 18px" }}>
         <p style={{ color: "#fff", fontWeight: 800, fontSize: 18, margin: 0, letterSpacing: "0.01em" }}>ترددیلا {flavor.title}</p>
-        <a href={flavor.href}
-          style={{ display: "inline-flex", alignItems: "center", marginTop: 10, padding: "7px 18px", borderRadius: 9999, background: "#39a845", color: "#fff", fontWeight: 700, fontSize: 13, textDecoration: "none", opacity: hovered ? 1 : 0, transform: hovered ? "translateY(0)" : "translateY(6px)", transition: "opacity 0.3s, transform 0.3s" }}>
+        <a
+          href={flavor.href}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            marginTop: 10,
+            padding: "7px 18px",
+            borderRadius: 9999,
+            background: "#39a845",
+            color: "#fff",
+            fontWeight: 700,
+            fontSize: 13,
+            textDecoration: "none",
+            opacity: hovered ? 1 : 0,
+            transform: hovered ? "translateY(0)" : "translateY(6px)",
+            transition: "opacity 0.3s, transform 0.3s",
+          }}
+        >
           آشنایی با این طعم
         </a>
       </div>
@@ -111,7 +256,7 @@ function FlavorCard({ flavor, index }) {
 }
 
 export default function HomePage() {
-  const [flavorHintVisible, setFlavorHintVisible] = useState(true);
+  const [flavorHintVisible, setFlavorHintVisible] = useState(true); // kept for potential future use
 
   return (
     <div dir="rtl" lang="fa" style={{ background: "#fdf8f3", color: "#2c1810", minHeight: "100vh" }}>
@@ -175,7 +320,9 @@ export default function HomePage() {
         </AnimatedSection>
 
         <div className="flavor-grid">
-          {flavors.map((flavor, i) => <FlavorCard key={flavor.title} flavor={flavor} index={i} />)}
+          {flavors.map((flavor, i) => (
+            <FlavorCard key={flavor.title} flavor={flavor} index={i} />
+          ))}
           {/* decorative 8th card */}
           <div style={{ position: "relative", borderRadius: 24, overflow: "hidden", background: "#8f1d1d", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: 240, padding: 24, textAlign: "center", opacity: 0, animation: "fadeSlideUp 0.6s ease 640ms forwards" }}>
             <div style={{ fontSize: 48, animation: "chip-float 3s ease-in-out infinite" }}>🌽</div>
@@ -189,7 +336,6 @@ export default function HomePage() {
 
       {/* ── CINEMA ── */}
       <section style={{ background: "linear-gradient(135deg, #8f1d1d 0%, #5c1111 100%)", padding: "72px 24px", position: "relative", overflow: "hidden" }}>
-        {/* decorative blobs */}
         <div style={{ position: "absolute", top: -60, left: -60, width: 240, height: 240, borderRadius: "50%", background: "rgba(255,255,255,0.06)", pointerEvents: "none" }} />
         <div style={{ position: "absolute", bottom: -80, right: -40, width: 300, height: 300, borderRadius: "50%", background: "rgba(255,255,255,0.04)", pointerEvents: "none" }} />
 
@@ -227,9 +373,29 @@ export default function HomePage() {
           <div className="retailer-grid">
             {retailers.map((r, i) => (
               <AnimatedSection key={r.name} delay={i * 60}>
-                <a href="#" style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: 140, borderRadius: 22, background: "#fff", padding: 24, boxShadow: "0 8px 32px rgba(143,29,29,0.08)", textDecoration: "none", transition: "transform 0.25s, box-shadow 0.25s" }}
-                  onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-5px)"; e.currentTarget.style.boxShadow = "0 18px 48px rgba(143,29,29,0.16)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = "0 8px 32px rgba(143,29,29,0.08)"; }}>
+                <a
+                  href="#"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    minHeight: 140,
+                    borderRadius: 22,
+                    background: "#fff",
+                    padding: 24,
+                    boxShadow: "0 8px 32px rgba(143,29,29,0.08)",
+                    textDecoration: "none",
+                    transition: "transform 0.25s, box-shadow 0.25s",
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.transform = "translateY(-5px)";
+                    e.currentTarget.style.boxShadow = "0 18px 48px rgba(143,29,29,0.16)";
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.transform = "";
+                    e.currentTarget.style.boxShadow = "0 8px 32px rgba(143,29,29,0.08)";
+                  }}
+                >
                   <img src={r.image} alt={r.name} style={{ maxHeight: 72, maxWidth: "100%", objectFit: "contain" }} />
                 </a>
               </AnimatedSection>
@@ -261,9 +427,28 @@ export default function HomePage() {
         <div className="blog-grid">
           {/* featured */}
           <AnimatedSection delay={60}>
-            <a href="/blog/tordilla-in-digikala" style={{ display: "block", borderRadius: 22, overflow: "hidden", background: "#fff", boxShadow: "0 8px 32px rgba(0,0,0,0.09)", textDecoration: "none", color: "inherit", gridRow: "span 2", transition: "box-shadow 0.3s, transform 0.3s" }}
-              onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 22px 52px rgba(0,0,0,0.16)"; e.currentTarget.style.transform = "translateY(-4px)"; }}
-              onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,0,0,0.09)"; e.currentTarget.style.transform = ""; }}>
+            <a
+              href="/blog/tordilla-in-digikala"
+              style={{
+                display: "block",
+                borderRadius: 22,
+                overflow: "hidden",
+                background: "#fff",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.09)",
+                textDecoration: "none",
+                color: "inherit",
+                gridRow: "span 2",
+                transition: "box-shadow 0.3s, transform 0.3s",
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.boxShadow = "0 22px 52px rgba(0,0,0,0.16)";
+                e.currentTarget.style.transform = "translateY(-4px)";
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,0,0,0.09)";
+                e.currentTarget.style.transform = "";
+              }}
+            >
               <img src={blogPosts[0].image} alt={blogPosts[0].title} style={{ width: "100%", height: 240, objectFit: "cover", display: "block" }} />
               <div style={{ padding: "22px 22px 26px" }}>
                 <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
@@ -279,9 +464,28 @@ export default function HomePage() {
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
             {blogPosts.slice(1, 3).map((post, i) => (
               <AnimatedSection key={post.title} delay={120 + i * 80}>
-                <a href="#" style={{ display: "flex", gap: 14, borderRadius: 18, overflow: "hidden", background: "#fff", boxShadow: "0 6px 20px rgba(0,0,0,0.07)", textDecoration: "none", color: "inherit", transition: "box-shadow 0.3s, transform 0.3s" }}
-                  onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 16px 40px rgba(0,0,0,0.13)"; e.currentTarget.style.transform = "translateY(-3px)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,0,0,0.07)"; e.currentTarget.style.transform = ""; }}>
+                <a
+                  href="#"
+                  style={{
+                    display: "flex",
+                    gap: 14,
+                    borderRadius: 18,
+                    overflow: "hidden",
+                    background: "#fff",
+                    boxShadow: "0 6px 20px rgba(0,0,0,0.07)",
+                    textDecoration: "none",
+                    color: "inherit",
+                    transition: "box-shadow 0.3s, transform 0.3s",
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.boxShadow = "0 16px 40px rgba(0,0,0,0.13)";
+                    e.currentTarget.style.transform = "translateY(-3px)";
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,0,0,0.07)";
+                    e.currentTarget.style.transform = "";
+                  }}
+                >
                   <img src={post.image} alt={post.title} style={{ width: 110, minHeight: "100%", objectFit: "cover", flexShrink: 0 }} />
                   <div style={{ padding: "14px 14px 14px 0" }}>
                     <span className="tag">{post.category}</span>
@@ -296,9 +500,28 @@ export default function HomePage() {
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
             {blogPosts.slice(3).map((post, i) => (
               <AnimatedSection key={post.title} delay={200 + i * 80}>
-                <a href="#" style={{ display: "flex", gap: 14, borderRadius: 18, overflow: "hidden", background: "#fff", boxShadow: "0 6px 20px rgba(0,0,0,0.07)", textDecoration: "none", color: "inherit", transition: "box-shadow 0.3s, transform 0.3s" }}
-                  onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 16px 40px rgba(0,0,0,0.13)"; e.currentTarget.style.transform = "translateY(-3px)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,0,0,0.07)"; e.currentTarget.style.transform = ""; }}>
+                <a
+                  href="#"
+                  style={{
+                    display: "flex",
+                    gap: 14,
+                    borderRadius: 18,
+                    overflow: "hidden",
+                    background: "#fff",
+                    boxShadow: "0 6px 20px rgba(0,0,0,0.07)",
+                    textDecoration: "none",
+                    color: "inherit",
+                    transition: "box-shadow 0.3s, transform 0.3s",
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.boxShadow = "0 16px 40px rgba(0,0,0,0.13)";
+                    e.currentTarget.style.transform = "translateY(-3px)";
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,0,0,0.07)";
+                    e.currentTarget.style.transform = "";
+                  }}
+                >
                   <img src={post.image} alt={post.title} style={{ width: 110, minHeight: "100%", objectFit: "cover", flexShrink: 0 }} />
                   <div style={{ padding: "14px 14px 14px 0" }}>
                     <span className="tag">{post.category}</span>
@@ -326,10 +549,37 @@ export default function HomePage() {
                 { label: "فیسبوک", href: "https://www.facebook.com/tordillachips", emoji: "👥" },
                 { label: "آپارات", href: "https://www.aparat.com/tordilla.chips", emoji: "🎬" },
               ].map(({ label, href, emoji }) => (
-                <a key={label} href={href} target="_blank" rel="noreferrer" aria-label={label}
-                  style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 8, padding: "18px 24px", borderRadius: 20, background: "rgba(255,255,255,0.12)", border: "1.5px solid rgba(255,255,255,0.2)", color: "#fff", textDecoration: "none", fontWeight: 700, fontSize: 13, minWidth: 100, transition: "background 0.25s, transform 0.25s" }}
-                  onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.22)"; e.currentTarget.style.transform = "translateY(-4px)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.12)"; e.currentTarget.style.transform = ""; }}>
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={label}
+                  style={{
+                    display: "inline-flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 8,
+                    padding: "18px 24px",
+                    borderRadius: 20,
+                    background: "rgba(255,255,255,0.12)",
+                    border: "1.5px solid rgba(255,255,255,0.2)",
+                    color: "#fff",
+                    textDecoration: "none",
+                    fontWeight: 700,
+                    fontSize: 13,
+                    minWidth: 100,
+                    transition: "background 0.25s, transform 0.25s",
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.background = "rgba(255,255,255,0.22)";
+                    e.currentTarget.style.transform = "translateY(-4px)";
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.background = "rgba(255,255,255,0.12)";
+                    e.currentTarget.style.transform = "";
+                  }}
+                >
                   <span style={{ fontSize: 28 }}>{emoji}</span>
                   {label}
                 </a>
