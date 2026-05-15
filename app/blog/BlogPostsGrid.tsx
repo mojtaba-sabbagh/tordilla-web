@@ -24,13 +24,12 @@ export function BlogPostsGrid({ posts }: BlogPostsGridProps) {
           className="group overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-md transition hover:-translate-y-1 hover:shadow-xl"
         >
           <Link href={`/blog/${post.slug}`} className="block">
-            <div className="w-full overflow-hidden bg-neutral-100">
+            <div className="relative aspect-[4/3] w-full overflow-hidden bg-neutral-100">
               <Image
                 src={post.image}
                 alt={post.title}
-                width={post.imageWidth || 400}
-                height={post.imageHeight || 300}
-                className="w-full h-auto object-cover transition duration-500 group-hover:scale-105"
+                fill
+                className="object-cover transition duration-500 group-hover:scale-105"
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
               />
             </div>

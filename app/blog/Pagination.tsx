@@ -11,7 +11,7 @@ export function Pagination({ currentPage, totalPages, basePath = "/blog" }: Pagi
   if (totalPages <= 1) return null;
 
   return (
-    <div className="mt-12 flex justify-center gap-2">
+    <div className="flex justify-center gap-2">
       {currentPage > 1 && (
         <Link
           href={currentPage === 2 ? basePath : `${basePath}/page/${currentPage - 1}`}
@@ -22,33 +22,16 @@ export function Pagination({ currentPage, totalPages, basePath = "/blog" }: Pagi
       )}
 
       {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-        if (page === 1 && currentPage === 1) {
-          return (
-            <span
-              key={page}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#8f1d1d] text-white"
-            >
-              {page}
-            </span>
-          );
-        }
-
-        if (page === currentPage) {
-          return (
-            <span
-              key={page}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#8f1d1d] text-white"
-            >
-              {page}
-            </span>
-          );
-        }
-
+        const isActive = page === currentPage;
         return (
           <Link
             key={page}
             href={page === 1 ? basePath : `${basePath}/page/${page}`}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-neutral-100 text-neutral-700 transition hover:bg-[#8f1d1d] hover:text-white"
+            className={`inline-flex h-10 w-10 items-center justify-center rounded-full transition ${
+              isActive
+                ? "bg-[#8f1d1d] text-white"
+                : "bg-neutral-100 text-neutral-700 hover:bg-[#8f1d1d] hover:text-white"
+            }`}
           >
             {page}
           </Link>

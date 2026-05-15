@@ -17,10 +17,8 @@ export function CategorySidebar({ categories, horizontal = false }: CategorySide
     return pathname === `/blog/category/${categorySlug}`;
   };
 
-  // Calculate total posts count
   const totalPosts = categories.reduce((sum, cat) => sum + cat.count, 0);
 
-  // Horizontal layout (flex row)
   if (horizontal) {
     return (
       <div className="w-full">
@@ -55,7 +53,7 @@ export function CategorySidebar({ categories, horizontal = false }: CategorySide
     );
   }
 
-  // Vertical layout (original sidebar style - used in category pages)
+  // Vertical sidebar (used in category pages)
   return (
     <div className="mb-8 rounded-2xl border border-neutral-200 bg-white p-6 shadow-md">
       <h3 className="mb-4 text-xl font-bold text-[#8f1d1d] border-r-4 border-[#8f1d1d] pr-3">
@@ -67,7 +65,7 @@ export function CategorySidebar({ categories, horizontal = false }: CategorySide
             href="/blog"
             className={`flex items-center justify-between rounded-lg p-2 transition ${
               pathname === "/blog"
-                ? "bg-[#8f1d1d]/10 !text-[#8f1d1d] font-medium"
+                ? "bg-[#8f1d1d]/10 text-[#8f1d1d] font-medium"
                 : "text-neutral-700 hover:bg-[#8f1d1d]/5 hover:text-[#8f1d1d]"
             }`}
           >
@@ -81,7 +79,7 @@ export function CategorySidebar({ categories, horizontal = false }: CategorySide
               href={`/blog/category/${cat.slug}`}
               className={`flex items-center justify-between rounded-lg p-2 transition ${
                 isCategoryActive(cat.slug)
-                  ? "bg-[#8f1d1d]/10 !text-[#8f1d1d] font-medium"
+                  ? "bg-[#8f1d1d]/10 text-[#8f1d1d] font-medium"
                   : "text-neutral-700 hover:bg-[#8f1d1d]/5 hover:text-[#8f1d1d]"
               }`}
             >
