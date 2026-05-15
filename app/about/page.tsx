@@ -1,7 +1,6 @@
-// app/about/page.tsx (no "use client" directive)
-import Image from "next/image";
+// app/about/page.tsx
 import Link from "next/link";
-import { CheckCircle, Award, Leaf, Package, Sprout, ChevronLeft } from "lucide-react";
+import Image from "next/image";
 
 export const metadata = {
   title: "درباره ترددیلا | چیپس ذرت ترددیلا",
@@ -9,231 +8,500 @@ export const metadata = {
     "آشنایی با ترددیلا، محصولات، نام تجاری و شرکت کوثر کویر رفسنجان - تولید کننده چیپس ذرت با کیفیت",
 };
 
+const features = [
+  { icon: "🌿", title: "مواد اولیه مرغوب", desc: "تهیه شده از بهترین ذرت ایرانی" },
+  { icon: "📦", title: "بسته‌بندی سه لایه", desc: "ضامن تازگی و سلامت محصول" },
+  { icon: "✅", title: "بدون مواد نگهدارنده", desc: "محصولی سالم و طبیعی" },
+  { icon: "🎨", title: "هشت طعم متنوع", desc: "مناسب برای همه سلیقه‌ها" },
+  { icon: "🌱", title: "رنگ طبیعی", desc: "آنتی‌اکسیدان طبیعی، سالم و لذت‌بخش" },
+];
+
+const stats = [
+  { value: "۱۳۷۲", label: "سال تأسیس", sub: "بیش از سه دهه تجربه" },
+  { value: "۸", label: "طعم متنوع", sub: "برای هر سلیقه‌ای" },
+  { value: "۱۰۰٪", label: "طبیعی و سالم", sub: "بدون مواد نگهدارنده" },
+];
+
 export default function AboutPage() {
   return (
-    <main className="bg-white" dir="rtl">
-      {/* Hero Section with decorative wave */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#fbf5ec] via-[#fef9f4] to-white py-12 md:py-16 lg:py-20">
-        <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-block mb-4">
-              <div className="h-1 w-12 bg-[#8f1d1d] rounded-full mx-auto"></div>
-            </div>
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-[#8f1d1d] mb-4">
-              درباره ترددیلا
-            </h1>
-            <p className="text-base md:text-lg text-neutral-600 max-w-2xl mx-auto">
-              آشنایی با برند ترددیلا، محصولات با کیفیت و شرکت کوثر کویر رفسنجان
-            </p>
-          </div>
-        </div>
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg
-            className="w-full h-12 text-white fill-current"
-            viewBox="0 0 1200 120"
-            preserveAspectRatio="none"
-          >
-            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" />
-          </svg>
-        </div>
-      </section>
+    <main className="about-page" dir="rtl">
+      <style>{`
+        .about-page {
+          background: #fdf8f3;
+          min-height: 100vh;
+        }
 
-      <div className="container mx-auto px-4 md:px-6 py-4 border-b border-neutral-100">
-        <div className="flex items-center gap-2 text-sm text-neutral-500">
-          <Link href="/" className="hover:text-[#8f1d1d] transition duration-200">
-            چیپس ذرت ترددیلا
-          </Link>
-          <ChevronLeft className="w-4 h-4" />
-          <span className="text-[#8f1d1d] font-medium">درباره ترددیلا</span>
-        </div>
-      </div>
+        /* ── HERO ── */
+        .about-hero {
+          position: relative;
+          background: linear-gradient(135deg, #8f1d1d 0%, #5c1111 100%);
+          padding: 80px 24px 100px;
+          text-align: center;
+          overflow: hidden;
+        }
+        .about-hero::before,
+        .about-hero::after {
+          content: '';
+          position: absolute;
+          border-radius: 50%;
+          pointer-events: none;
+        }
+        .about-hero::before {
+          width: 360px; height: 360px;
+          top: -120px; left: -80px;
+          background: rgba(255,255,255,0.05);
+        }
+        .about-hero::after {
+          width: 280px; height: 280px;
+          bottom: -100px; right: -60px;
+          background: rgba(255,255,255,0.04);
+        }
+        .about-hero-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 5px 18px;
+          border-radius: 9999px;
+          border: 1.5px solid rgba(255,255,255,0.28);
+          background: rgba(255,255,255,0.1);
+          color: #fff;
+          font-size: 13px;
+          font-weight: 700;
+          margin-bottom: 20px;
+          position: relative;
+          z-index: 1;
+        }
+        .about-hero h1 {
+          font-size: clamp(30px, 5vw, 54px);
+          font-weight: 900;
+          color: #fff;
+          margin-bottom: 16px;
+          position: relative;
+          z-index: 1;
+        }
+        .about-hero p {
+          max-width: 560px;
+          margin: 0 auto 32px;
+          color: rgba(255,255,255,0.78);
+          font-size: 16px;
+          line-height: 2;
+          position: relative;
+          z-index: 1;
+        }
+        .about-hero-logo {
+          position: relative;
+          z-index: 1;
+          display: flex;
+          justify-content: center;
+        }
+        .about-hero-logo-ring {
+          width: 148px;
+          height: 148px;
+          border-radius: 50%;
+          background: rgba(255,255,255,0.12);
+          border: 2px solid rgba(255,255,255,0.2);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          backdrop-filter: blur(8px);
+        }
 
-      <section className="container mx-auto px-4 md:px-6 py-8 md:py-6">
-        <div className="flex justify-center">
-          <div className="relative w-64 h-64 md:w-80 md:h-80">
+        /* wave separator */
+        .about-wave {
+          display: block;
+          width: 100%;
+          overflow: hidden;
+          line-height: 0;
+          margin-top: -2px;
+        }
+        .about-wave svg { display: block; width: 100%; }
+
+        /* ── BREADCRUMB ── */
+        .about-breadcrumb {
+          max-width: 1080px;
+          margin: 0 auto;
+          padding: 20px 24px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 13px;
+          color: #a07060;
+          border-bottom: 1.5px solid rgba(143,29,29,0.08);
+        }
+        .about-breadcrumb a {
+          color: #8f1d1d;
+          text-decoration: none;
+          font-weight: 600;
+        }
+        .about-breadcrumb a:hover { text-decoration: underline; }
+        .about-breadcrumb-sep { color: #cbb0a0; }
+
+        /* ── BODY ── */
+        .about-body {
+          max-width: 1080px;
+          margin: 0 auto;
+          padding: 64px 24px 80px;
+          display: flex;
+          flex-direction: column;
+          gap: 32px;
+        }
+
+        /* ── SECTION CARD ── */
+        .section-card {
+          background: #fff;
+          border-radius: 26px;
+          padding: 44px;
+          box-shadow: 0 8px 32px rgba(143,29,29,0.07);
+        }
+        @media(max-width: 600px) { .section-card { padding: 28px 22px; } }
+
+        .section-heading {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 24px;
+        }
+        .section-heading-bar {
+          width: 5px;
+          height: 36px;
+          border-radius: 9999px;
+          background: linear-gradient(to bottom, #8f1d1d, #ce4a28);
+          flex-shrink: 0;
+        }
+        .section-heading h2 {
+          font-size: clamp(20px, 2.8vw, 28px);
+          font-weight: 900;
+          color: #2c1810;
+        }
+        .section-subheading {
+          font-size: 14px;
+          font-weight: 700;
+          color: #8f1d1d;
+          margin-bottom: 18px;
+        }
+        .section-prose {
+          font-size: 15px;
+          color: #5a3728;
+          line-height: 2.1;
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+        }
+
+        /* ── STATS ── */
+        .stats-row {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 20px;
+        }
+        @media(max-width: 560px) { .stats-row { grid-template-columns: 1fr; } }
+        .stat-card {
+          background: #fff;
+          border-radius: 22px;
+          padding: 32px 20px;
+          text-align: center;
+          box-shadow: 0 8px 32px rgba(143,29,29,0.07);
+          border-bottom: 4px solid #8f1d1d;
+          transition: transform 0.28s, box-shadow 0.28s;
+        }
+        .stat-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 20px 48px rgba(143,29,29,0.14);
+        }
+        .stat-value {
+          font-size: clamp(36px, 5vw, 52px);
+          font-weight: 900;
+          color: #8f1d1d;
+          line-height: 1;
+          margin-bottom: 8px;
+        }
+        .stat-label {
+          font-size: 15px;
+          font-weight: 800;
+          color: #2c1810;
+          margin-bottom: 5px;
+        }
+        .stat-sub {
+          font-size: 12px;
+          color: #a07060;
+          font-weight: 500;
+        }
+
+        /* ── FEATURES ── */
+        .features-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+          gap: 16px;
+        }
+        .feature-card {
+          background: #fdf8f3;
+          border: 1.5px solid rgba(143,29,29,0.1);
+          border-radius: 20px;
+          padding: 24px 18px;
+          text-align: center;
+          transition: border-color 0.25s, background 0.25s, transform 0.25s;
+        }
+        .feature-card:hover {
+          border-color: rgba(143,29,29,0.3);
+          background: #fdf0e8;
+          transform: translateY(-4px);
+        }
+        .feature-icon {
+          font-size: 32px;
+          margin-bottom: 12px;
+          display: block;
+        }
+        .feature-title {
+          font-size: 14px;
+          font-weight: 800;
+          color: #2c1810;
+          margin-bottom: 6px;
+        }
+        .feature-desc {
+          font-size: 12px;
+          color: #a07060;
+          line-height: 1.7;
+        }
+
+        /* ── HIGHLIGHT QUOTE ── */
+        .highlight-quote {
+          border-right: 4px solid #8f1d1d;
+          padding: 12px 20px;
+          background: rgba(143,29,29,0.05);
+          border-radius: 0 12px 12px 0;
+          font-weight: 700;
+          color: #8f1d1d;
+          font-size: 15px;
+        }
+
+        /* ── CTA ── */
+        .about-cta {
+          position: relative;
+          background: linear-gradient(135deg, #8f1d1d 0%, #5c1111 100%);
+          border-radius: 28px;
+          padding: 52px 44px;
+          text-align: center;
+          overflow: hidden;
+        }
+        .about-cta::before {
+          content: '';
+          position: absolute;
+          top: -60px; left: -60px;
+          width: 240px; height: 240px;
+          border-radius: 50%;
+          background: rgba(255,255,255,0.06);
+          pointer-events: none;
+        }
+        .about-cta::after {
+          content: '';
+          position: absolute;
+          bottom: -80px; right: -50px;
+          width: 280px; height: 280px;
+          border-radius: 50%;
+          background: rgba(255,255,255,0.04);
+          pointer-events: none;
+        }
+        .about-cta h2 {
+          font-size: clamp(22px, 3vw, 34px);
+          font-weight: 900;
+          color: #fff;
+          margin-bottom: 12px;
+          position: relative;
+          z-index: 1;
+        }
+        .about-cta p {
+          color: rgba(255,255,255,0.75);
+          font-size: 15px;
+          margin-bottom: 32px;
+          position: relative;
+          z-index: 1;
+        }
+        .cta-buttons {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 12px;
+          justify-content: center;
+          position: relative;
+          z-index: 1;
+        }
+        .btn-white {
+          display: inline-flex;
+          align-items: center;
+          padding: 12px 28px;
+          border-radius: 9999px;
+          background: #fff;
+          color: #8f1d1d;
+          font-size: 15px;
+          font-weight: 800;
+          text-decoration: none;
+          transition: background 0.2s, transform 0.2s;
+        }
+        .btn-white:hover { background: #f5ede6; transform: translateY(-2px); }
+        .btn-ghost {
+          display: inline-flex;
+          align-items: center;
+          padding: 12px 28px;
+          border-radius: 9999px;
+          border: 2px solid rgba(255,255,255,0.4);
+          color: #fff;
+          font-size: 15px;
+          font-weight: 700;
+          text-decoration: none;
+          transition: border-color 0.2s, background 0.2s, transform 0.2s;
+        }
+        .btn-ghost:hover {
+          border-color: #fff;
+          background: rgba(255,255,255,0.1);
+          transform: translateY(-2px);
+        }
+      `}</style>
+
+      {/* ── HERO ── */}
+      <section className="about-hero">
+        <div className="about-hero-badge">🌽 از سال ۱۳۷۲ با شما</div>
+        <h1>درباره ترددیلا</h1>
+        <p>آشنایی با برند ترددیلا، محصولات با کیفیت و شرکت کوثر کویر رفسنجان</p>
+        <div className="about-hero-logo">
+          <div className="about-hero-logo-ring">
             <Image
               src="/home/logo.png"
               alt="لوگوی ترددیلا"
-              fill
+              width={108}
+              height={108}
               className="object-contain"
-              sizes="(max-width: 768px) 256px, 320px"
               priority
             />
           </div>
         </div>
       </section>
 
-      <section className="py-12 md:py-16 animate-fade-in">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="max-w-4xl mx-auto">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="h-8 w-1 bg-[#8f1d1d] rounded-full"></div>
-              <h2 className="text-2xl md:text-3xl font-bold text-[#8f1d1d]">
-                محصولات ترددیلا
-              </h2>
+      {/* wave */}
+      <div className="about-wave">
+        <svg viewBox="0 0 1200 60" preserveAspectRatio="none" style={{ height: 52 }}>
+          <path d="M0,0 C300,60 900,60 1200,0 L1200,60 L0,60 Z" fill="#fdf8f3" />
+        </svg>
+      </div>
+
+      {/* ── BREADCRUMB ── */}
+      <nav className="about-breadcrumb">
+        <Link href="/">خانه</Link>
+        <span className="about-breadcrumb-sep">›</span>
+        <span>درباره ترددیلا</span>
+      </nav>
+
+      {/* ── BODY ── */}
+      <div className="about-body">
+
+        {/* Stats */}
+        <div className="stats-row">
+          {stats.map((s) => (
+            <div className="stat-card" key={s.label}>
+              <div className="stat-value">{s.value}</div>
+              <div className="stat-label">{s.label}</div>
+              <div className="stat-sub">{s.sub}</div>
             </div>
-            <div className="text-sm md:text-sm font-bold text-[#8f1d1d] mb-4 pr-2">
-              چیپس ترتیلا ذرت: تردی اصیل، طعمی دلنشین
-            </div>
-            <div className="prose prose-lg max-w-none text-neutral-700 leading-relaxed space-y-4">
-              <p>
-                لذت یک میان‌وعده بی‌نظیر را با چیپس ترتیلا ذرت تجربه کنید. این چیپس‌های ترد و خوش‌طعم، که از بهترین مواد اولیه و دانه‌های ذرت مرغوب تهیه شده‌اند، همراهی عالی برای لحظات شاد شما هستند. برش‌های مثلثی و فرآوری دقیق، تردی فوق‌العاده‌ای به این چیپس‌ها می‌بخشد که هر کسی را شیفته خود می‌کند. چیپس ترتیلا ذرت، چه به تنهایی و چه در کنار انواع دیپ، سس سالسا، گواکاموله یا پنیر، تجربه‌ای فراموش‌نشدنی خلق می‌کند.
-              </p>
-              <p>انتخاب ایده‌آل برای مهمانی‌ها، تماشای فیلم یا هر جمع دوستانه.</p>
-              <p>با چیپس ترتیلا ذرت، لحظات خود را طعم‌دار کنید و شادی را به اشتراک بگذارید.</p>
-              <p>
-                محصول چیپس ترتیلا ما، نتیجه تلاش و تخصص تیمی مجرب و حرفه‌ای است. کیفیت بی‌نظیر این محصول توسط کارشناسان و متخصصان فنی ما تضمین می‌شود، تا شما همیشه بهترین و تازه‌ترین اسنک را تجربه کنید. با ما، لذت را در هر ترد و خوش‌طعم بودن چیپس ترتیلا احساس کنید.
-              </p>
-              <p>
-                تنوع طعم‌ها یکی از خواسته‌های مهم مصرف‌کنندگان است و به همین جهت، ترددیلا با بهترین طعم دهنده های وارداتی از کشورهای سوئیس و اسپانیا، در هشت طعم مختلف تولید و به بازار عرضه می‌شود. در تولید ترددیلا از هیچ‌گونه مواد نگهدارنده استفاده نمی شود و بسته‌بندی سه لایه و غیرقابل نفوذ، ضامن تازگی و سلامت آن است.
-              </p>
-            </div>
+          ))}
+        </div>
+
+        {/* Products section */}
+        <div className="section-card">
+          <div className="section-heading">
+            <div className="section-heading-bar" />
+            <h2>محصولات ترددیلا</h2>
+          </div>
+          <div className="section-subheading">چیپس ترتیلا ذرت: تردی اصیل، طعمی دلنشین</div>
+          <div className="section-prose">
+            <p>
+              لذت یک میان‌وعده بی‌نظیر را با چیپس ترتیلا ذرت تجربه کنید. این چیپس‌های ترد و
+              خوش‌طعم، که از بهترین مواد اولیه و دانه‌های ذرت مرغوب تهیه شده‌اند، همراهی عالی
+              برای لحظات شاد شما هستند. برش‌های مثلثی و فرآوری دقیق، تردی فوق‌العاده‌ای به این
+              چیپس‌ها می‌بخشد که هر کسی را شیفته خود می‌کند.
+            </p>
+            <p>
+              چیپس ترتیلا ذرت، چه به تنهایی و چه در کنار انواع دیپ، سس سالسا، گواکاموله یا پنیر،
+              تجربه‌ای فراموش‌نشدنی خلق می‌کند. انتخاب ایده‌آل برای مهمانی‌ها، تماشای فیلم یا هر
+              جمع دوستانه.
+            </p>
+            <p>
+              تنوع طعم‌ها یکی از خواسته‌های مهم مصرف‌کنندگان است و به همین جهت، ترددیلا با
+              بهترین طعم‌دهنده‌های وارداتی از کشورهای سوئیس و اسپانیا، در هشت طعم مختلف تولید
+              و به بازار عرضه می‌شود. در تولید ترددیلا از هیچ‌گونه مواد نگهدارنده استفاده نمی‌شود
+              و بسته‌بندی سه لایه و غیرقابل نفوذ، ضامن تازگی و سلامت آن است.
+            </p>
           </div>
         </div>
-      </section>
 
-      <section className="bg-[#f6f1ec] py-12 md:py-16">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5">
-            <div className="text-center p-6 bg-white rounded-2xl shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-              <div className="w-16 h-16 bg-[#8f1d1d]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Leaf className="w-8 h-8 text-[#8f1d1d]" />
-              </div>
-              <h3 className="font-bold text-lg mb-2">مواد اولیه مرغوب</h3>
-              <p className="text-sm text-neutral-600">تهیه شده از بهترین ذرت ایرانی</p>
+        {/* Features grid */}
+        <div className="features-grid">
+          {features.map((f) => (
+            <div className="feature-card" key={f.title}>
+              <span className="feature-icon">{f.icon}</span>
+              <div className="feature-title">{f.title}</div>
+              <div className="feature-desc">{f.desc}</div>
             </div>
-            <div className="text-center p-6 bg-white rounded-2xl shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-              <div className="w-16 h-16 bg-[#8f1d1d]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Package className="w-8 h-8 text-[#8f1d1d]" />
-              </div>
-              <h3 className="font-bold text-lg mb-2">بسته‌بندی سه لایه</h3>
-              <p className="text-sm text-neutral-600">ضامن تازگی و سلامت محصول</p>
+          ))}
+        </div>
+
+        {/* Brand section */}
+        <div className="section-card">
+          <div className="section-heading">
+            <div className="section-heading-bar" />
+            <h2>نام تجاری ترددیلا</h2>
+          </div>
+          <div className="section-prose">
+            <p>
+              باعث افتخارمان است که از سال ۱۳۷۲ تا کنون با تولید انواع میان‌وعده، چیپس و
+              پاپ‌کرن با نام تجاری ترددیلا توانسته‌ایم در کنار هواداران‌مان باشیم.
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <div className="highlight-quote">«رنگین‌کمان مزه‌ها»</div>
+              <div className="highlight-quote">«مزه‌ی دورهمی‌های بامزه»</div>
             </div>
-            <div className="text-center p-6 bg-white rounded-2xl shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-              <div className="w-16 h-16 bg-[#8f1d1d]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="w-8 h-8 text-[#8f1d1d]" />
-              </div>
-              <h3 className="font-bold text-lg mb-2">بدون مواد نگهدارنده</h3>
-              <p className="text-sm text-neutral-600">محصولی سالم و طبیعی</p>
-            </div>
-            <div className="text-center p-6 bg-white rounded-2xl shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-              <div className="w-16 h-16 bg-[#8f1d1d]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Award className="w-8 h-8 text-[#8f1d1d]" />
-              </div>
-              <h3 className="font-bold text-lg mb-2">هشت طعم متنوع</h3>
-              <p className="text-sm text-neutral-600">مناسب برای همه سلیقه‌ها</p>
-            </div>
-            <div className="text-center p-6 bg-white rounded-2xl shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-              <div className="w-16 h-16 bg-[#8f1d1d]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Sprout className="w-8 h-8 text-[#8f1d1d]" />
-              </div>
-              <h3 className="font-bold text-lg mb-2">رنگ طبیعی</h3>
-              <p className="text-sm text-neutral-600">آنتی‌اکسیدان طبیعی، سالم و لذت‌بخش</p>
-            </div>
+            <p>
+              با بسته‌بندی جدید و طعم‌های با کیفیت‌تر از قبل در کنار شما هستیم. امیدواریم که
+              بتوانیم در سال‌های پیش‌رو، با ورود به بازارهای منطقه‌ای، نقشی در افزایش صادرات
+              کشور بر عهده بگیریم و توانمان را در رقابت با برندهای بین‌المللی اثبات کنیم.
+            </p>
           </div>
         </div>
-      </section>
 
-      <section className="py-12 md:py-16 animate-fade-in">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="max-w-4xl mx-auto">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="h-8 w-1 bg-[#8f1d1d] rounded-full"></div>
-              <h2 className="text-2xl md:text-3xl font-bold text-[#8f1d1d]">
-                نام تجاری ترددیلا
-              </h2>
-            </div>
-            <div className="prose prose-lg max-w-none text-neutral-700 leading-relaxed">
-              <p>
-                باعث افتخارمان است که از سال ۱۳۷۲ تا کنون با تولید انواع میان‌وعده، چیپس و پاپ‌کرن با نام تجاری
-                ترددیلا توانسته‌ایم در کنار هواداران‌مان باشیم. زمانی با شعار
-                <span className="font-bold text-[#8f1d1d] mx-1">«رنگین‌کمان مزه‌ها»</span>
-                اقدام به معرفی هشت طعم مختلف برای سلیقه‌های گوناگون کردیم و اکنون با شعار
-                <span className="font-bold text-[#8f1d1d] mx-1">«مزه‌ی دورهمی‌های بامزه»</span>
-                با بسته‌بندی جدید و طعم‌های با کیفیت‌تر از قبل در کنار شما هستیم.
-              </p>
-              <p className="mt-4">
-                امیدواریم که بتوانیم در سال‌های پیش‌رو، با ورود به بازارهای منطقه‌ای، نقشی در افزایش صادرات کشور
-                بر عهده بگیریم و توانمان را در رقابت با برندهای بین‌المللی اثبات کنیم.
-              </p>
-            </div>
+        {/* Company section */}
+        <div className="section-card">
+          <div className="section-heading">
+            <div className="section-heading-bar" />
+            <h2>درباره شرکت</h2>
+          </div>
+          <div className="section-prose">
+            <p>
+              شرکت کوثر کویر رفسنجان واقع شده در شهر طلای سبز، واحد نمونه صنعتی در استان
+              کرمان می‌باشد. این شرکت به فعالیت‌های متعددی از جمله تولید و بسته‌بندی چیپس و
+              اسنک، فرآوری و بسته‌بندی انواع خشکبار خصوصاً پسته، واردات و صادرات محصولات
+              خود به سایر شرکت‌های همکار می‌پردازد.
+            </p>
+            <p>
+              شرکت کوثر کویر رفسنجان دفتر مرکزی خود را در تهران از سال ۱۳۸۷ راه‌اندازی نمود.
+              کلیه امور بازرگانی و فروش از جمله فروش مویرگی در تهران، مدیریت فروش شهرستان‌ها،
+              صادرات محصولات با برند تجاری ترددیلا و واردات و صادرات انواع خشکبار، ذرت و سایر
+              اقلام مورد نیاز شرکت را بر عهده دارد.
+            </p>
           </div>
         </div>
-      </section>
 
-      <section className="bg-[#f6f1ec] py-12 md:py-16">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="max-w-4xl mx-auto">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="h-8 w-1 bg-[#8f1d1d] rounded-full"></div>
-              <h2 className="text-2xl md:text-3xl font-bold text-[#8f1d1d]">
-                درباره شرکت
-              </h2>
-            </div>
-            <div className="prose prose-lg max-w-none text-neutral-700 leading-relaxed space-y-4">
-              <p>
-                شرکت کوثر کویر رفسنجان واقع شده در شهر طلای سبز، واحد نمونه صنعتی در استان کرمان می‌باشد.
-                این شرکت به فعالیت‌های متعددی از جمله تولید و بسته‌بندی چیپس و اسنک، فرآوری و بسته‌بندی انواع
-                خشکبار خصوصا پسته، واردات و صادرات محصولات خود به سایر شرکت‌های همکار، می‌پردازد.
-              </p>
-              <p>
-                شرکت کوثر کویر رفسنجان، دفتر مرکزی خود را در تهران از سال ۱۳۸۷ راه‌اندازی نمود، کلیه امور بازرگانی
-                و فروش از جمله فروش مویرگی در تهران، مدیریت فروش شهرستان‌ها، صادرات محصولات با برند تجاری ترددیلا
-                و واردات و صادرات انواع خشکبار، ذرت و سایر اقلام مورد نیاز شرکت را بر عهده دارد.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-12 md:py-16">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="grid gap-6 md:grid-cols-3 max-w-4xl mx-auto">
-            <div className="bg-white rounded-2xl p-6 text-center shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border border-neutral-100">
-              <div className="text-4xl md:text-5xl font-black text-[#8f1d1d]">۱۳۷۲</div>
-              <p className="text-neutral-600 mt-2 font-medium">سال تاسیس</p>
-              <div className="w-12 h-0.5 bg-[#8f1d1d]/30 mx-auto mt-3"></div>
-            </div>
-            <div className="bg-white rounded-2xl p-6 text-center shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border border-neutral-100">
-              <div className="text-4xl md:text-5xl font-black text-[#8f1d1d]">۸</div>
-              <p className="text-neutral-600 mt-2 font-medium">طعم متنوع</p>
-              <div className="w-12 h-0.5 bg-[#8f1d1d]/30 mx-auto mt-3"></div>
-            </div>
-            <div className="bg-white rounded-2xl p-6 text-center shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border border-neutral-100">
-              <div className="text-4xl md:text-5xl font-black text-[#8f1d1d]">۱۰۰%</div>
-              <p className="text-neutral-600 mt-2 font-medium">طبیعی و سالم</p>
-              <div className="w-12 h-0.5 bg-[#8f1d1d]/30 mx-auto mt-3"></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-[#8f1d1d] py-12 md:py-16 text-white relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-64 h-64 bg-white/5 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
-        <div className="absolute bottom-0 right-0 w-80 h-80 bg-white/5 rounded-full translate-x-1/3 translate-y-1/3"></div>
-        <div className="container mx-auto px-4 md:px-6 text-center relative z-10">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">با ترددیلا همراه شوید</h2>
-          <p className="text-white/80 mb-6 max-w-2xl mx-auto">
+        {/* CTA */}
+        <div className="about-cta">
+          <h2>با ترددیلا همراه شوید</h2>
+          <p>
             برای اطلاع از محصولات جدید و طعم‌های متنوع، ما را در شبکه‌های اجتماعی دنبال کنید
           </p>
-          <div className="flex flex-wrap gap-4 justify-center">
-            <Link
-              href="/contact"
-              className="inline-block rounded-full border-2 border-white px-8 py-3 font-bold transition-all duration-300 hover:bg-gray-400 hover:scale-105 shadow-md"
-            >
-              تماس با ما
-            </Link>
-            <a
-              href="https://instagram.com/tordillachips/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block rounded-full border-2 border-white px-8 py-3 font-bold transition-all duration-300 hover:bg-gray-400 hover:text-[#8f1d1d] hover:scale-105"
-            >
+          <div className="cta-buttons">
+            <Link href="/contact" className="btn-white">تماس با ما</Link>
+            <a href="https://instagram.com/tordillachips/" target="_blank" rel="noopener noreferrer" className="btn-ghost">
               اینستاگرام ترددیلا
             </a>
           </div>
         </div>
-      </section>
+
+      </div>
     </main>
   );
 }

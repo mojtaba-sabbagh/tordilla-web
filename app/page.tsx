@@ -1,343 +1,342 @@
-import Link from "next/link";
-import { HomeSlider } from "@/components/home-slider";
-import { generateSliderImages } from "@/lib/image-gather";
+"use client";
+
+import { useState, useEffect, useRef } from "react";
 
 const flavors = [
-  {
-    title: "ترددیلا ماست موسیر",
-    image: "/home/flavors/mast1.jpg",
-    href: "/products/mast-o-musir",
-    highlighted: true,
-  },
-  
-  {
-    title: "ترددیلا پنیری",
-    image: "/home/flavors/chees1.jpg",
-    href: "/products/paniri",
-    highlighted: true,
-  },
-  {
-    title: "ترددیلا تنوری",
-    image: "/home/flavors/barbiq1.jpg",
-    href: "/products/tanouri",
-    highlighted: true,
-  },
-  {
-    title: "ترددیلا سالسا",
-    image: "/home/flavors/salsa1.jpg",
-    href: "/products/salsa",
-    highlighted: true,
-  },
-  {
-    title: "ترددیلا مکزیکی",
-    image: "/home/flavors/mexican1.jpg",
-    href: "/products/mexican",
-    highlighted: true,
-  },
-  {
-    title: "ترددیلا پیازجعفری",
-    image: "/home/flavors/piaz1.jpg",
-    href: "/products/piaz-jafari",
-    highlighted: true,
-  },
-  {
-    title: "ترددیلا کنجدی",
-    image: "/home/flavors/seseami.jpg",
-    href: "/products/sesame",
-    highlighted: true,
-  },
-  {
-    title: "",
-    image: "/home/flavors/photo_2019-12-21_08-21-09.jpg",
-  },
+  { title: "ماست موسیر", image: "/home/flavors/mast1.jpg", href: "/products/mast-o-musir", color: "#e8f5e9", accent: "#2e7d32" },
+  { title: "پنیری", image: "/home/flavors/chees1.jpg", href: "/products/paniri", color: "#fff8e1", accent: "#f9a825" },
+  { title: "تنوری", image: "/home/flavors/barbiq1.jpg", href: "/products/tanouri", color: "#fbe9e7", accent: "#bf360c" },
+  { title: "سالسا", image: "/home/flavors/salsa1.jpg", href: "/products/salsa", color: "#fce4ec", accent: "#c62828" },
+  { title: "مکزیکی", image: "/home/flavors/mexican1.jpg", href: "/products/mexican", color: "#e8eaf6", accent: "#283593" },
+  { title: "پیاز جعفری", image: "/home/flavors/piaz1.jpg", href: "/products/piaz-jafari", color: "#e0f2f1", accent: "#00695c" },
+  { title: "کنجدی", image: "/home/flavors/seseami.jpg", href: "/products/sesame", color: "#efebe9", accent: "#4e342e" },
 ];
 
 const retailers = [
-  { name: "دیجی‌کالا", image: "/home/brands/digikala.png", href: "#" },
-  { name: "مزبار", image: "/home/brands/mazbar.png", href: "#" },
-  { name: "شهروند", image: "/home/brands/shahrvand.png", href: "#" },
-  { name: "کنبو", image: "/home/brands/canbo.png", href: "#" },
-  { name: "پالادیوم", image: "/home/brands/paladium.png", href: "#" },
-  { name: "روکو", image: "/home/brands/roco.png", href: "#" },
+  { name: "دیجی‌کالا", image: "/home/brands/digikala.png" },
+  { name: "مزبار", image: "/home/brands/mazbar.png" },
+  { name: "شهروند", image: "/home/brands/shahrvand.png" },
+  { name: "کنبو", image: "/home/brands/canbo.png" },
+  { name: "پالادیوم", image: "/home/brands/paladium.png" },
+  { name: "روکو", image: "/home/brands/roco.png" },
 ];
 
 const blogPosts = [
-  {
-    title: "ترددیلا در دیجیکالا",
-    category: "بدانیم",
-    date: "11 اکتبر 2018",
-    image: "/home/blog/digikala-logo-1200x480-760x180.jpg",
-    href: "/blog/tordilla-in-digikala",
-    featured: true,
-  },
-  {
-    title: "ناچو ترددیلا در سینماهای سراسر کشور عرضه خواهد شد.",
-    category: "بدانیم",
-    date: "26 آگوست 2018",
-    image: "/home/blog/b4fd571f4b9de34a1599ffdd904f3295-380x180.jpg",
-    href: "/blog/cinema-nacho",
-  },
-  {
-    title: "طرز تهیه تاکو مکزیکی (مرحله به مرحله با عکس)",
-    category: "طرز تهیه غذا",
-    date: "13 آگوست 2018",
-    image: "/home/blog/1520956952-chicken-tacos-horizontal-380x180.jpg",
-    href: "/blog/mexican-taco",
-  },
-  {
-    title: "بهترین دستور تهیه نان ترتیلا مرحله به مرحله",
-    category: "طرز تهیه غذا",
-    date: "13 آگوست 2018",
-    image: "/home/blog/lionel-gustave-171881-unsplash-380x180.jpg",
-    href: "/blog/tortilla-bread",
-  },
-  {
-    title: "طرز تهیه سالسا با طعم‌های متفاوت",
-    category: "طرز تهیه دیپ",
-    date: "13 آگوست 2018",
-    image: "/home/blog/OG0A1062-380x180.jpg",
-    href: "/blog/salsa-recipes",
-  },
+  { title: "ترددیلا در دیجیکالا", category: "بدانیم", date: "۱۱ اکتبر ۲۰۱۸", image: "/home/blog/digikala-logo-1200x480-760x180.jpg", featured: true },
+  { title: "ناچو ترددیلا در سینماهای سراسر کشور عرضه خواهد شد", category: "بدانیم", date: "۲۶ آگوست ۲۰۱۸", image: "/home/blog/b4fd571f4b9de34a1599ffdd904f3295-380x180.jpg" },
+  { title: "طرز تهیه تاکو مکزیکی (مرحله به مرحله با عکس)", category: "طرز تهیه غذا", date: "۱۳ آگوست ۲۰۱۸", image: "/home/blog/1520956952-chicken-tacos-horizontal-380x180.jpg" },
+  { title: "بهترین دستور تهیه نان ترتیلا مرحله به مرحله", category: "طرز تهیه غذا", date: "۱۳ آگوست ۲۰۱۸", image: "/home/blog/lionel-gustave-171881-unsplash-380x180.jpg" },
+  { title: "طرز تهیه سالسا با طعم‌های متفاوت", category: "طرز تهیه دیپ", date: "۱۳ آگوست ۲۰۱۸", image: "/home/blog/OG0A1062-380x180.jpg" },
 ];
 
-const socials = [
-  {
-    label: "اینستاگرام ترددیلا",
-    href: "https://instagram.com/tordillachips/",
-    viewBox: "0 0 107.47 107.47",
-    paths: [
-      "M82.58,40.58A15.71,15.71,0,0,0,66.89,24.89H40.58a15.72,15.72,0,0,0-15.7,15.69V66.89a15.72,15.72,0,0,0,15.7,15.69H66.89A15.71,15.71,0,0,0,82.58,66.89ZM72.77,30.23A4.47,4.47,0,1,1,68.3,34.7,4.47,4.47,0,0,1,72.77,30.23Zm-19,40.67A17.17,17.17,0,1,1,70.9,53.73,17.18,17.18,0,0,1,53.73,70.9Z",
-      "M53.73,41.77a12,12,0,1,0,12,12A12,12,0,0,0,53.73,41.77Z",
-      "M53.73,0a53.74,53.74,0,1,0,53.74,53.73A53.74,53.74,0,0,0,53.73,0ZM87.66,66.89A20.8,20.8,0,0,1,66.89,87.66H40.58A20.8,20.8,0,0,1,19.8,66.89V40.58A20.8,20.8,0,0,1,40.58,19.8H66.89A20.8,20.8,0,0,1,87.66,40.58Z",
-    ],
-  },
-  {
-    label: "توییتر ترددیلا",
-    href: "https://twitter.com/tordillachips",
-    viewBox: "0 0 107.47 107.47",
-    paths: [
-      "M53.73,0a53.74,53.74,0,1,0,53.74,53.73A53.74,53.74,0,0,0,53.73,0ZM82.37,40.55a15.28,15.28,0,0,1-3.16,2.65l0,0C78.6,61.32,66.46,79.8,45,80.93c-8.1.43-15.56-2.87-21.36-7.65a23,23,0,0,0,6.57,1,19.66,19.66,0,0,0,12-4.37s-12-3.32-11.72-8.9l5.75-.17a18.12,18.12,0,0,1-5.69-2.95c-3.46-3.12-5.46-7.46-4.47-9.89a7.41,7.41,0,0,0,2.32,1.13,10.73,10.73,0,0,0,3.27.54S28.06,47.09,27,44.25c-1.62-4.42-.8-10.06.81-11.76,0,0,.64,3.58,10.85,8.75,5.18,2.63,11,4.49,15.53,4.61a16.67,16.67,0,0,1-.52-4.2c0-6.16,5.71-11.15,12.76-11.15a13.54,13.54,0,0,1,9.84,4L79.68,33l4-1.72h0s.21.24,0,.85c-.41,1.45-3.59,4.54-4.84,5.54l0,.26a8.19,8.19,0,0,0,2.42-.32c1.35-.37,4.57-1.77,4.57-1.77A22.44,22.44,0,0,1,82.37,40.55Z",
-    ],
-  },
-  {
-    label: "فیسبوک ترددیلا",
-    href: "https://www.facebook.com/tordillachips",
-    viewBox: "0 0 107.47 107.47",
-    paths: [
-      "M53.73,0a53.74,53.74,0,1,0,53.74,53.73A53.74,53.74,0,0,0,53.73,0ZM71.82,30.46H65.27c-5.15,0-6.14,2.44-6.14,6V44.4H71.39l-1.6,12.39H59.13V88.57H46.34V56.79H35.64V44.4h10.7V35.27c0-10.6,6.47-16.37,15.93-16.37a88.45,88.45,0,0,1,9.55.48Z",
-    ],
-  },
-  {
-    label: "آپارات ترددیلا",
-    href: "https://www.aparat.com/tordilla.chips",
-    viewBox: "0 0 107.47 107.47",
-    circles: [
-      { cx: "45.33", cy: "41.28", r: "8.18", transform: "translate(-15.92 44.14) rotate(-45)" },
-      { cx: "61.68", cy: "66.91", r: "8.18", transform: "translate(-29.25 63.21) rotate(-45)" },
-      { cx: "41.05", cy: "62.95", r: "8.18", transform: "translate(-32.49 47.47) rotate(-45)" },
-      { cx: "65.74", cy: "45.03", r: "8.18", transform: "translate(-8.59 16.31) rotate(-13.28)" },
-    ],
-    paths: [
-      "M57.46,54a3.82,3.82,0,1,0-3.81,3.82A3.82,3.82,0,0,0,57.46,54Z",
-      "M53.73,0a53.74,53.74,0,1,0,53.74,53.73A53.74,53.74,0,0,0,53.73,0Zm-25,29.55A13.55,13.55,0,0,1,45.4,20.1l5.43,1.5A32.27,32.27,0,0,0,27,35.65Zm.56,48.72a13.59,13.59,0,0,1-9.45-16.71l1.7-6.12A32.23,32.23,0,0,0,34.68,79.77Zm49.51-.35a13.59,13.59,0,0,1-16.71,9.45l-5.42-1.51a32.21,32.21,0,0,0,23.82-14Zm-25,4.67A28.86,28.86,0,1,1,82.59,53.73,28.86,28.86,0,0,1,53.73,82.59ZM87.65,45.91,86,52A32.26,32.26,0,0,0,72.79,27.69L78.2,29.2A13.56,13.56,0,0,1,87.65,45.91Z",
-    ],
-  },
+const sliderImages = [
+  "/home/slider/where-1024x447.jpg",
+  "/home/slider/tamas-ba-ma-small-size-min-1024x447.jpg",
 ];
 
-let sliderImages = generateSliderImages('public/home/slider');
-sliderImages = sliderImages.map((f : any) => (f.split('/').slice(1).join('/')));
-// [
-//   "/home/slider/where-1024x447.jpg",
-//   "/home/slider/tamas-ba-ma-small-size-min-1024x447.jpg"
-// ];
+function useInView(threshold = 0.15) {
+  const ref = useRef(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const observer = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setInView(true); observer.disconnect(); } }, { threshold });
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [threshold]);
+  return [ref, inView];
+}
+
+function AnimatedSection({ children, delay = 0, className = "" }) {
+  const [ref, inView] = useInView();
+  return (
+    <div ref={ref} className={className} style={{ opacity: inView ? 1 : 0, transform: inView ? "translateY(0)" : "translateY(36px)", transition: `opacity 0.75s ease ${delay}ms, transform 0.75s ease ${delay}ms` }}>
+      {children}
+    </div>
+  );
+}
+
+function Slider({ images }) {
+  const [active, setActive] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setActive(i => (i + 1) % images.length), 4500);
+    return () => clearInterval(t);
+  }, [images.length]);
+
+  return (
+    <div style={{ position: "relative", width: "100%", overflow: "hidden" }}>
+      <div style={{ position: "relative", width: "100%", height: "clamp(260px, 52vw, 560px)", background: "#1a0a04" }}>
+        {images.map((src, i) => (
+          <img key={src} src={src} alt={`اسلاید ${i + 1}`}
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: active === i ? 1 : 0, transition: "opacity 1.1s ease" }} />
+        ))}
+        {/* gradient overlay */}
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15,4,0,0.55) 0%, transparent 60%)" }} />
+
+        {/* arrows */}
+        {[{ dir: "right", label: "قبلی", delta: -1 }, { dir: "left", label: "بعدی", delta: 1 }].map(({ dir, label, delta }) => (
+          <button key={dir} aria-label={`اسلاید ${label}`} onClick={() => setActive(i => (i + delta + images.length) % images.length)}
+            style={{ position: "absolute", top: "50%", [dir]: "16px", transform: "translateY(-50%)", width: 44, height: 44, borderRadius: "50%", background: "rgba(255,255,255,0.18)", backdropFilter: "blur(8px)", border: "1.5px solid rgba(255,255,255,0.35)", color: "#fff", fontSize: 22, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "background 0.2s" }}>
+            {delta === -1 ? "›" : "‹"}
+          </button>
+        ))}
+
+        {/* dots */}
+        <div style={{ position: "absolute", bottom: 20, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 8 }}>
+          {images.map((_, i) => (
+            <button key={i} onClick={() => setActive(i)}
+              style={{ height: 8, width: active === i ? 28 : 8, borderRadius: 9999, background: active === i ? "#fff" : "rgba(255,255,255,0.45)", border: "none", cursor: "pointer", transition: "all 0.35s ease" }} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FlavorCard({ flavor, index }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <div onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
+      style={{ position: "relative", borderRadius: 24, overflow: "hidden", cursor: "pointer", background: "#1a0a04", opacity: 0, animation: `fadeSlideUp 0.6s ease ${120 + index * 70}ms forwards`, boxShadow: hovered ? "0 24px 52px rgba(0,0,0,0.28)" : "0 6px 20px rgba(0,0,0,0.12)", transform: hovered ? "translateY(-6px)" : "translateY(0)", transition: "box-shadow 0.35s, transform 0.35s" }}>
+      <img src={flavor.image} alt={flavor.title}
+        style={{ display: "block", width: "100%", height: 240, objectFit: "cover", transition: "transform 0.6s ease", transform: hovered ? "scale(1.07)" : "scale(1)" }} />
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.15) 55%, transparent 100%)" }} />
+      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "20px 18px" }}>
+        <p style={{ color: "#fff", fontWeight: 800, fontSize: 18, margin: 0, letterSpacing: "0.01em" }}>ترددیلا {flavor.title}</p>
+        <a href={flavor.href}
+          style={{ display: "inline-flex", alignItems: "center", marginTop: 10, padding: "7px 18px", borderRadius: 9999, background: "#39a845", color: "#fff", fontWeight: 700, fontSize: 13, textDecoration: "none", opacity: hovered ? 1 : 0, transform: hovered ? "translateY(0)" : "translateY(6px)", transition: "opacity 0.3s, transform 0.3s" }}>
+          آشنایی با این طعم
+        </a>
+      </div>
+    </div>
+  );
+}
 
 export default function HomePage() {
+  const [flavorHintVisible, setFlavorHintVisible] = useState(true);
+
   return (
-    <div className="bg-white">
-      <section className="w-full pt-0">
-        <HomeSlider images={sliderImages} />
+    <div dir="rtl" lang="fa" style={{ background: "#fdf8f3", color: "#2c1810", minHeight: "100vh" }}>
+      <style>{`
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        @keyframes fadeSlideUp {
+          from { opacity: 0; transform: translateY(32px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; } to { opacity: 1; }
+        }
+        @keyframes chip-float {
+          0%, 100% { transform: translateY(0) rotate(-5deg); }
+          50% { transform: translateY(-12px) rotate(-5deg); }
+        }
+        .flavor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 18px; }
+        .retailer-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
+        .blog-grid { display: grid; gap: 20px; }
+        @media(min-width: 760px) { .blog-grid { grid-template-columns: 1.6fr 1fr 1fr; } }
+        .tag { display: inline-block; padding: 3px 12px; border-radius: 9999px; font-size: 12px; font-weight: 700; background: rgba(143,29,29,0.1); color: #8f1d1d; }
+        .btn-primary { display: inline-flex; align-items: center; padding: 12px 28px; border-radius: 9999px; background: #8f1d1d; color: #fff; font-weight: 800; font-size: 15px; text-decoration: none; border: none; cursor: pointer; transition: background 0.2s, transform 0.2s; }
+        .btn-primary:hover { background: #6e1515; transform: translateY(-2px); }
+        .btn-green { background: #39a845; }
+        .btn-green:hover { background: #2f8d39; }
+        .btn-blue { background: #1a6fa8; }
+        .btn-blue:hover { background: #145480; }
+        .section-tag { display: inline-flex; align-items: center; gap: 6px; padding: 5px 16px; border-radius: 9999px; border: 1.5px solid rgba(143,29,29,0.2); background: rgba(143,29,29,0.06); color: #8f1d1d; font-size: 13px; font-weight: 700; margin-bottom: 14px; }
+        hr.divider { border: none; border-top: 1.5px solid rgba(143,29,29,0.1); margin: 0; }
+      `}</style>
+
+      {/* ── SLIDER ── */}
+      <Slider images={sliderImages} />
+
+      {/* ── HERO TEXT ── */}
+      <section style={{ textAlign: "center", padding: "72px 24px 60px" }}>
+        <AnimatedSection>
+          <div className="section-tag">🌽 چیپس ذرت اصیل مکزیکی</div>
+          <h1 style={{ fontSize: "clamp(32px, 5vw, 58px)", fontWeight: 900, color: "#8f1d1d", lineHeight: 1.25, marginBottom: 20 }}>
+            چیپس ذرت ترددیلا
+          </h1>
+          <img src="/home/logo.png" alt="لوگوی ترددیلا" style={{ width: "clamp(120px, 12vw, 170px)", height: "auto", margin: "0 auto 24px", display: "block" }} />
+          <p style={{ maxWidth: 600, margin: "0 auto 32px", fontSize: 18, lineHeight: 1.9, color: "#5a3728" }}>
+            ترددیلا میان وعده‌ای خوشمزه، ساخته شده از ذرت تازه.
+            در طعم‌های مختلف که می‌تواند برای هر سن و سلیقه‌ای محبوب باشد.
+          </p>
+          <a href="/products" className="btn-primary">مشاهده همه محصولات</a>
+        </AnimatedSection>
       </section>
 
-      <section className="mx-auto max-w-[1120px] px-4 py-12 text-center md:px-6">
-        <h1 className="text-3xl font-black text-[#8f1d1d] md:text-5xl">
-          چیپس ذرت ترددیلا
-        </h1>
-        <img
-          alt="لوگوی ترددیلا"
-          className="mx-auto mt-6 h-auto w-[150px] md:w-[190px]"
-          src="/home/logo.png"
-        />
-        <p className="mx-auto mt-6 max-w-[720px] text-lg leading-9 text-neutral-700">
-          ترددیلا میان وعده‌ای خوشمزه، ساخته شده از ذرت تازه.
-          <br />
-          در طعم‌های مختلف که می‌تواند برای هر سن و سلیقه‌ای محبوب باشد.
-        </p>
+      <hr className="divider" />
+
+      {/* ── FLAVORS ── */}
+      <section style={{ padding: "72px 24px", maxWidth: 1240, margin: "0 auto" }}>
+        <AnimatedSection style={{ textAlign: "center", marginBottom: 48 }}>
+          <div style={{ textAlign: "center", marginBottom: 48 }}>
+            <div className="section-tag">✨ طعم‌های منحصر به فرد</div>
+            <h2 style={{ fontSize: "clamp(26px, 3.5vw, 42px)", fontWeight: 900, color: "#8f1d1d" }}>طعم‌های ترددیلا</h2>
+            <p style={{ marginTop: 10, color: "#7a5040", fontSize: 15 }}>هفت طعم متفاوت برای هر روز هفته</p>
+          </div>
+        </AnimatedSection>
+
+        <div className="flavor-grid">
+          {flavors.map((flavor, i) => <FlavorCard key={flavor.title} flavor={flavor} index={i} />)}
+          {/* decorative 8th card */}
+          <div style={{ position: "relative", borderRadius: 24, overflow: "hidden", background: "#8f1d1d", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: 240, padding: 24, textAlign: "center", opacity: 0, animation: "fadeSlideUp 0.6s ease 640ms forwards" }}>
+            <div style={{ fontSize: 48, animation: "chip-float 3s ease-in-out infinite" }}>🌽</div>
+            <p style={{ color: "#fff", fontWeight: 800, fontSize: 18, marginTop: 16 }}>همه طعم‌ها</p>
+            <a href="/products" style={{ marginTop: 14, padding: "8px 20px", borderRadius: 9999, background: "rgba(255,255,255,0.18)", color: "#fff", fontWeight: 700, fontSize: 13, textDecoration: "none", border: "1.5px solid rgba(255,255,255,0.35)" }}>مشاهده محصولات</a>
+          </div>
+        </div>
       </section>
 
-      <section className="mx-auto max-w-[1240px] px-4 pb-12 md:px-6 lg:px-8">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {flavors.map((item, index) => (
-            <article
-              className="group relative overflow-hidden rounded-[24px] bg-neutral-100"
-              key={`${item.image}-${index}`}
-            >
-              <img
-                alt={item.title || `تصویر محصول ${index + 1}`}
-                className="h-full min-h-[220px] w-full object-cover transition duration-500 group-hover:scale-[1.02] md:min-h-[240px]"
-                src={item.image}
-              />
+      <hr className="divider" />
 
-              {item.highlighted ? (
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent p-6 !text-white">
-                  <h2 className="text-2xl font-extrabold">{item.title}</h2>
-                  <Link
-                    className="mt-4 inline-flex min-h-11 items-center rounded-full bg-[#39a845] px-5 text-sm font-bold !text-white transition hover:bg-[#2f8d39]"
-                    href={item.href ?? "/products"}
-                  >
-                    آشنایی با این طعم
-                  </Link>
+      {/* ── CINEMA ── */}
+      <section style={{ background: "linear-gradient(135deg, #8f1d1d 0%, #5c1111 100%)", padding: "72px 24px", position: "relative", overflow: "hidden" }}>
+        {/* decorative blobs */}
+        <div style={{ position: "absolute", top: -60, left: -60, width: 240, height: 240, borderRadius: "50%", background: "rgba(255,255,255,0.06)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", bottom: -80, right: -40, width: 300, height: 300, borderRadius: "50%", background: "rgba(255,255,255,0.04)", pointerEvents: "none" }} />
+
+        <AnimatedSection className="" style={{ maxWidth: 800, margin: "0 auto" }}>
+          <div style={{ maxWidth: 800, margin: "0 auto" }}>
+            <div style={{ textAlign: "center", marginBottom: 36 }}>
+              <div className="section-tag" style={{ borderColor: "rgba(255,255,255,0.25)", background: "rgba(255,255,255,0.1)", color: "#fff" }}>🎬 ترددیلا در سینما</div>
+              <h2 style={{ fontSize: "clamp(24px, 3vw, 38px)", fontWeight: 900, color: "#fff" }}>همراه فیلم، ترددیلا!</h2>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              {["/home/cinema/cinema-01.png", "/home/cinema/cinema-02.png"].map((src, i) => (
+                <div key={i} style={{ borderRadius: 18, overflow: "hidden", background: "rgba(255,255,255,0.08)", padding: 6 }}>
+                  <img src={src} alt="سینما" style={{ width: "100%", borderRadius: 13, display: "block", objectFit: "cover" }} />
                 </div>
-              ) : null}
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="bg-[#8f1d1d] py-6 !text-white md:py-8">
-        <div className="mx-auto max-w-[760px] px-4 md:px-5">
-          <div className="grid gap-3 md:grid-cols-2">
-            <div className="overflow-hidden rounded-[16px] bg-white/10 p-1.5">
-              <img
-                alt="همکاری ترددیلا با سینماها"
-                className="h-auto w-full rounded-[12px] object-cover"
-                src="/home/cinema/cinema-01.png"
-              />
+              ))}
             </div>
-            <div className="overflow-hidden rounded-[16px] bg-white/10 p-1.5">
-              <img
-                alt="راهکار سینمایی ترددیلا"
-                className="h-auto w-full rounded-[12px] object-cover"
-                src="/home/cinema/cinema-02.png"
-              />
+            <div style={{ textAlign: "center", marginTop: 28 }}>
+              <a href="/cinema" className="btn-primary" style={{ background: "#39a845" }}>لیست سینماها</a>
             </div>
           </div>
-
-          <div className="mt-4 text-center">
-            <Link
-              className="inline-flex min-h-9 items-center rounded-full bg-[#39a845] px-5 text-sm font-bold !text-white transition hover:bg-[#2f8d39]"
-              href="/cinema"
-            >
-              لیست سینماها
-            </Link>
-          </div>
-        </div>
+        </AnimatedSection>
       </section>
 
-      <section className="bg-[#f6f1ec] py-14">
-        <div className="mx-auto max-w-[1240px] px-4 md:px-6 lg:px-8">
-          <h3 className="text-center text-3xl font-black text-[#8f1d1d]">
-            ترددیلا کجاست؟
-          </h3>
+      {/* ── WHERE TO BUY ── */}
+      <section style={{ background: "#fef4ec", padding: "80px 24px" }}>
+        <div style={{ maxWidth: 1240, margin: "0 auto" }}>
+          <AnimatedSection>
+            <div style={{ textAlign: "center", marginBottom: 52 }}>
+              <div className="section-tag">📍 کجا بخریم؟</div>
+              <h2 style={{ fontSize: "clamp(26px, 3.5vw, 42px)", fontWeight: 900, color: "#8f1d1d" }}>ترددیلا کجاست؟</h2>
+              <p style={{ marginTop: 10, color: "#7a5040", fontSize: 15 }}>محصولات ترددیلا در فروشگاه‌های زیر در دسترس است</p>
+            </div>
+          </AnimatedSection>
 
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-            {retailers.map((item) => (
-              <a
-                className="flex min-h-[180px] items-center justify-center rounded-[26px] bg-white p-6 shadow-[0_18px_40px_rgba(0,0,0,0.08)] transition hover:-translate-y-1"
-                href={item.href}
-                key={item.name}
-              >
-                <img
-                  alt={item.name}
-                  className="max-h-[92px] w-auto object-contain"
-                  src={item.image}
-                />
-              </a>
+          <div className="retailer-grid">
+            {retailers.map((r, i) => (
+              <AnimatedSection key={r.name} delay={i * 60}>
+                <a href="#" style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: 140, borderRadius: 22, background: "#fff", padding: 24, boxShadow: "0 8px 32px rgba(143,29,29,0.08)", textDecoration: "none", transition: "transform 0.25s, box-shadow 0.25s" }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-5px)"; e.currentTarget.style.boxShadow = "0 18px 48px rgba(143,29,29,0.16)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = "0 8px 32px rgba(143,29,29,0.08)"; }}>
+                  <img src={r.image} alt={r.name} style={{ maxHeight: 72, maxWidth: "100%", objectFit: "contain" }} />
+                </a>
+              </AnimatedSection>
             ))}
           </div>
 
-          <div className="mt-10 text-center">
-            <Link
-              className="inline-flex min-h-12 items-center rounded-full bg-[#1f86c7] px-8 text-base font-extrabold !text-white transition hover:bg-[#15689b]"
-              href="/tordilla-finder"
-            >
-              ترددیلا یاب
-            </Link>
-          </div>
+          <AnimatedSection delay={400}>
+            <div style={{ textAlign: "center", marginTop: 44 }}>
+              <a href="/tordilla-finder" className="btn-primary btn-blue">ترددیلا یاب</a>
+            </div>
+          </AnimatedSection>
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1240px] px-4 py-14 md:px-6 lg:px-8">
-        <h3 className="mb-8 text-center text-3xl font-black text-[#8f1d1d]">
-          وبلاگ ترددیلا
-        </h3>
+      <hr className="divider" />
 
-        <div className="grid gap-6 md:grid-cols-12">
-          {blogPosts.map((post) => (
-            <article
-              className={`overflow-hidden rounded-[24px] border border-neutral-200 bg-white shadow-[0_18px_40px_rgba(0,0,0,0.08)] ${
-                post.featured ? "md:col-span-8" : "md:col-span-4"
-              }`}
-              key={post.title}
-            >
-              <img
-                alt={post.title}
-                className={`w-full object-cover ${post.featured ? "h-[240px]" : "h-[210px]"}`}
-                src={post.image}
-              />
-              <div className="p-6">
-                <h2 className="text-xl font-extrabold leading-9 text-neutral-900">
-                  <Link href={post.href}>{post.title}</Link>
-                </h2>
-                <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm text-neutral-500">
-                  <span>{post.category}</span>
-                  <span>{post.date}</span>
+      {/* ── BLOG ── */}
+      <section style={{ padding: "80px 24px", maxWidth: 1240, margin: "0 auto" }}>
+        <AnimatedSection>
+          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", flexWrap: "wrap", gap: 12, marginBottom: 44 }}>
+            <div>
+              <div className="section-tag">📝 تازه‌ترین‌ها</div>
+              <h2 style={{ fontSize: "clamp(24px, 3vw, 38px)", fontWeight: 900, color: "#8f1d1d", marginTop: 6 }}>وبلاگ ترددیلا</h2>
+            </div>
+            <a href="/blog" style={{ color: "#8f1d1d", fontWeight: 700, fontSize: 14, textDecoration: "none", borderBottom: "2px solid #8f1d1d", paddingBottom: 2 }}>همه مطالب ›</a>
+          </div>
+        </AnimatedSection>
+
+        <div className="blog-grid">
+          {/* featured */}
+          <AnimatedSection delay={60}>
+            <a href="/blog/tordilla-in-digikala" style={{ display: "block", borderRadius: 22, overflow: "hidden", background: "#fff", boxShadow: "0 8px 32px rgba(0,0,0,0.09)", textDecoration: "none", color: "inherit", gridRow: "span 2", transition: "box-shadow 0.3s, transform 0.3s" }}
+              onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 22px 52px rgba(0,0,0,0.16)"; e.currentTarget.style.transform = "translateY(-4px)"; }}
+              onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,0,0,0.09)"; e.currentTarget.style.transform = ""; }}>
+              <img src={blogPosts[0].image} alt={blogPosts[0].title} style={{ width: "100%", height: 240, objectFit: "cover", display: "block" }} />
+              <div style={{ padding: "22px 22px 26px" }}>
+                <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+                  <span className="tag">{blogPosts[0].category}</span>
+                  <span style={{ fontSize: 12, color: "#999", lineHeight: "26px" }}>{blogPosts[0].date}</span>
                 </div>
+                <h3 style={{ fontSize: 20, fontWeight: 800, lineHeight: 1.6, color: "#2c1810" }}>{blogPosts[0].title}</h3>
               </div>
-            </article>
-          ))}
-        </div>
-      </section>
+            </a>
+          </AnimatedSection>
 
-      <section className="bg-[#8f1d1d] py-12 !!text-white">
-        <div className="mx-auto max-w-[1240px] px-4 text-center md:px-6 lg:px-8">
-          <h4 className="text-2xl font-black md:text-[32px]">
-            ترددیلا در شبکه های اجتماعی
-          </h4>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-5 md:gap-7">
-            {socials.map((item) => (
-              <a
-                aria-label={item.label}
-                className="group inline-flex h-[72px] w-[72px] items-center justify-center rounded-full transition hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#8f1d1d] md:h-[84px] md:w-[84px]"
-                href={item.href}
-                key={item.label}
-                rel="noreferrer"
-                target="_blank"
-              >
-                <svg
-                  aria-hidden="true"
-                  className="h-full w-full"
-                  fill="none"
-                  viewBox={item.viewBox}
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  {item.circles?.map((circle, index) => (
-                    <circle
-                      cx={circle.cx}
-                      cy={circle.cy}
-                      fill="#fff"
-                      key={`${item.label}-circle-${index}`}
-                      r={circle.r}
-                      transform={circle.transform}
-                    />
-                  ))}
-                  {item.paths.map((path, index) => (
-                    <path d={path} fill="#fff" key={`${item.label}-path-${index}`} />
-                  ))}
-                </svg>
-              </a>
+          {/* secondary posts */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+            {blogPosts.slice(1, 3).map((post, i) => (
+              <AnimatedSection key={post.title} delay={120 + i * 80}>
+                <a href="#" style={{ display: "flex", gap: 14, borderRadius: 18, overflow: "hidden", background: "#fff", boxShadow: "0 6px 20px rgba(0,0,0,0.07)", textDecoration: "none", color: "inherit", transition: "box-shadow 0.3s, transform 0.3s" }}
+                  onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 16px 40px rgba(0,0,0,0.13)"; e.currentTarget.style.transform = "translateY(-3px)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,0,0,0.07)"; e.currentTarget.style.transform = ""; }}>
+                  <img src={post.image} alt={post.title} style={{ width: 110, minHeight: "100%", objectFit: "cover", flexShrink: 0 }} />
+                  <div style={{ padding: "14px 14px 14px 0" }}>
+                    <span className="tag">{post.category}</span>
+                    <h3 style={{ marginTop: 8, fontSize: 14, fontWeight: 700, lineHeight: 1.7, color: "#2c1810" }}>{post.title}</h3>
+                    <p style={{ marginTop: 6, fontSize: 12, color: "#999" }}>{post.date}</p>
+                  </div>
+                </a>
+              </AnimatedSection>
+            ))}
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+            {blogPosts.slice(3).map((post, i) => (
+              <AnimatedSection key={post.title} delay={200 + i * 80}>
+                <a href="#" style={{ display: "flex", gap: 14, borderRadius: 18, overflow: "hidden", background: "#fff", boxShadow: "0 6px 20px rgba(0,0,0,0.07)", textDecoration: "none", color: "inherit", transition: "box-shadow 0.3s, transform 0.3s" }}
+                  onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 16px 40px rgba(0,0,0,0.13)"; e.currentTarget.style.transform = "translateY(-3px)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,0,0,0.07)"; e.currentTarget.style.transform = ""; }}>
+                  <img src={post.image} alt={post.title} style={{ width: 110, minHeight: "100%", objectFit: "cover", flexShrink: 0 }} />
+                  <div style={{ padding: "14px 14px 14px 0" }}>
+                    <span className="tag">{post.category}</span>
+                    <h3 style={{ marginTop: 8, fontSize: 14, fontWeight: 700, lineHeight: 1.7, color: "#2c1810" }}>{post.title}</h3>
+                    <p style={{ marginTop: 6, fontSize: 12, color: "#999" }}>{post.date}</p>
+                  </div>
+                </a>
+              </AnimatedSection>
             ))}
           </div>
         </div>
+      </section>
+
+      {/* ── SOCIAL ── */}
+      <section style={{ background: "linear-gradient(135deg, #8f1d1d 0%, #5c1111 100%)", padding: "72px 24px" }}>
+        <AnimatedSection>
+          <div style={{ maxWidth: 760, margin: "0 auto", textAlign: "center" }}>
+            <div className="section-tag" style={{ borderColor: "rgba(255,255,255,0.25)", background: "rgba(255,255,255,0.1)", color: "#fff", marginBottom: 14 }}>🌐 شبکه‌های اجتماعی</div>
+            <h2 style={{ fontSize: "clamp(22px, 3vw, 36px)", fontWeight: 900, color: "#fff", marginBottom: 12 }}>ترددیلا در شبکه‌های اجتماعی</h2>
+            <p style={{ color: "rgba(255,255,255,0.72)", fontSize: 15, marginBottom: 40 }}>ما را دنبال کنید و از آخرین اخبار و رویدادها با خبر شوید</p>
+            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center", gap: 20 }}>
+              {[
+                { label: "اینستاگرام", href: "https://instagram.com/tordillachips/", emoji: "📸" },
+                { label: "توییتر", href: "https://twitter.com/tordillachips", emoji: "🐦" },
+                { label: "فیسبوک", href: "https://www.facebook.com/tordillachips", emoji: "👥" },
+                { label: "آپارات", href: "https://www.aparat.com/tordilla.chips", emoji: "🎬" },
+              ].map(({ label, href, emoji }) => (
+                <a key={label} href={href} target="_blank" rel="noreferrer" aria-label={label}
+                  style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 8, padding: "18px 24px", borderRadius: 20, background: "rgba(255,255,255,0.12)", border: "1.5px solid rgba(255,255,255,0.2)", color: "#fff", textDecoration: "none", fontWeight: 700, fontSize: 13, minWidth: 100, transition: "background 0.25s, transform 0.25s" }}
+                  onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.22)"; e.currentTarget.style.transform = "translateY(-4px)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.12)"; e.currentTarget.style.transform = ""; }}>
+                  <span style={{ fontSize: 28 }}>{emoji}</span>
+                  {label}
+                </a>
+              ))}
+            </div>
+          </div>
+        </AnimatedSection>
       </section>
     </div>
   );
