@@ -2,16 +2,21 @@
 import Link from "next/link";
 import Image from "next/image";
 import { BlogPost } from "@/lib/blog-data";
+import { Locale, translations } from "@/lib/i18n";
 
 interface BlogPostsGridProps {
   posts: BlogPost[];
+  locale: Locale;
 }
 
-export function BlogPostsGrid({ posts }: BlogPostsGridProps) {
+export function BlogPostsGrid({ posts, locale }: BlogPostsGridProps) {
+  const t = translations[locale].blog;
+  const noPostsText = locale === "fa" ? "هیچ مطلبی یافت نشد." : "No posts found.";
+
   if (posts.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-neutral-500">هیچ مطلبی یافت نشد.</p>
+        <p className="text-neutral-500">{noPostsText}</p>
       </div>
     );
   }
@@ -23,7 +28,7 @@ export function BlogPostsGrid({ posts }: BlogPostsGridProps) {
           key={post.id}
           className="group overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-md transition hover:-translate-y-1 hover:shadow-xl"
         >
-          <Link href={`/blog/${post.slug}`} className="block">
+          <Link href={`/blog/${post.slug}?lang=${locale}`} className="block">
             <div className="relative aspect-[4/3] w-full overflow-hidden bg-neutral-100">
               <Image
                 src={post.image}
@@ -44,8 +49,12 @@ export function BlogPostsGrid({ posts }: BlogPostsGridProps) {
                 {post.excerpt}
               </p>
               <div className="mt-4 flex items-center justify-between text-xs text-neutral-400">
-                <span>{new Date(post.date).toLocaleDateString('fa-IR')}</span>
-                <span className="text-[#8f1d1d] font-medium">خواندن ادامه ›</span>
+                <span>
+                  {new Date(post.date).toLocaleDateString(
+                    locale === "fa" ? "fa-IR" : "en-US"
+                  )}
+                </span>
+                <span className="text-[#8f1d1d] font-medium">{t.readMore}</span>
               </div>
             </div>
           </Link>

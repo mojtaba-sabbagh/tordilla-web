@@ -2,16 +2,34 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ShoppingBag, Clock, Package, Truck, Shield, Mail } from "lucide-react";
+import { getLocaleFromSearchParams, translations } from "@/lib/i18n";
 
-export const metadata = {
-  title: "فروشگاه | چیپس ذرت ترددیلا",
-  description: "خرید آنلاین چیپس ذرت ترددیلا - به زودی با بهترین قیمت‌ها",
-};
+interface ShopPageProps {
+  searchParams: Promise<{ lang?: string }>;
+}
 
-export default function ShopPage() {
+export async function generateMetadata({ searchParams }: ShopPageProps) {
+  const { lang } = await searchParams;
+  const locale = getLocaleFromSearchParams(new URLSearchParams({ lang: lang || "fa" }));
+  return {
+    title: locale === "fa" ? "فروشگاه | چیپس ذرت ترددیلا" : "Shop | Tordilla Corn Chips",
+    description: locale === "fa" 
+      ? "خرید آنلاین چیپس ذرت ترددیلا - به زودی با بهترین قیمت‌ها"
+      : "Buy Tordilla corn chips online – coming soon with best prices",
+  };
+}
+
+export default async function ShopPage({ searchParams }: ShopPageProps) {
+  const { lang } = await searchParams;
+  const locale = getLocaleFromSearchParams(new URLSearchParams({ lang: lang || "fa" }));
+  const t = translations[locale].shop;
+  const commonT = translations[locale].common;
+  const localeQuery = `?lang=${locale}`;
+
   return (
-    <main className="shop-page" dir="rtl">
-      <style>{`
+    <main className="shop-page" dir={locale === "fa" ? "rtl" : "ltr"}>
+      {/* paste all original CSS from shop page here, exactly as in your file */}
+       <style>{`
         .shop-page {
           background: #fdf8f3;
           min-height: 100vh;
@@ -281,21 +299,15 @@ export default function ShopPage() {
         }
       `}</style>
 
+
       {/* Hero */}
       <section className="shop-hero">
-        <div className="shop-hero-badge">🛒 خرید آسان، طعم بی‌نظیر</div>
-        <h1>فروشگاه آنلاین ترددیلا</h1>
-        <p>به زودی با بهترین قیمت‌ها و طعم‌های متنوع در خدمت شما خواهیم بود</p>
+        <div className="shop-hero-badge">{t.heroBadge}</div>
+        <h1>{t.heroTitle}</h1>
+        <p>{t.heroText}</p>
         <div className="shop-hero-logo">
           <div className="shop-hero-logo-ring">
-            <Image
-              src="/home/logo.png"
-              alt="لوگوی ترددیلا"
-              width={108}
-              height={108}
-              className="object-contain"
-              priority
-            />
+            <Image src="/home/logo.png" alt="Tordilla logo" width={108} height={108} className="object-contain" priority />
           </div>
         </div>
       </section>
@@ -309,9 +321,9 @@ export default function ShopPage() {
 
       {/* Breadcrumb */}
       <nav className="shop-breadcrumb">
-        <Link href="/">خانه</Link>
+        <Link href={`/?lang=${locale}`}>{commonT.home}</Link>
         <span className="shop-breadcrumb-sep">›</span>
-        <span>فروشگاه</span>
+        <span>{t.breadcrumbCurrent}</span>
       </nav>
 
       <div className="shop-container">
@@ -321,15 +333,14 @@ export default function ShopPage() {
             <Clock />
           </div>
           <h2 className="text-2xl md:text-3xl font-bold text-neutral-800 mb-4">
-            در حال راه‌اندازی فروشگاه اینترنتی
+            {t.comingSoonTitle}
           </h2>
           <p className="text-neutral-600 leading-relaxed max-w-2xl mx-auto mb-8">
-            فروشگاه آنلاین ترددیلا به زودی افتتاح خواهد شد. در این فروشگاه می‌توانید
-            انواع چیپس ذرت ترددیلا را با طعم‌های متنوع و بهترین قیمت تهیه کنید.
+            {t.comingSoonText}
           </p>
-          <Link href="/contact" className="btn-primary">
+          <Link href={`/contact${localeQuery}`} className="btn-primary">
             <Mail size={18} />
-            تماس با ما
+            {t.contactButton}
           </Link>
         </div>
 
@@ -337,32 +348,33 @@ export default function ShopPage() {
         <div className="section-card">
           <div className="section-heading">
             <div className="section-heading-bar" />
-            <h2>چرا ترددیلا؟</h2>
+            <h2>{t.featuresTitle}</h2>
           </div>
           <div className="features-grid">
             <div className="feature-card">
               <div className="feature-icon"><Package /></div>
-              <div className="feature-title">بسته‌بندی سه لایه</div>
-              <div className="feature-desc">ضامن تازگی و سلامت محصول</div>
+              <div className="feature-title">{t.featurePackaging}</div>
+              <div className="feature-desc">{t.featurePackagingDesc}</div>
             </div>
             <div className="feature-card">
               <div className="feature-icon"><Shield /></div>
-              <div className="feature-title">بدون مواد نگهدارنده</div>
-              <div className="feature-desc">محصولی سالم و طبیعی</div>
+              <div className="feature-title">{t.featureNatural}</div>
+              <div className="feature-desc">{t.featureNaturalDesc}</div>
             </div>
             <div className="feature-card">
               <div className="feature-icon"><Truck /></div>
-              <div className="feature-title">ارسال سریع</div>
-              <div className="feature-desc">به تمام نقاط کشور</div>
+              <div className="feature-title">{t.featureShipping}</div>
+              <div className="feature-desc">{t.featureShippingDesc}</div>
             </div>
           </div>
         </div>
 
         {/* Social Section */}
         <div className="social-section">
-          <h3>ترددیلا در شبکه‌های اجتماعی</h3>
+          <h3>{t.socialHeading}</h3>
           <div className="social-icons">
-            <a aria-label="اینستاگرام" className="social-icon-link" href="https://instagram.com/tordillachips/" target="_blank" rel="noopener noreferrer">
+            {/* same SVGs as original – you can keep them unchanged */}
+            <a aria-label="Instagram" className="social-icon-link" href="https://instagram.com/tordillachips/" target="_blank" rel="noopener noreferrer">
               <svg viewBox="0 0 107.47 107.47" fill="white"><path d="M82.58,40.58A15.71,15.71,0,0,0,66.89,24.89H40.58a15.72,15.72,0,0,0-15.7,15.69V66.89a15.72,15.72,0,0,0,15.7,15.69H66.89A15.71,15.71,0,0,0,82.58,66.89ZM72.77,30.23A4.47,4.47,0,1,1,68.3,34.7,4.47,4.47,0,0,1,72.77,30.23Zm-19,40.67A17.17,17.17,0,1,1,70.9,53.73,17.18,17.18,0,0,1,53.73,70.9Z"/><path d="M53.73,41.77a12,12,0,1,0,12,12A12,12,0,0,0,53.73,41.77Z"/><path d="M53.73,0a53.74,53.74,0,1,0,53.74,53.73A53.74,53.74,0,0,0,53.73,0ZM87.66,66.89A20.8,20.8,0,0,1,66.89,87.66H40.58A20.8,20.8,0,0,1,19.8,66.89V40.58A20.8,20.8,0,0,1,40.58,19.8H66.89A20.8,20.8,0,0,1,87.66,40.58Z"/></svg>
             </a>
             <a aria-label="توییتر" className="social-icon-link" href="https://twitter.com/tordillachips" target="_blank" rel="noopener noreferrer">

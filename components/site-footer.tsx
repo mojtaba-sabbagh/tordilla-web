@@ -1,8 +1,13 @@
-// components/site-footer.tsx
+"use client";
+
 import Link from "next/link";
-import Image from "next/image";
+import { usePathname, useSearchParams } from "next/navigation";
+import { getLocaleFromSearchParams, translations } from "@/lib/i18n";
 
 export function SiteFooter() {
+  const searchParams = useSearchParams();
+  const locale = getLocaleFromSearchParams(searchParams);
+  const t = translations[locale].footer;
   const currentYear = new Date().getFullYear();
 
   return (
@@ -12,14 +17,8 @@ export function SiteFooter() {
         <div className="grid gap-8 md:grid-cols-2">
           {/* About Section */}
           <div>
-            <h5 className="text-lg font-bold text-[#1f140f] mb-4">درباره ترددیلا</h5>
-            <p className="text-sm leading-relaxed">
-              برگه ذرت ترتیلا، میان‌وعده‌ا‌ی سالم، تهیه شده از دانه ذرت، آب، روغن، نمک
-              و ادویه‌های مختلف است. این محصول اولین بار در کشور مکزیک تهیه شده است و
-              به واسطه طعم متفاوت، شکل منحصر به فرد سه‌گوش، کاربرد زیاد در غذاهای
-              مختلف و جذب کمتر روغن نسبت به سایر چیپس‌ها، جایگاه خاصی در فرهنگ غذایی
-              کشورهای مختلف، خصوصا کشورهای آمریکای لاتین و ایالات متحده دارد.
-            </p>
+            <h5 className="text-lg font-bold text-[#1f140f] mb-4">{t.aboutTitle}</h5>
+            <p className="text-sm leading-relaxed">{t.aboutText}</p>
           </div>
 
           {/* Instagram Section 
@@ -46,22 +45,22 @@ export function SiteFooter() {
 
           {/* Contact Section */}
           <div>
-            <h5 className="text-lg font-bold text-[#1f140f] mb-4">ارتباط با ما</h5>
+            <h5 className="text-lg font-bold text-[#1f140f] mb-4">{t.contactTitle}</h5>
             <div className="space-y-3 text-sm">
               <p className="flex gap-2">
                 <span>📍</span>
-                <span>رفسنجان، شهرک صنعتی شماره ۱، میدان نیلوفر، ت صناشیع غذایی کثر کویر رفسنجان</span>
+                <span>{t.address}</span>
               </p>
               <p className="flex gap-2">
                 <span>📞</span>
                 <a href="tel:02191072667" className="hover:text-[#ce4a28] transition">
-                  ۰۹۴۲۰۲۶۴۰۸ - داخلی ۲۰
+                  {t.phone}
                 </a>
               </p>
               <p className="flex gap-2">
                 <span>✉️</span>
                 <a href="mailto:it@tordilla.ir" className="hover:text-[#ce4a28] transition">
-                  it@tordilla.ir
+                  {t.email}
                 </a>
               </p>
             </div>
@@ -70,11 +69,9 @@ export function SiteFooter() {
       </div>
 
       {/* Social Networks Section */}
-      <div className="bg-[#8f1d1d] py-8 text-white">
+      <div className="bg-[#8f1d1d] !py-8 text-white">
         <div className="container mx-auto px-4 md:px-6 text-center">
-          <h4 className="text-xl font-black md:text-2xl mb-6">
-            ترددیلا در شبکه های اجتماعی
-          </h4>
+          <h4 className="text-xl font-black md:text-2xl mb-6">{t.socialTitle}</h4>
           <div className="flex flex-wrap items-center justify-center gap-5 md:gap-7">
             <a
               aria-label="اینستاگرام ترددیلا"
@@ -147,29 +144,29 @@ export function SiteFooter() {
       </div>
 
       {/* Copyright Section */}
-      <div className="container mx-auto px-4 md:px-6 py-6">
+      <div className="container mx-auto px-4 md:!px-6 !py-6">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
           <div className="flex gap-6">
-            <Link href="/blog" className="hover:text-[#ce4a28] transition">
-              وبلاگ
+            <Link href={`/blog?lang=${locale}`} className="hover:text-[#ce4a28] transition">
+              {t.links.blog}
             </Link>
-            <Link href="/contact" className="hover:text-[#ce4a28] transition">
-              تماس با ما
+            <Link href={`/contact?lang=${locale}`} className="hover:text-[#ce4a28] transition">
+              {t.links.contact}
             </Link>
-            <Link href="/about" className="hover:text-[#ce4a28] transition">
-              درباره ما
+            <Link href={`/about?lang=${locale}`} className="hover:text-[#ce4a28] transition">
+              {t.links.about}
             </Link>
           </div>
           <div className="text-center">
             <span>
-              تمام حقوق محفوظ برای ترددیلا © {currentYear}{" "}
+              {t.copyright} {currentYear}{" "}
               <a
                 href="https://www.joorchin.co/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-[#ce4a28] transition"
               >
-                طراحی توسط جورچین
+                {t.designBy}
               </a>
             </span>
           </div>

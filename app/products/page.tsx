@@ -1,9 +1,19 @@
 import Link from "next/link";
 import { products } from "@/lib/seed-content";
+import { translations } from "@/lib/i18n";
 
-export default function ProductsPage() {
+export default function ProductsPage({
+  searchParams,
+}: {
+  searchParams?: { lang?: string | string[] };
+}) {
+  const lang = Array.isArray(searchParams?.lang) ? searchParams.lang[0] : searchParams?.lang;
+  const locale = lang === "en" ? "en" : "fa";
+  const t = translations[locale].products;
+  const localeQuery = locale === "en" ? "?lang=en" : "";
+
   return (
-    <div className="products-page">
+    <div className="products-page" dir={locale === "fa" ? "rtl" : "ltr"} lang={locale}>
       <style>{`
         .products-page {
           background: #fdf8f3;
@@ -187,12 +197,9 @@ export default function ProductsPage() {
 
       {/* Hero */}
       <section className="products-hero">
-        <div className="products-hero-badge">🌽 چیپس ذرت اصیل مکزیکی</div>
-        <h1>محصولات ترددیلا</h1>
-        <p>
-          در این بخش طعم‌های مختلف ترددیلا را می‌بینید. هر محصول صفحه اختصاصی
-          خود را دارد تا طعم، ویژگی‌ها و اطلاعات تغذیه‌ای آن به‌صورت کامل معرفی شود.
-        </p>
+        <div className="products-hero-badge">{t.heroBadge}</div>
+        <h1>{t.heroTitle}</h1>
+        <p>{t.heroText}</p>
       </section>
 
       {/* Grid */}
@@ -206,7 +213,7 @@ export default function ProductsPage() {
             >
               <div className="product-card-img-wrap">
                 <img alt={product.title} src={product.image} />
-                <span className="product-card-badge">ترددیلا</span>
+                <span className="product-card-badge">{t.tordillaLabel}</span>
               </div>
               <div className="product-card-body">
                 <h3>{product.title}</h3>
@@ -218,8 +225,8 @@ export default function ProductsPage() {
                     </span>
                   ))}
                 </div>
-                <Link className="product-card-cta" href={`/products/${product.slug}`}>
-                  مشاهده جزئیات
+                <Link className="product-card-cta" href={`/products/${product.slug}${localeQuery}`}>
+                  {t.viewDetails}
                   <span className="product-card-cta-arrow">‹</span>
                 </Link>
               </div>

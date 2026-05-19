@@ -1,5 +1,6 @@
 // app/layout.tsx
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import localFont from "next/font/local";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -34,6 +35,10 @@ export const metadata: Metadata = {
   description: siteMeta.description,
   alternates: {
     canonical: "/",
+    languages: {
+      fa: "/",
+      en: "/en",
+    },
   },
 };
 
@@ -47,14 +52,16 @@ export default function RootLayout({
       data-scroll-behavior="smooth" 
       dir="rtl" 
       lang="fa"
-      suppressHydrationWarning  // ← Add this line
+      suppressHydrationWarning
     >
       <body className={yekan.className} suppressHydrationWarning>
-        <div className="site-shell min-h-screen flex flex-col">
-          <SiteHeader />
-          <main className="flex-1">{children}</main>
-          <SiteFooter />
-        </div>
+        <Suspense fallback={null}>
+          <div className="site-shell min-h-screen flex flex-col">
+            <SiteHeader />
+            <main className="flex-1">{children}</main>
+            <SiteFooter />
+          </div>
+        </Suspense>
       </body>
     </html>
   );

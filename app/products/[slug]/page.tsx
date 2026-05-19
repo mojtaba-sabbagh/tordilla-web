@@ -1,16 +1,23 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { products } from "@/lib/seed-content";
+import { translations } from "@/lib/i18n";
 
 type ProductPageProps = {
   params: Promise<{ slug: string }>;
+  searchParams?: { lang?: string | string[] };
 };
 
 export function generateStaticParams() {
   return products.map((product) => ({ slug: product.slug }));
 }
 
-export default async function ProductPage({ params }: ProductPageProps) {
+export default async function ProductPage({ params, searchParams }: ProductPageProps) {
+  const lang = Array.isArray(searchParams?.lang) ? searchParams.lang[0] : searchParams?.lang;
+  const locale = lang === "en" ? "en" : "fa";
+  const t = translations[locale].productDetail;
+  const localeQuery = locale === "en" ? "?lang=en" : "";
+
   const { slug } = await params;
   const product = products.find((item) => item.slug === slug);
 
@@ -19,16 +26,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const related = products.filter((p) => p.slug !== product.slug).slice(0, 4);
 
   const nutritionRows = [
-    { label: "اندازه هر سهم", value: product.nutrition.serving, icon: "⚖️" },
-    { label: "انرژی", value: product.nutrition.energy, icon: "⚡" },
-    { label: "قند", value: product.nutrition.sugar, icon: "🍬" },
-    { label: "چربی", value: product.nutrition.fat, icon: "🫧" },
-    { label: "نمک", value: product.nutrition.salt, icon: "🧂" },
-    { label: "اسیدهای چرب ترانس", value: product.nutrition.transFat, icon: "🔬" },
+    { label: t.nutritionLabels.serving, value: product.nutrition.serving, icon: "⚖️" },
+    { label: t.nutritionLabels.energy, value: product.nutrition.energy, icon: "⚡" },
+    { label: t.nutritionLabels.sugar, value: product.nutrition.sugar, icon: "🍬" },
+    { label: t.nutritionLabels.fat, value: product.nutrition.fat, icon: "🫧" },
+    { label: t.nutritionLabels.salt, value: product.nutrition.salt, icon: "🧂" },
+    { label: t.nutritionLabels.transFat, value: product.nutrition.transFat, icon: "🔬" },
   ];
 
   return (
-    <div className="product-detail-page">
+    <div className="product-detail-page" dir={locale === "fa" ? "rtl" : "ltr"} lang={locale}>
       <style>{`
         .product-detail-page {
           background: #fdf8f3;
@@ -317,9 +324,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
       {/* Breadcrumb */}
       <nav className="breadcrumb">
-        <Link href="/">خانه</Link>
+        <Link href={locale === "en" ? "/?lang=en" : "/"}>{t.breadcrumbHome}</Link>
         <span className="breadcrumb-sep">›</span>
-        <Link href="/products">محصولات</Link>
+        <Link href={`/products${localeQuery}`}>{t.breadcrumbProducts}</Link>
         <span className="breadcrumb-sep">›</span>
         <span>{product.title}</span>
       </nav>
@@ -332,7 +339,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </div>
 
         <div className="product-hero-info">
-          <div className="product-hero-badge">✨ محصول ویژه</div>
+          <div className="product-hero-badge">{t.heroBadge}</div>
           <h1>{product.title}</h1>
           <p>{product.shortDescription}</p>
 
@@ -344,18 +351,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
           <div className="product-meta-pills">
             <div className="product-meta-pill">
-              <span className="product-meta-pill-label">بسته‌بندی</span>
+              <span className="product-meta-pill-label">{t.packagingLabel}</span>
               <span className="product-meta-pill-value">{product.packaging}</span>
             </div>
             <div className="product-meta-pill">
-              <span className="product-meta-pill-label">مخاطب</span>
+              <span className="product-meta-pill-label">{t.audienceLabel}</span>
               <span className="product-meta-pill-value">{product.audience}</span>
             </div>
           </div>
 
           <div className="product-cta-row">
-            <Link className="btn-primary" href="/tordilla-finder">📍 کجا بخرم؟</Link>
-            <Link className="btn-outline" href="/products">همه محصولات</Link>
+            <Link className="btn-primary" href={`/tordilla-finder${localeQuery}`}>{t.whereToBuy}</Link>
+            <Link className="btn-outline" href={`/products${localeQuery}`}>{t.productsButton}</Link>
           </div>
         </div>
       </div>
@@ -367,7 +374,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <div className="section-card">
           <h3 className="section-card-title">
             <span className="section-card-title-icon">📖</span>
-            معرفی محصول
+            {t.descriptionHeading}
           </h3>
           <p>{product.description}</p>
         </div>
@@ -377,7 +384,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <div className="section-card">
             <h3 className="section-card-title">
               <span className="section-card-title-icon">🥗</span>
-              ارزش غذایی
+              {t.nutritionHeading}
             </h3>
             <div className="nutrition-grid">
               {nutritionRows.map(({ label, value, icon }) => (
@@ -393,11 +400,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <div className="section-card">
             <h3 className="section-card-title">
               <span className="section-card-title-icon">🌽</span>
-              محصولات دیگر
+              {t.relatedHeading}
             </h3>
             <div className="related-list">
               {related.map((item) => (
-                <Link className="related-item" href={`/products/${item.slug}`} key={item.slug}>
+                <Link className="related-item" href={`/products/${item.slug}${localeQuery}`} key={item.slug}>
                   <img alt={item.title} src={item.image} />
                   {item.title}
                   <span className="related-item-arrow">‹</span>

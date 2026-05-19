@@ -4,7 +4,9 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
 import { Mail, Phone, MapPin, Clock, Send } from "lucide-react";
+import { translations, getLocaleFromSearchParams } from '@/lib/i18n';
 
 // export const metadata = {
 //   title: "تماس با ترددیلا | ارتباط با ما",
@@ -15,6 +17,10 @@ import { Mail, Phone, MapPin, Clock, Send } from "lucide-react";
 export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const searchParams = useSearchParams();
+  const locale = getLocaleFromSearchParams(searchParams);
+  const t = translations[locale].contact;
+  const homeHref = locale === 'en' ? '/?lang=en' : '/';
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -38,21 +44,21 @@ export default function ContactPage() {
       });
       const result = await response.json();
       if (response.ok) {
-        setSubmitStatus({ type: 'success', message: result.message || 'پیام شما با موفقیت ثبت شد. با تشکر!' });
+        setSubmitStatus({ type: 'success', message: result.message || t.successMessage });
         form.reset();
       } else {
-        setSubmitStatus({ type: 'error', message: result.error || 'خطا در ثبت پیام. لطفاً مجدد تلاش کنید.' });
+        setSubmitStatus({ type: 'error', message: result.error || t.saveErrorMessage });
       }
     } catch (error) {
       console.error('Submit error:', error);
-      setSubmitStatus({ type: 'error', message: 'خطا در ارتباط با سرور.' });
+      setSubmitStatus({ type: 'error', message: t.serverErrorMessage });
     } finally {
       setIsSubmitting(false);
     }
   }
 
   return (
-    <main className="contact-page" dir="rtl">
+    <main className="contact-page" dir={locale === 'fa' ? 'rtl' : 'ltr'} lang={locale}>
       <style>{`
         .contact-page {
           background: #fdf8f3;
@@ -481,9 +487,9 @@ export default function ContactPage() {
 
       {/* ── HERO ── */}
       <section className="contact-hero">
-        <div className="contact-hero-badge">📞 ارتباط با ما</div>
-        <h1>تماس با ترددیلا</h1>
-        <p>خوشحال می‌شویم نظرات، پیشنهادات و سوالات شما را بشنویم</p>
+        <div className="contact-hero-badge">{t.heroBadge}</div>
+        <h1>{t.heroTitle}</h1>
+        <p>{t.heroText}</p>
         <div className="contact-hero-logo">
           <div className="contact-hero-logo-ring">
             <Image
@@ -507,9 +513,9 @@ export default function ContactPage() {
 
       {/* breadcrumb */}
       <nav className="contact-breadcrumb">
-        <Link href="/">خانه</Link>
+        <Link href={homeHref}>{t.breadcrumbHome}</Link>
         <span className="contact-breadcrumb-sep">›</span>
-        <span>تماس با ما</span>
+        <span>{t.breadcrumbCurrent}</span>
       </nav>
 
       <div className="contact-container">
@@ -517,26 +523,26 @@ export default function ContactPage() {
         <div className="info-grid">
           <div className="info-card">
             <div className="info-icon"><MapPin /></div>
-            <h3>آدرس</h3>
+            <h3>{t.addressTitle}</h3>
             <p>
-              رفسنجان، شهرک صنعتی شماره ۱<br />
-              میدان نیلوفر - شرکت صنایع غذایی کوثر کویر رفسنجان
+              {t.addressLines[0]}<br />
+              {t.addressLines[1]}
             </p>
           </div>
           <div className="info-card">
             <div className="info-icon"><Phone /></div>
-            <h3>تلفن</h3>
-            <p><a href="tel:09426002408">۰۹۴۲۶۰۰۲۴۰۸ - داخلی ۲۰</a></p>
+            <h3>{t.phoneTitle}</h3>
+            <p><a href="tel:09426002408">{t.phoneNumber}</a></p>
           </div>
           <div className="info-card">
             <div className="info-icon"><Mail /></div>
-            <h3>ایمیل</h3>
-            <p><a href="mailto:it@tordilla.ir">it@tordilla.ir</a></p>
+            <h3>{t.emailTitle}</h3>
+            <p><a href="mailto:it@tordilla.ir">{t.emailAddress}</a></p>
           </div>
           <div className="info-card">
             <div className="info-icon"><Clock /></div>
-            <h3>ساعت کاری</h3>
-            <p>شنبه تا پنجشنبه: ۷ تا ۱۴</p>
+            <h3>{t.hoursTitle}</h3>
+            <p>{t.hoursText}</p>
           </div>
         </div>
 
@@ -546,32 +552,32 @@ export default function ContactPage() {
             <div className="section-card">
               <div className="section-heading">
                 <div className="section-heading-bar" />
-                <h2>ارسال پیام</h2>
+                <h2>{t.formHeading}</h2>
               </div>
               <form onSubmit={handleSubmit}>
                 <div className="form-group">
-                  <label htmlFor="name">نام و نام خانوادگی *</label>
-                  <input type="text" id="name" name="name" required placeholder="نام خود را وارد کنید" />
+                  <label htmlFor="name">{t.formNameLabel}</label>
+                  <input type="text" id="name" name="name" required placeholder={t.formNamePlaceholder} />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="email">ایمیل *</label>
-                  <input type="email" id="email" name="email" required className="ltr-input" placeholder="example@domain.com" />
+                  <label htmlFor="email">{t.formEmailLabel}</label>
+                  <input type="email" id="email" name="email" required className="ltr-input" placeholder={t.formEmailPlaceholder} />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="phone">تلفن تماس</label>
-                  <input type="tel" id="phone" name="phone" className="ltr-input" placeholder="۰۲۱-XXXXX" />
+                  <label htmlFor="phone">{t.formPhoneLabel}</label>
+                  <input type="tel" id="phone" name="phone" className="ltr-input" placeholder={t.formPhonePlaceholder} />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="subject">موضوع *</label>
-                  <input type="text" id="subject" name="subject" required placeholder="موضوع پیام" />
+                  <label htmlFor="subject">{t.formSubjectLabel}</label>
+                  <input type="text" id="subject" name="subject" required placeholder={t.formSubjectPlaceholder} />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="message">پیام شما *</label>
-                  <textarea id="message" name="message" rows={5} required placeholder="متن پیام خود را بنویسید..." />
+                  <label htmlFor="message">{t.formMessageLabel}</label>
+                  <textarea id="message" name="message" rows={5} required placeholder={t.formMessagePlaceholder} />
                 </div>
                 <button type="submit" disabled={isSubmitting} className="submit-btn">
                   <Send size={18} />
-                  {isSubmitting ? 'در حال ارسال...' : 'ارسال پیام'}
+                  {isSubmitting ? t.formSubmitting : t.formSubmit}
                 </button>
                 {submitStatus && (
                   <div className={`status-message ${submitStatus.type === 'success' ? 'status-success' : 'status-error'}`}>
@@ -587,7 +593,7 @@ export default function ContactPage() {
               <div className="map-wrapper">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3244.123456789012!2x55.3890!3x30.6892!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3f8e0143e6b3c0e1%3A0x2b9a8f0b1c2d3e4f!2sRafsanjan%2C%20Kerman%20Province%2C%20Iran!5e0!3m2!1sen!2s!4v1234567890123!5m2!1sen!2s"
-                  title="موقعیت شرکت کوثر کویر رفسنجان"
+                  title={t.mapTitle}
                   allowFullScreen
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
@@ -600,43 +606,33 @@ export default function ContactPage() {
         {/* Company info section */}
         <div className="company-grid">
           <div className="company-card">
-            <h3>شرکت کوثر کویر رفسنجان</h3>
-            <p>
-              شرکت کوثر کویر رفسنجان واقع شده در شهر طلای سبز، واحد نمونه صنعتی در استان کرمان
-              می‌باشد. این شرکت به فعالیت‌های متعددی از جمله تولید و بسته‌بندی چیپس و اسنک،
-              فرآوری و بسته‌بندی انواع خشکبار خصوصاً پسته، واردات و صادرات محصولات خود به
-              سایر شرکت‌های همکار می‌پردازد.
-            </p>
+            <h3>{t.companyCard1Title}</h3>
+            <p>{t.companyCard1Text}</p>
           </div>
           <div className="company-card">
-            <h3>دفتر مرکزی تهران</h3>
-            <p>
-              شرکت کوثر کویر رفسنجان، دفتر مرکزی خود را در تهران از سال ۱۳۸۷ راه‌اندازی نمود،
-              کلیه امور بازرگانی و فروش از جمله فروش مویرگی در تهران، مدیریت فروش شهرستان‌ها،
-              صادرات محصولات با برند تجاری ترددیلا و واردات و صادرات انواع خشکبار، ذرت و
-              سایر اقلام مورد نیاز شرکت را بر عهده دارد.
-            </p>
+            <h3>{t.companyCard2Title}</h3>
+            <p>{t.companyCard2Text}</p>
           </div>
         </div>
 
         {/* Instagram CTA */}
         <div className="contact-cta">
-          <h2>اینستاگرام ترددیلا</h2>
-          <p>برای دیدن جدیدترین محصولات و تخفیف‌ها، ما را در اینستاگرام دنبال کنید</p>
+          <h2>{t.ctaHeading}</h2>
+          <p>{t.ctaText}</p>
           <a
             href="https://instagram.com/tordillachips/"
             target="_blank"
             rel="noopener noreferrer"
             className="btn-white"
           >
-            دنبال کنید
+            {t.ctaButton}
           </a>
         </div>
 
         {/* Social networks section (full icon row) */}
         <div className="social-row">
           <a
-            aria-label="اینستاگرام ترددیلا"
+            aria-label={t.instagramAria}
             className="social-icon-link"
             href="https://instagram.com/tordillachips/"
             target="_blank"
@@ -649,7 +645,7 @@ export default function ContactPage() {
             </svg>
           </a>
           <a
-            aria-label="توییتر ترددیلا"
+            aria-label={t.twitterAria}
             className="social-icon-link"
             href="https://twitter.com/tordillachips"
             target="_blank"
@@ -660,7 +656,7 @@ export default function ContactPage() {
             </svg>
           </a>
           <a
-            aria-label="فیسبوک ترددیلا"
+            aria-label={t.facebookAria}
             className="social-icon-link"
             href="https://www.facebook.com/tordillachips"
             target="_blank"
@@ -671,7 +667,7 @@ export default function ContactPage() {
             </svg>
           </a>
           <a
-            aria-label="آپارات ترددیلا"
+            aria-label={t.aparatAria}
             className="social-icon-link"
             href="https://www.aparat.com/tordilla.chips"
             target="_blank"

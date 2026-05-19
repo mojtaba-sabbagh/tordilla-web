@@ -1,10 +1,14 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation";
+import { getLocaleFromSearchParams, translations } from "@/lib/i18n";
 
 // Type definitions
 interface Flavor {
-  title: string;
+  titleFa: string;
+  titleEn: string;
+  title?: string;
   image: string;
   href: string;
   color: string;
@@ -17,10 +21,14 @@ interface Retailer {
 }
 
 interface BlogPost {
-  title: string;
-  category: string;
-  date: string;
+  titleFa: string;
+  titleEn: string;
+  categoryFa: string;
+  categoryEn: string;
+  dateFa: string;
+  dateEn: string;
   image: string;
+  href: string;
   featured?: boolean;
 }
 
@@ -38,16 +46,19 @@ interface SliderProps {
 interface FlavorCardProps {
   flavor: Flavor;
   index: number;
+  localeQuery: string;
+  titlePrefix: string;
+  flavorCta: string;
 }
 
 const flavors: Flavor[] = [
-  { title: "ماست موسیر", image: "/home/flavors/mast1.jpg", href: "/products/mast-o-musir", color: "#e8f5e9", accent: "#2e7d32" },
-  { title: "پنیری", image: "/home/flavors/chees1.jpg", href: "/products/paniri", color: "#fff8e1", accent: "#f9a825" },
-  { title: "تنوری", image: "/home/flavors/barbiq1.jpg", href: "/products/tanouri", color: "#fbe9e7", accent: "#bf360c" },
-  { title: "سالسا", image: "/home/flavors/salsa1.jpg", href: "/products/salsa", color: "#fce4ec", accent: "#c62828" },
-  { title: "مکزیکی", image: "/home/flavors/mexican1.jpg", href: "/products/mexican", color: "#e8eaf6", accent: "#283593" },
-  { title: "پیاز جعفری", image: "/home/flavors/piaz1.jpg", href: "/products/piaz-jafari", color: "#e0f2f1", accent: "#00695c" },
-  { title: "کنجدی", image: "/home/flavors/seseami.jpg", href: "/products/sesame", color: "#efebe9", accent: "#4e342e" },
+  { titleFa: "ماست موسیر", titleEn: "Yogurt & Shallot", image: "/home/flavors/mast1.jpg", href: "/products/mast-o-musir", color: "#e8f5e9", accent: "#2e7d32" },
+  { titleFa: "پنیری", titleEn: "Cheese", image: "/home/flavors/chees1.jpg", href: "/products/paniri", color: "#fff8e1", accent: "#f9a825" },
+  { titleFa: "تنوری", titleEn: "Oven-Baked", image: "/home/flavors/barbiq1.jpg", href: "/products/tanouri", color: "#fbe9e7", accent: "#bf360c" },
+  { titleFa: "سالسا", titleEn: "Salsa", image: "/home/flavors/salsa1.jpg", href: "/products/salsa", color: "#fce4ec", accent: "#c62828" },
+  { titleFa: "مکزیکی", titleEn: "Mexican", image: "/home/flavors/mexican1.jpg", href: "/products/mexican", color: "#e8eaf6", accent: "#283593" },
+  { titleFa: "پیاز جعفری", titleEn: "Onion & Parsley", image: "/home/flavors/piaz1.jpg", href: "/products/piaz-jafari", color: "#e0f2f1", accent: "#00695c" },
+  { titleFa: "کنجدی", titleEn: "Sesame", image: "/home/flavors/seseami.jpg", href: "/products/sesame", color: "#efebe9", accent: "#4e342e" },
 ];
 
 const retailers: Retailer[] = [
@@ -60,11 +71,57 @@ const retailers: Retailer[] = [
 ];
 
 const blogPosts: BlogPost[] = [
-  { title: "ترددیلا در دیجیکالا", category: "بدانیم", date: "۱۱ اکتبر ۲۰۱۸", image: "/home/blog/digikala-logo-1200x480-760x180.jpg", featured: true },
-  { title: "ناچو ترددیلا در سینماهای سراسر کشور عرضه خواهد شد", category: "بدانیم", date: "۲۶ آگوست ۲۰۱۸", image: "/home/blog/b4fd571f4b9de34a1599ffdd904f3295-380x180.jpg" },
-  { title: "طرز تهیه تاکو مکزیکی (مرحله به مرحله با عکس)", category: "طرز تهیه غذا", date: "۱۳ آگوست ۲۰۱۸", image: "/home/blog/1520956952-chicken-tacos-horizontal-380x180.jpg" },
-  { title: "بهترین دستور تهیه نان ترتیلا مرحله به مرحله", category: "طرز تهیه غذا", date: "۱۳ آگوست ۲۰۱۸", image: "/home/blog/lionel-gustave-171881-unsplash-380x180.jpg" },
-  { title: "طرز تهیه سالسا با طعم‌های متفاوت", category: "طرز تهیه دیپ", date: "۱۳ آگوست ۲۰۱۸", image: "/home/blog/OG0A1062-380x180.jpg" },
+  {
+    titleFa: "ترددیلا در دیجیکالا",
+    titleEn: "Tordilla on Digikala",
+    categoryFa: "بدانیم",
+    categoryEn: "Know",
+    dateFa: "۱۱ اکتبر ۲۰۱۸",
+    dateEn: "October 11, 2018",
+    image: "/home/blog/digikala-logo-1200x480-760x180.jpg",
+    href: "/blog/tordilla-in-digikala",
+    featured: true,
+  },
+  {
+    titleFa: "ناچو ترددیلا در سینماهای سراسر کشور عرضه خواهد شد",
+    titleEn: "Tordilla Nachos Coming to Cinemas Nationwide",
+    categoryFa: "بدانیم",
+    categoryEn: "Know",
+    dateFa: "۲۶ آگوست ۲۰۱۸",
+    dateEn: "August 26, 2018",
+    image: "/home/blog/b4fd571f4b9de34a1599ffdd904f3295-380x180.jpg",
+    href: "/blog/nacho-at-cinemas",
+  },
+  {
+    titleFa: "طرز تهیه تاکو مکزیکی (مرحله به مرحله با عکس)",
+    titleEn: "How to Make Mexican Tacos (Step by Step)",
+    categoryFa: "طرز تهیه غذا",
+    categoryEn: "Recipe",
+    dateFa: "۱۳ آگوست ۲۰۱۸",
+    dateEn: "August 13, 2018",
+    image: "/home/blog/1520956952-chicken-tacos-horizontal-380x180.jpg",
+    href: "/blog/mexican-taco-recipe",
+  },
+  {
+    titleFa: "بهترین دستور تهیه نان ترتیلا مرحله به مرحله",
+    titleEn: "The Best Step-by-Step Tortilla Bread Recipe",
+    categoryFa: "طرز تهیه غذا",
+    categoryEn: "Recipe",
+    dateFa: "۱۳ آگوست ۲۰۱۸",
+    dateEn: "August 13, 2018",
+    image: "/home/blog/lionel-gustave-171881-unsplash-380x180.jpg",
+    href: "/blog/tortilla-bread-recipe",
+  },
+  {
+    titleFa: "طرز تهیه سالسا با طعم‌های متفاوت",
+    titleEn: "Salsa Recipes with Different Flavors",
+    categoryFa: "طرز تهیه دیپ",
+    categoryEn: "Dip Recipe",
+    dateFa: "۱۳ آگوست ۲۰۱۸",
+    dateEn: "August 13, 2018",
+    image: "/home/blog/OG0A1062-380x180.jpg",
+    href: "/blog/salsa-recipe",
+  },
 ];
 
 const sliderImages: string[] = [
@@ -196,7 +253,7 @@ function Slider({ images }: SliderProps) {
   );
 }
 
-function FlavorCard({ flavor, index }: FlavorCardProps) {
+function FlavorCard({ flavor, index, localeQuery, titlePrefix, flavorCta }: FlavorCardProps) {
   const [hovered, setHovered] = useState(false);
   return (
     <div
@@ -229,9 +286,9 @@ function FlavorCard({ flavor, index }: FlavorCardProps) {
       />
       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.15) 55%, transparent 100%)" }} />
       <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "20px 18px" }}>
-        <p style={{ color: "#fff", fontWeight: 800, fontSize: 18, margin: 0, letterSpacing: "0.01em" }}>ترددیلا {flavor.title}</p>
+        <p style={{ color: "#fff", fontWeight: 800, fontSize: 18, margin: 0, letterSpacing: "0.01em" }}>{titlePrefix} {flavor.title}</p>
         <a
-          href={flavor.href}
+          href={`${flavor.href}${localeQuery}`}
           style={{
             display: "inline-flex",
             alignItems: "center",
@@ -248,7 +305,7 @@ function FlavorCard({ flavor, index }: FlavorCardProps) {
             transition: "opacity 0.3s, transform 0.3s",
           }}
         >
-          آشنایی با این طعم
+          {flavorCta}
         </a>
       </div>
     </div>
@@ -257,9 +314,27 @@ function FlavorCard({ flavor, index }: FlavorCardProps) {
 
 export default function HomePage() {
   const [flavorHintVisible, setFlavorHintVisible] = useState(true); // kept for potential future use
+  const searchParams = useSearchParams();
+  const locale = getLocaleFromSearchParams(searchParams);
+  const t = translations[locale].home;
+  const localeQuery = `?lang=${locale}`;
+
+  const localizedFlavors = flavors.map((flavor) => ({
+    ...flavor,
+    title: locale === "fa" ? flavor.titleFa : flavor.titleEn,
+  }));
+
+  const localizedBlogPosts = blogPosts.map((post) => ({
+    ...post,
+    title: locale === "fa" ? post.titleFa : post.titleEn,
+    category: locale === "fa" ? post.categoryFa : post.categoryEn,
+    date: locale === "fa" ? post.dateFa : post.dateEn,
+  }));
+
+  const socialNetworks = translations[locale].home.socialNetworks;
 
   return (
-    <div dir="rtl" lang="fa" style={{ background: "#fdf8f3", color: "#2c1810", minHeight: "100vh" }}>
+    <div dir={locale === "fa" ? "rtl" : "ltr"} lang={locale} style={{ background: "#fdf8f3", color: "#2c1810", minHeight: "100vh" }}>
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
         @keyframes fadeSlideUp {
@@ -292,18 +367,17 @@ export default function HomePage() {
       <Slider images={sliderImages} />
 
       {/* ── HERO TEXT ── */}
-      <section style={{ textAlign: "center", padding: "72px 24px 60px" }}>
+      <section style={{ textAlign: locale === "fa" ? "center" : "left", padding: "72px 24px 60px" }}>
         <AnimatedSection>
-          <div className="section-tag">🌽 چیپس ذرت اصیل مکزیکی</div>
+          <div className="section-tag">{t.heroTag}</div>
           <h1 style={{ fontSize: "clamp(32px, 5vw, 58px)", fontWeight: 900, color: "#8f1d1d", lineHeight: 1.25, marginBottom: 20 }}>
-            چیپس ذرت ترددیلا
+            {t.heroTitle}
           </h1>
-          <img src="/home/logo.png" alt="لوگوی ترددیلا" style={{ width: "clamp(120px, 12vw, 170px)", height: "auto", margin: "0 auto 24px", display: "block" }} />
+          <img src="/home/logo.png" alt={locale === "fa" ? "لوگوی ترددیلا" : "Tordilla logo"} style={{ width: "clamp(120px, 12vw, 170px)", height: "auto", margin: "0 auto 24px", display: "block" }} />
           <p style={{ maxWidth: 600, margin: "0 auto 32px", fontSize: 18, lineHeight: 1.9, color: "#5a3728" }}>
-            ترددیلا میان وعده‌ای خوشمزه، ساخته شده از ذرت تازه.
-            در طعم‌های مختلف که می‌تواند برای هر سن و سلیقه‌ای محبوب باشد.
+            {t.heroText}
           </p>
-          <a href="/products" className="btn-primary">مشاهده همه محصولات</a>
+          <a href={`/products${localeQuery}`} className="btn-primary">{t.heroButton}</a>
         </AnimatedSection>
       </section>
 
@@ -312,22 +386,22 @@ export default function HomePage() {
       {/* ── FLAVORS ── */}
       <section style={{ padding: "72px 24px", maxWidth: 1240, margin: "0 auto" }}>
         <AnimatedSection style={{ textAlign: "center", marginBottom: 48 }}>
-          <div style={{ textAlign: "center", marginBottom: 48 }}>
-            <div className="section-tag">✨ طعم‌های منحصر به فرد</div>
-            <h2 style={{ fontSize: "clamp(26px, 3.5vw, 42px)", fontWeight: 900, color: "#8f1d1d" }}>طعم‌های ترددیلا</h2>
-            <p style={{ marginTop: 10, color: "#7a5040", fontSize: 15 }}>هفت طعم متفاوت برای هر روز هفته</p>
+          <div style={{ textAlign: locale === "fa" ? "center" : "left", marginBottom: 48 }}>
+            <div className="section-tag">{t.flavorsTag}</div>
+            <h2 style={{ fontSize: "clamp(26px, 3.5vw, 42px)", fontWeight: 900, color: "#8f1d1d" }}>{t.flavorsHeading}</h2>
+            <p style={{ marginTop: 10, color: "#7a5040", fontSize: 15 }}>{t.flavorsSubheading}</p>
           </div>
         </AnimatedSection>
 
         <div className="flavor-grid">
-          {flavors.map((flavor, i) => (
-            <FlavorCard key={flavor.title} flavor={flavor} index={i} />
+          {localizedFlavors.map((flavor, i) => (
+            <FlavorCard key={flavor.title} flavor={flavor} index={i} localeQuery={localeQuery} titlePrefix={locale === "fa" ? "ترددیلا" : "Tordilla"} flavorCta={t.flavorCta} />
           ))}
           {/* decorative 8th card */}
           <div style={{ position: "relative", borderRadius: 24, overflow: "hidden", background: "#8f1d1d", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: 240, padding: 24, textAlign: "center", opacity: 0, animation: "fadeSlideUp 0.6s ease 640ms forwards" }}>
             <div style={{ fontSize: 48, animation: "chip-float 3s ease-in-out infinite" }}>🌽</div>
-            <p style={{ color: "#fff", fontWeight: 800, fontSize: 18, marginTop: 16 }}>همه طعم‌ها</p>
-            <a href="/products" style={{ marginTop: 14, padding: "8px 20px", borderRadius: 9999, background: "rgba(255,255,255,0.18)", color: "#fff", fontWeight: 700, fontSize: 13, textDecoration: "none", border: "1.5px solid rgba(255,255,255,0.35)" }}>مشاهده محصولات</a>
+            <p style={{ color: "#fff", fontWeight: 800, fontSize: 18, marginTop: 16 }}>{t.allFlavorsTitle}</p>
+            <a href={`/products${localeQuery}`} style={{ marginTop: 14, padding: "8px 20px", borderRadius: 9999, background: "rgba(255,255,255,0.18)", color: "#fff", fontWeight: 700, fontSize: 13, textDecoration: "none", border: "1.5px solid rgba(255,255,255,0.35)" }}>{t.allFlavorsButton}</a>
           </div>
         </div>
       </section>
@@ -342,8 +416,8 @@ export default function HomePage() {
         <AnimatedSection className="" style={{ maxWidth: 800, margin: "0 auto" }}>
           <div style={{ maxWidth: 800, margin: "0 auto" }}>
             <div style={{ textAlign: "center", marginBottom: 36 }}>
-              <div className="section-tag" style={{ borderColor: "rgba(255,255,255,0.25)", background: "rgba(255,255,255,0.1)", color: "#fff" }}>🎬 ترددیلا در سینما</div>
-              <h2 style={{ fontSize: "clamp(24px, 3vw, 38px)", fontWeight: 900, color: "#fff" }}>همراه فیلم، ترددیلا!</h2>
+              <div className="section-tag" style={{ borderColor: "rgba(255,255,255,0.25)", background: "rgba(255,255,255,0.1)", color: "#fff" }}>{t.cinemaTag}</div>
+              <h2 style={{ fontSize: "clamp(24px, 3vw, 38px)", fontWeight: 900, color: "#fff" }}>{t.cinemaHeading}</h2>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               {["/home/cinema/cinema-01.png", "/home/cinema/cinema-02.png"].map((src, i) => (
@@ -353,7 +427,7 @@ export default function HomePage() {
               ))}
             </div>
             <div style={{ textAlign: "center", marginTop: 28 }}>
-              <a href="/cinema" className="btn-primary" style={{ background: "#39a845" }}>لیست سینماها</a>
+              <a href={`/cinema${localeQuery}`} className="btn-primary" style={{ background: "#39a845" }}>{t.cinemaButton}</a>
             </div>
           </div>
         </AnimatedSection>
@@ -364,9 +438,9 @@ export default function HomePage() {
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
           <AnimatedSection>
             <div style={{ textAlign: "center", marginBottom: 52 }}>
-              <div className="section-tag">📍 کجا بخریم؟</div>
-              <h2 style={{ fontSize: "clamp(26px, 3.5vw, 42px)", fontWeight: 900, color: "#8f1d1d" }}>ترددیلا کجاست؟</h2>
-              <p style={{ marginTop: 10, color: "#7a5040", fontSize: 15 }}>محصولات ترددیلا در فروشگاه‌های زیر در دسترس است</p>
+              <div className="section-tag">{t.whereBuyTag}</div>
+              <h2 style={{ fontSize: "clamp(26px, 3.5vw, 42px)", fontWeight: 900, color: "#8f1d1d" }}>{t.whereBuyHeading}</h2>
+              <p style={{ marginTop: 10, color: "#7a5040", fontSize: 15 }}>{t.whereBuyText}</p>
             </div>
           </AnimatedSection>
 
@@ -404,7 +478,7 @@ export default function HomePage() {
 
           <AnimatedSection delay={400}>
             <div style={{ textAlign: "center", marginTop: 44 }}>
-              <a href="/tordilla-finder" className="btn-primary btn-blue">ترددیلا یاب</a>
+              <a href={`/tordilla-finder${localeQuery}`} className="btn-primary btn-blue">{t.finderButton}</a>
             </div>
           </AnimatedSection>
         </div>
@@ -417,10 +491,10 @@ export default function HomePage() {
         <AnimatedSection>
           <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", flexWrap: "wrap", gap: 12, marginBottom: 44 }}>
             <div>
-              <div className="section-tag">📝 تازه‌ترین‌ها</div>
-              <h2 style={{ fontSize: "clamp(24px, 3vw, 38px)", fontWeight: 900, color: "#8f1d1d", marginTop: 6 }}>وبلاگ ترددیلا</h2>
+              <div className="section-tag">{t.blogTag}</div>
+              <h2 style={{ fontSize: "clamp(24px, 3vw, 38px)", fontWeight: 900, color: "#8f1d1d", marginTop: 6 }}>{t.blogHeading}</h2>
             </div>
-            <a href="/blog" style={{ color: "#8f1d1d", fontWeight: 700, fontSize: 14, textDecoration: "none", borderBottom: "2px solid #8f1d1d", paddingBottom: 2 }}>همه مطالب ›</a>
+            <a href={`/blog${localeQuery}`} style={{ color: "#8f1d1d", fontWeight: 700, fontSize: 14, textDecoration: "none", borderBottom: "2px solid #8f1d1d", paddingBottom: 2 }}>{t.blogAllPosts}</a>
           </div>
         </AnimatedSection>
 
@@ -428,7 +502,7 @@ export default function HomePage() {
           {/* featured */}
           <AnimatedSection delay={60}>
             <a
-              href="/blog/tordilla-in-digikala"
+              href={`${localizedBlogPosts[0].href}${localeQuery}`}
               style={{
                 display: "block",
                 borderRadius: 22,
@@ -449,23 +523,23 @@ export default function HomePage() {
                 e.currentTarget.style.transform = "";
               }}
             >
-              <img src={blogPosts[0].image} alt={blogPosts[0].title} style={{ width: "100%", height: 240, objectFit: "cover", display: "block" }} />
+              <img src={localizedBlogPosts[0].image} alt={localizedBlogPosts[0].title} style={{ width: "100%", height: 240, objectFit: "cover", display: "block" }} />
               <div style={{ padding: "22px 22px 26px" }}>
                 <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
-                  <span className="tag">{blogPosts[0].category}</span>
-                  <span style={{ fontSize: 12, color: "#999", lineHeight: "26px" }}>{blogPosts[0].date}</span>
+                  <span className="tag">{localizedBlogPosts[0].category}</span>
+                  <span style={{ fontSize: 12, color: "#999", lineHeight: "26px" }}>{localizedBlogPosts[0].date}</span>
                 </div>
-                <h3 style={{ fontSize: 20, fontWeight: 800, lineHeight: 1.6, color: "#2c1810" }}>{blogPosts[0].title}</h3>
+                <h3 style={{ fontSize: 20, fontWeight: 800, lineHeight: 1.6, color: "#2c1810" }}>{localizedBlogPosts[0].title}</h3>
               </div>
             </a>
           </AnimatedSection>
 
           {/* secondary posts */}
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-            {blogPosts.slice(1, 3).map((post, i) => (
+            {localizedBlogPosts.slice(1, 3).map((post, i) => (
               <AnimatedSection key={post.title} delay={120 + i * 80}>
                 <a
-                  href="#"
+                  href={`${post.href}${localeQuery}`}
                   style={{
                     display: "flex",
                     gap: 14,
@@ -498,10 +572,10 @@ export default function HomePage() {
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-            {blogPosts.slice(3).map((post, i) => (
+            {localizedBlogPosts.slice(3).map((post, i) => (
               <AnimatedSection key={post.title} delay={200 + i * 80}>
                 <a
-                  href="#"
+                  href={`${post.href}${localeQuery}`}
                   style={{
                     display: "flex",
                     gap: 14,
@@ -539,16 +613,11 @@ export default function HomePage() {
       <section style={{ background: "linear-gradient(135deg, #8f1d1d 0%, #5c1111 100%)", padding: "72px 24px" }}>
         <AnimatedSection>
           <div style={{ maxWidth: 760, margin: "0 auto", textAlign: "center" }}>
-            <div className="section-tag" style={{ borderColor: "rgba(255,255,255,0.25)", background: "rgba(255,255,255,0.1)", color: "#fff", marginBottom: 14 }}>🌐 شبکه‌های اجتماعی</div>
-            <h2 style={{ fontSize: "clamp(22px, 3vw, 36px)", fontWeight: 900, color: "#fff", marginBottom: 12 }}>ترددیلا در شبکه‌های اجتماعی</h2>
-            <p style={{ color: "rgba(255,255,255,0.72)", fontSize: 15, marginBottom: 40 }}>ما را دنبال کنید و از آخرین اخبار و رویدادها با خبر شوید</p>
+            <div className="section-tag" style={{ borderColor: "rgba(255,255,255,0.25)", background: "rgba(255,255,255,0.1)", color: "#fff", marginBottom: 14 }}>{t.socialTag}</div>
+            <h2 style={{ fontSize: "clamp(22px, 3vw, 36px)", fontWeight: 900, color: "#fff", marginBottom: 12 }}>{t.socialHeading}</h2>
+            <p style={{ color: "rgba(255,255,255,0.72)", fontSize: 15, marginBottom: 40 }}>{t.socialText}</p>
             <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center", gap: 20 }}>
-              {[
-                { label: "اینستاگرام", href: "https://instagram.com/tordillachips/", emoji: "📸" },
-                { label: "توییتر", href: "https://twitter.com/tordillachips", emoji: "🐦" },
-                { label: "فیسبوک", href: "https://www.facebook.com/tordillachips", emoji: "👥" },
-                { label: "آپارات", href: "https://www.aparat.com/tordilla.chips", emoji: "🎬" },
-              ].map(({ label, href, emoji }) => (
+              {socialNetworks.map(({ label, href, emoji }) => (
                 <a
                   key={label}
                   href={href}
