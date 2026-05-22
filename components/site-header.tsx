@@ -37,15 +37,18 @@ export function SiteHeader() {
   currentSearch.set("lang", otherLocale);
   const langSwitchHref = `${pathname}?${currentSearch.toString()}`;
 
+  // Brand name translation
+  const brandName = locale === "fa" ? "ترددیلا" : "Tordilla";
+
   return (
     <header className="sticky top-0 z-50 backdrop-blur-md bg-[rgba(247,239,228,0.72)] border-b border-[rgba(76,50,33,0.12)]">
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between min-h-[78px] gap-5">
           <Link href={`/?lang=${locale}`} className="flex items-center gap-3 font-bold text-base">
             <div className="grid place-items-center w-[42px] h-[42px] rounded-full bg-gradient-to-br from-[#ce4a28] to-[#ef8a4b] text-white shadow-[0_24px_60px_rgba(54,29,12,0.12)]">
-              <span className="text-sm">ت</span>
+              <span className="text-sm">{locale === "fa" ? "ت" : "T"}</span>
             </div>
-            <span className="hidden sm:inline">ترددیلا</span>
+            <span className="hidden sm:inline">{brandName}</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-4 flex-wrap">
@@ -75,7 +78,7 @@ export function SiteHeader() {
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="md:hidden p-2 rounded-lg text-[#675247] hover:bg-white/20 transition"
-            aria-label="منو"
+            aria-label={locale === "fa" ? "منو" : "Menu"}
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
