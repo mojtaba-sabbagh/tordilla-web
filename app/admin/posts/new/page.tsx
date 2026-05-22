@@ -4,22 +4,27 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Save, Eye } from "lucide-react";
+import { ArrowLeft, Save } from "lucide-react";
 
 export default function CreatePostPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    title: "",
+    titleFa: "",
+    titleEn: "",
     slug: "",
-    category: "",
+    categoryFa: "",
+    categoryEn: "",
     categorySlug: "",
-    excerpt: "",
-    content: "",
+    excerptFa: "",
+    excerptEn: "",
+    contentFa: "",
+    contentEn: "",
     image: "",
     imageWidth: 800,
     imageHeight: 600,
-    author: "Admin",
+    authorFa: "",
+    authorEn: "",
     published: true,
   });
 
@@ -30,24 +35,41 @@ export default function CreatePostPage() {
       .toLowerCase();
   };
 
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const title = e.target.value;
-    setFormData({
-      ...formData,
-      title,
-      slug: generateSlug(title),
-    });
+  const handleTitleChange = (lang: "fa" | "en", value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [`title${lang === "fa" ? "Fa" : "En"}`]: value,
+    }));
+    // Auto-generate slug from Persian title if slug is empty
+    if (!formData.slug && lang === "fa") {
+      setFormData((prev) => ({ ...prev, slug: generateSlug(value) }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
+    // Build JSON objects
+    const payload = {
+      title: { fa: formData.titleFa, en: formData.titleEn },
+      category: { fa: formData.categoryFa, en: formData.categoryEn },
+      excerpt: { fa: formData.excerptFa, en: formData.excerptEn },
+      content: { fa: formData.contentFa, en: formData.contentEn },
+      author: { fa: formData.authorFa, en: formData.authorEn },
+      slug: formData.slug,
+      categorySlug: formData.categorySlug,
+      image: formData.image,
+      imageWidth: formData.imageWidth,
+      imageHeight: formData.imageHeight,
+      published: formData.published,
+    };
+
     try {
       const response = await fetch("/api/admin/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
@@ -65,58 +87,71 @@ export default function CreatePostPage() {
   };
 
   const categories = [
-    { name: "بدانیم", slug: "badanim" },
-    { name: "طرز تهیه غذا", slug: "recipe-food" },
-    { name: "طرز تهیه دیپ", slug: "recipe-dip" },
-    { name: "طرز تهیه سس", slug: "recipe-sauce" },
-    { name: "سالم بخوریم", slug: "healthy-eating" },
-    { name: "اخبار", slug: "news" },
+    { nameFa: "بدانیم", nameEn: "Know", slug: "badanim" },
+    { nameFa: "طرز تهیه غذا", nameEn: "Recipe", slug: "recipe-food" },
+    { nameFa: "طرز تهیه دیپ", nameEn: "Dip Recipe", slug: "recipe-dip" },
+    { nameFa: "طرز تهیه سس", nameEn: "Sauce Recipe", slug: "recipe-sauce" },
+    { nameFa: "سالم بخوریم", nameEn: "Healthy Eating", slug: "healthy-eating" },
+    { nameFa: "اخبار", nameEn: "News", slug: "news" },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50" dir="rtl">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-4">
-              <Link
-                href="/admin"
-                className="text-neutral-600 hover:text-[#8f1d1d] transition"
-              >
+              <Link href="/admin" className="text-neutral-600 hover:text-[#8f1d1d] transition">
                 <ArrowLeft className="h-5 w-5" />
               </Link>
-              <h1 className="text-xl font-bold text-[#8f1d1d]">نوشتن مطلب جدید</h1>
+              <h1 className="text-xl font-bold text-[#8f1d1d]">نوشتن مطلب جدید (دوزبانه)</h1>
             </div>
           </div>
         </div>
       </div>
 
       {/* Form */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Title */}
-          <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-1">
-              عنوان *
-            </label>
-            <input
-              type="text"
-              required
-              value={formData.title}
-              onChange={handleTitleChange}
-              className="w-full rounded-lg border border-neutral-300 px-4 py-2 focus:border-[#8f1d1d] focus:outline-none focus:ring-2 focus:ring-[#8f1d1d]/20"
-              placeholder="عنوان مطلب"
-            />
+          {/* Title - Bilingual */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-1">
+                عنوان (فارسی) *
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.titleFa}
+                onChange={(e) => handleTitleChange("fa", e.target.value)}
+                className="w-full rounded-lg border border-neutral-300 px-4 py-2 focus:border-[#8f1d1d] focus:outline-none focus:ring-2 focus:ring-[#8f1d1d]/20"
+                placeholder="عنوان فارسی مطلب"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-1">
+                Title (English) *
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.titleEn}
+                onChange={(e) => handleTitleChange("en", e.target.value)}
+                className="w-full rounded-lg border border-neutral-300 px-4 py-2 focus:border-[#8f1d1d] focus:outline-none focus:ring-2 focus:ring-[#8f1d1d]/20"
+                placeholder="English title"
+              />
+            </div>
           </div>
 
           {/* Slug */}
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-1">
-              Slug (آدرس)
+              Slug (آدرس) *
             </label>
             <input
               type="text"
+              required
               value={formData.slug}
               onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
               className="w-full rounded-lg border border-neutral-300 px-4 py-2 bg-gray-50 font-mono text-sm"
@@ -127,20 +162,21 @@ export default function CreatePostPage() {
             </p>
           </div>
 
-          {/* Category */}
-          <div className="grid grid-cols-2 gap-4">
+          {/* Category - Bilingual */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-neutral-700 mb-1">
-                دسته بندی *
+                دسته بندی (فارسی) *
               </label>
               <select
                 required
-                value={formData.category}
+                value={formData.categoryFa}
                 onChange={(e) => {
-                  const selected = categories.find(c => c.name === e.target.value);
+                  const selected = categories.find(c => c.nameFa === e.target.value);
                   setFormData({
                     ...formData,
-                    category: e.target.value,
+                    categoryFa: e.target.value,
+                    categoryEn: selected?.nameEn || "",
                     categorySlug: selected?.slug || "",
                   });
                 }}
@@ -148,11 +184,53 @@ export default function CreatePostPage() {
               >
                 <option value="">انتخاب کنید</option>
                 {categories.map((cat) => (
-                  <option key={cat.slug} value={cat.name}>
-                    {cat.name}
+                  <option key={cat.slug} value={cat.nameFa}>
+                    {cat.nameFa}
                   </option>
                 ))}
               </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-1">
+                Category (English) *
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.categoryEn}
+                readOnly
+                className="w-full rounded-lg border border-neutral-300 px-4 py-2 bg-gray-50"
+              />
+            </div>
+          </div>
+
+          {/* Author - Bilingual */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-1">
+                نویسنده (فارسی) *
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.authorFa}
+                onChange={(e) => setFormData({ ...formData, authorFa: e.target.value })}
+                className="w-full rounded-lg border border-neutral-300 px-4 py-2 focus:border-[#8f1d1d] focus:outline-none"
+                placeholder="نام نویسنده به فارسی"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-1">
+                Author (English) *
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.authorEn}
+                onChange={(e) => setFormData({ ...formData, authorEn: e.target.value })}
+                className="w-full rounded-lg border border-neutral-300 px-4 py-2 focus:border-[#8f1d1d] focus:outline-none"
+                placeholder="Author name"
+              />
             </div>
           </div>
 
@@ -199,37 +277,64 @@ export default function CreatePostPage() {
             </div>
           </div>
 
-          {/* Excerpt */}
-          <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-1">
-              خلاصه مطلب *
-            </label>
-            <textarea
-              required
-              rows={3}
-              value={formData.excerpt}
-              onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-              className="w-full rounded-lg border border-neutral-300 px-4 py-2 focus:border-[#8f1d1d] focus:outline-none"
-              placeholder="خلاصه‌ای از مطلب..."
-            />
+          {/* Excerpt - Bilingual */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-1">
+                خلاصه مطلب (فارسی) *
+              </label>
+              <textarea
+                required
+                rows={3}
+                value={formData.excerptFa}
+                onChange={(e) => setFormData({ ...formData, excerptFa: e.target.value })}
+                className="w-full rounded-lg border border-neutral-300 px-4 py-2 focus:border-[#8f1d1d] focus:outline-none"
+                placeholder="خلاصه فارسی..."
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-1">
+                Excerpt (English) *
+              </label>
+              <textarea
+                required
+                rows={3}
+                value={formData.excerptEn}
+                onChange={(e) => setFormData({ ...formData, excerptEn: e.target.value })}
+                className="w-full rounded-lg border border-neutral-300 px-4 py-2 focus:border-[#8f1d1d] focus:outline-none"
+                placeholder="English excerpt..."
+              />
+            </div>
           </div>
 
-          {/* Content */}
-          <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-1">
-              محتوای مطلب *
-            </label>
-            <textarea
-              required
-              rows={15}
-              value={formData.content}
-              onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-              className="w-full rounded-lg border border-neutral-300 px-4 py-2 font-mono text-sm focus:border-[#8f1d1d] focus:outline-none"
-              placeholder="محتوای مطلب (HTML پشتیبانی می‌شود)..."
-            />
-            <p className="text-xs text-neutral-500 mt-1">
-              می‌توانید از تگ‌های HTML مانند &lt;p&gt;، &lt;h2&gt;، &lt;ul&gt;، &lt;li&gt; استفاده کنید
-            </p>
+          {/* Content - Bilingual */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-1">
+                محتوای مطلب (فارسی) *
+              </label>
+              <textarea
+                required
+                rows={15}
+                value={formData.contentFa}
+                onChange={(e) => setFormData({ ...formData, contentFa: e.target.value })}
+                className="w-full rounded-lg border border-neutral-300 px-4 py-2 font-mono text-sm focus:border-[#8f1d1d] focus:outline-none"
+                placeholder="محتوای فارسی (HTML پشتیبانی می‌شود)..."
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-1">
+                Content (English) *
+              </label>
+              <textarea
+                required
+                rows={15}
+                value={formData.contentEn}
+                onChange={(e) => setFormData({ ...formData, contentEn: e.target.value })}
+                className="w-full rounded-lg border border-neutral-300 px-4 py-2 font-mono text-sm focus:border-[#8f1d1d] focus:outline-none"
+                placeholder="English content (HTML supported)..."
+              />
+            </div>
           </div>
 
           {/* Publish Status */}

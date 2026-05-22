@@ -5,11 +5,33 @@ import Image from "next/image";
 import Link from "next/link";
 import { Calendar, User, FolderOpen, MessageCircle } from "lucide-react";
 import { CommentForm } from "./CommentForm";
-import { Locale, translations, getLocaleFromSearchParams } from "@/lib/i18n";
+import { getLocaleFromSearchParams, translations } from "@/lib/i18n";
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ lang?: string }>;
+}
+
+// Helper to safely get localized text from JSON string or object
+function getLocalizedText(value: unknown, locale: string): string {
+  if (!value) return "";
+  if (typeof value === "string") {
+    try {
+      const parsed = JSON.parse(value);
+      if (parsed && typeof parsed === "object") {
+        return parsed[locale] || parsed.fa || Object.values(parsed)[0] || "";
+      }
+    } catch {
+      // Not JSON, return as is
+      return value;
+    }
+    return value;
+  }
+  if (typeof value === "object") {
+    const obj = value as Record<string, string>;
+    return obj[locale] || obj.fa || Object.values(obj)[0] || "";
+  }
+  return String(value);
 }
 
 export async function generateMetadata({ params, searchParams }: BlogPostPageProps) {
@@ -18,8 +40,8 @@ export async function generateMetadata({ params, searchParams }: BlogPostPagePro
   const locale = getLocaleFromSearchParams(new URLSearchParams({ lang: lang || "fa" }));
   const post = await prisma.blogPost.findUnique({ where: { slug, published: true } });
   if (!post) return { title: locale === "fa" ? "پست یافت نشد" : "Post not found" };
-  const title = locale === "fa" ? `${post.title} | وبلاگ ترددیلا` : `${post.title} | Tordilla Blog`;
-  return { title, description: post.excerpt };
+  const title = getLocalizedText(post.title, locale);
+  return { title };
 }
 
 export default async function BlogPostPage({ params, searchParams }: BlogPostPageProps) {
@@ -32,6 +54,13 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
   });
   if (!post) notFound();
 
+  // Safely extract localized values
+  const title = getLocalizedText(post.title, locale);
+  const category = getLocalizedText(post.category, locale);
+  const author = getLocalizedText(post.author, locale);
+  const contentHtml = getLocalizedText(post.content, locale);
+  const excerpt = getLocalizedText(post.excerpt, locale); // for meta or future use
+
   const relatedPosts = await prisma.blogPost.findMany({
     where: { categorySlug: post.categorySlug, id: { not: post.id }, published: true },
     take: 3,
@@ -41,36 +70,157 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
   const t = translations[locale];
   const blogT = t.blog;
   const commonT = t.common;
+  const localeQuery = `?lang=${locale}`;
 
   return (
     <main className="single-post-page" dir={locale === "fa" ? "rtl" : "ltr"}>
       <style>{`
-        /* keep all CSS exactly as original – only text content changes */
-        .single-post-page { background: #fdf8f3; min-height: 100vh; }
-        .post-hero { position: relative; background: linear-gradient(135deg, #8f1d1d 0%, #5c1111 100%); padding: 80px 24px 100px; text-align: center; overflow: hidden; }
-        .post-hero::before, .post-hero::after { content: ''; position: absolute; border-radius: 50%; pointer-events: none; }
-        .post-hero::before { width: 360px; height: 360px; top: -120px; left: -80px; background: rgba(255,255,255,0.05); }
-        .post-hero::after { width: 280px; height: 280px; bottom: -100px; right: -60px; background: rgba(255,255,255,0.04); }
-        .post-hero-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 18px; border-radius: 9999px; border: 1.5px solid rgba(255,255,255,0.28); background: rgba(255,255,255,0.1); color: #fff; font-size: 13px; font-weight: 700; margin-bottom: 20px; position: relative; z-index: 1; }
-        .post-hero h1 { font-size: clamp(30px, 5vw, 54px); font-weight: 900; color: #fff; margin-bottom: 16px; position: relative; z-index: 1; }
-        .post-hero-logo-ring { width: 148px; height: 148px; border-radius: 50%; background: rgba(255,255,255,0.12); border: 2px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); margin: 0 auto; }
-        .post-wave { display: block; width: 100%; overflow: hidden; line-height: 0; margin-top: -2px; }
+        .single-post-page {
+          background: #fdf8f3;
+          min-height: 100vh;
+        }
+        .post-hero {
+          position: relative;
+          background: linear-gradient(135deg, #8f1d1d 0%, #5c1111 100%);
+          padding: 80px 24px 100px;
+          text-align: center;
+          overflow: hidden;
+        }
+        .post-hero::before,
+        .post-hero::after {
+          content: '';
+          position: absolute;
+          border-radius: 50%;
+          pointer-events: none;
+        }
+        .post-hero::before {
+          width: 360px; height: 360px;
+          top: -120px; left: -80px;
+          background: rgba(255,255,255,0.05);
+        }
+        .post-hero::after {
+          width: 280px; height: 280px;
+          bottom: -100px; right: -60px;
+          background: rgba(255,255,255,0.04);
+        }
+        .post-hero-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 5px 18px;
+          border-radius: 9999px;
+          border: 1.5px solid rgba(255,255,255,0.28);
+          background: rgba(255,255,255,0.1);
+          color: #fff;
+          font-size: 13px;
+          font-weight: 700;
+          margin-bottom: 20px;
+          position: relative;
+          z-index: 1;
+        }
+        .post-hero h1 {
+          font-size: clamp(30px, 5vw, 54px);
+          font-weight: 900;
+          color: #fff;
+          margin-bottom: 16px;
+          position: relative;
+          z-index: 1;
+        }
+        .post-hero-logo-ring {
+          width: 148px;
+          height: 148px;
+          border-radius: 50%;
+          background: rgba(255,255,255,0.12);
+          border: 2px solid rgba(255,255,255,0.2);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          backdrop-filter: blur(8px);
+          margin: 0 auto;
+        }
+        .post-wave {
+          display: block;
+          width: 100%;
+          overflow: hidden;
+          line-height: 0;
+          margin-top: -2px;
+        }
         .post-wave svg { display: block; width: 100%; }
-        .post-breadcrumb { max-width: 1080px; margin: 0 auto; padding: 20px 24px; display: flex; align-items: center; gap: 8px; font-size: 13px; color: #a07060; border-bottom: 1.5px solid rgba(143,29,29,0.08); }
-        .post-breadcrumb a { color: #8f1d1d; text-decoration: none; font-weight: 600; }
+        .post-breadcrumb {
+          max-width: 1080px;
+          margin: 0 auto;
+          padding: 20px 24px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 13px;
+          color: #a07060;
+          border-bottom: 1.5px solid rgba(143,29,29,0.08);
+        }
+        .post-breadcrumb a {
+          color: #8f1d1d;
+          text-decoration: none;
+          font-weight: 600;
+        }
         .post-breadcrumb a:hover { text-decoration: underline; }
         .post-breadcrumb-sep { color: #cbb0a0; }
-        .post-container { max-width: 800px; margin: 0 auto; padding: 40px 24px; }
-        .post-meta-bar { display: flex; flex-wrap: wrap; gap: 16px; padding-bottom: 20px; margin-bottom: 32px; border-bottom: 2px solid rgba(143,29,29,0.15); color: #5a3728; font-size: 14px; }
+        .post-container {
+          max-width: 800px;
+          margin: 0 auto;
+          padding: 40px 24px;
+        }
+        .post-meta-bar {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 16px;
+          padding-bottom: 20px;
+          margin-bottom: 32px;
+          border-bottom: 2px solid rgba(143,29,29,0.15);
+          color: #5a3728;
+          font-size: 14px;
+        }
         .post-meta-bar span { display: inline-flex; align-items: center; gap: 6px; }
-        .featured-image { border-radius: 24px; overflow: hidden; margin-bottom: 32px; box-shadow: 0 12px 40px rgba(0,0,0,0.1); }
-        .post-content { font-size: 16px; line-height: 1.9; color: #2c1810; }
+        .featured-image {
+          border-radius: 24px;
+          overflow: hidden;
+          margin-bottom: 32px;
+          box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+        }
+        .post-content {
+          font-size: 16px;
+          line-height: 1.9;
+          color: #2c1810;
+        }
         .post-content h2 { color: #8f1d1d; margin-top: 32px; }
-        .comments-section { margin-top: 48px; padding-top: 32px; border-top: 2px solid rgba(143,29,29,0.15); }
-        .comment { background: #fff; border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .related-section { background: #f6f1ec; padding: 48px 24px; }
-        .related-grid { max-width: 1080px; margin: 0 auto; display: grid; gap: 24px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
-        .related-card { background: #fff; border-radius: 20px; overflow: hidden; transition: transform 0.25s; }
+        .comments-section {
+          margin-top: 48px;
+          padding-top: 32px;
+          border-top: 2px solid rgba(143,29,29,0.15);
+        }
+        .comment {
+          background: #fff;
+          border-radius: 20px;
+          padding: 20px;
+          margin-bottom: 20px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .related-section {
+          background: #f6f1ec;
+          padding: 48px 24px;
+        }
+        .related-grid {
+          max-width: 1080px;
+          margin: 0 auto;
+          display: grid;
+          gap: 24px;
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        }
+        .related-card {
+          background: #fff;
+          border-radius: 20px;
+          overflow: hidden;
+          transition: transform 0.25s;
+        }
         .related-card:hover { transform: translateY(-5px); }
         .related-card img { width: 100%; height: 160px; object-fit: cover; }
         .related-card h4 { padding: 16px; font-weight: 800; color: #2c1810; }
@@ -78,7 +228,7 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
 
       <section className="post-hero">
         <div className="post-hero-badge">{blogT.articleBadge}</div>
-        <h1>{post.title}</h1>
+        <h1>{title}</h1>
         <div className="post-hero-logo-ring">
           <Image src="/home/logo.png" alt="Logo" width={108} height={108} />
         </div>
@@ -95,24 +245,24 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
         <span className="post-breadcrumb-sep">›</span>
         <Link href={`/blog?lang=${locale}`}>{commonT.blog}</Link>
         <span className="post-breadcrumb-sep">›</span>
-        <Link href={`/blog/category/${post.categorySlug}?lang=${locale}`}>{post.category}</Link>
+        <Link href={`/blog/category/${post.categorySlug}?lang=${locale}`}>{category}</Link>
         <span className="post-breadcrumb-sep">›</span>
-        <span>{post.title}</span>
+        <span>{title}</span>
       </nav>
 
       <div className="post-container">
         <div className="post-meta-bar">
           <span><Calendar size={16} /> {new Date(post.date).toLocaleDateString(locale === "fa" ? "fa-IR" : "en-US")}</span>
-          <span><User size={16} /> {post.author}</span>
-          <span><FolderOpen size={16} /> <Link href={`/blog/category/${post.categorySlug}?lang=${locale}`} style={{color:'#8f1d1d'}}>{post.category}</Link></span>
-          <span><MessageCircle size={16} /> {post.comments.length} {post.comments.length === 1 ? blogT.commentsCount : blogT.commentsCount+"s"}</span>
+          <span><User size={16} /> {author}</span>
+          <span><FolderOpen size={16} /> <Link href={`/blog/category/${post.categorySlug}?lang=${locale}`}>{category}</Link></span>
+          <span><MessageCircle size={16} /> {post.comments.length} {post.comments.length === 1 ? blogT.commentsCount : blogT.commentsCount + "s"}</span>
         </div>
 
         <div className="featured-image">
-          <Image src={post.image} alt={post.title} width={800} height={450} className="w-full h-auto" />
+          <Image src={post.image} alt={title} width={800} height={450} className="w-full h-auto" />
         </div>
 
-        <div className="post-content" dangerouslySetInnerHTML={{ __html: post.content }} />
+        <div className="post-content" dangerouslySetInnerHTML={{ __html: contentHtml }} />
 
         <div className="comments-section">
           <h3 className="text-2xl font-bold text-[#8f1d1d] mb-6">{blogT.commentsHeading} ({post.comments.length})</h3>
@@ -142,12 +292,15 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
         <section className="related-section">
           <h3 className="text-2xl font-bold text-[#8f1d1d] text-center mb-8">{commonT.relatedPosts}</h3>
           <div className="related-grid">
-            {relatedPosts.map(p => (
-              <Link key={p.id} href={`/blog/${p.slug}?lang=${locale}`} className="related-card">
-                <img src={p.image} alt={p.title} />
-                <h4>{p.title}</h4>
-              </Link>
-            ))}
+            {relatedPosts.map(p => {
+              const relatedTitle = getLocalizedText(p.title, locale);
+              return (
+                <Link key={p.id} href={`/blog/${p.slug}?lang=${locale}`} className="related-card">
+                  <img src={p.image} alt={relatedTitle} />
+                  <h4>{relatedTitle}</h4>
+                </Link>
+              );
+            })}
           </div>
         </section>
       )}

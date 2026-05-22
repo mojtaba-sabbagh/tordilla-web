@@ -12,16 +12,16 @@ datasource db {
 model BlogPost {
   id            String    @id @default(cuid())
   slug          String    @unique
-  title         String
-  category      String
-  categorySlug  String
+  title         Json      // { "fa": "عنوان فارسی", "en": "English title" }
+  category      Json      // { "fa": "دسته بندی فارسی", "en": "English category" }
+  categorySlug  String    // single slug for routing (same for both languages)
   date          DateTime  @default(now())
   image         String
   imageWidth    Int       @default(800)
   imageHeight   Int       @default(600)
-  excerpt       String    @db.Text
-  content       String    @db.Text
-  author        String
+  excerpt       Json      // { "fa": "خلاصه فارسی", "en": "English excerpt" }
+  content       Json      // { "fa": "متن فارسی", "en": "English content" }
+  author        Json      // { "fa": "نویسنده فارسی", "en": "Author name" }
   published     Boolean   @default(true)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt

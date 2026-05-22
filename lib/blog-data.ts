@@ -1,156 +1,92 @@
 // lib/blog-data.ts
-import { prisma } from './prisma';
+import { prisma } from "./prisma";
+import { Locale } from "./i18n";
+import type { BlogPost as PrismaBlogPost } from "@prisma/client";
 
-export interface BlogPost {
+export type BlogPost = {
   id: string;
   slug: string;
-  title: string;
-  category: string;
+  title: { fa: string; en: string };
+  category: { fa: string; en: string };
   categorySlug: string;
-  date: string | Date;
+  date: Date;
   image: string;
   imageWidth: number;
   imageHeight: number;
-  excerpt: string;
-  content: string;
-  author: string;
+  excerpt: { fa: string; en: string };
+  content: { fa: string; en: string };
+  author: { fa: string; en: string };
   published: boolean;
   comments?: Comment[];
-}
+};
 
-export interface Comment {
-  id: string;
-  name: string;
-  email: string;
-  content: string;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
-  createdAt: string | Date;
-}
-
-export interface Category {
-  name: string;
+export type Category = {
   slug: string;
+  name: { fa: string; en: string };
   count: number;
-}
+};
 
-// Fetch all blog posts from database
-export async function getBlogPosts(): Promise<BlogPost[]> {
-  const posts = await prisma.blogPost.findMany({
-    where: { published: true },
-    orderBy: { date: 'desc' },
-    include: {
-      comments: {
-        where: { status: 'APPROVED' },
-        orderBy: { createdAt: 'desc' },
-      },
-    },
-  });
-  
-  return posts as BlogPost[];
-}
-
-// Fetch paginated blog posts
-export async function getPaginatedBlogPosts(page: number = 1, pageSize: number = 8): Promise<{
-  posts: BlogPost[];
-  total: number;
-  totalPages: number;
-}> {
-  const skip = (page - 1) * pageSize;
-  
-  const [posts, total] = await Promise.all([
-    prisma.blogPost.findMany({
-      where: { published: true },
-      orderBy: { date: 'desc' },
-      skip,
-      take: pageSize,
-      include: {
-        comments: {
-          where: { status: 'APPROVED' },
-          orderBy: { createdAt: 'desc' },
-        },
-      },
-    }),
-    prisma.blogPost.count({
-      where: { published: true },
-    }),
-  ]);
-  
+// Helper function to safely cast JSON fields to the expected type
+function castBlogPost(post: PrismaBlogPost): BlogPost {
   return {
-    posts: posts as BlogPost[],
-    total,
-    totalPages: Math.ceil(total / pageSize),
+    ...post,
+    title: post.title as { fa: string; en: string },
+    category: post.category as { fa: string; en: string },
+    excerpt: post.excerpt as { fa: string; en: string },
+    content: post.content as { fa: string; en: string },
+    author: post.author as { fa: string; en: string },
   };
 }
 
-// Get categories from database
-export async function getCategories(): Promise<Category[]> {
-  const categories = await prisma.blogPost.groupBy({
-    by: ['category', 'categorySlug'],
-    where: { published: true },
-    _count: {
-      category: true,
-    },
-  });
+export async function getPaginatedBlogPosts(page: number, postsPerPage: number) {
+  const skip = (page - 1) * postsPerPage;
+  const [posts, totalPosts] = await Promise.all([
+    prisma.blogPost.findMany({
+      where: { published: true },
+      skip,
+      take: postsPerPage,
+      orderBy: { date: "desc" },
+    }),
+    prisma.blogPost.count({ where: { published: true } }),
+  ]);
   
-  return categories
-    .map(cat => ({
-      name: cat.category,
-      slug: cat.categorySlug,
-      count: cat._count.category,
-    }))
-    .sort((a, b) => a.name.localeCompare(b.name));
+  const totalPages = Math.ceil(totalPosts / postsPerPage);
+  // Map through posts and cast each one
+  const typedPosts = posts.map(castBlogPost);
+  
+  return { posts: typedPosts, totalPages };
 }
 
-// Get posts by category from database
-export async function getPostsByCategory(categorySlug: string): Promise<BlogPost[]> {
+export async function getPostsByCategory(categorySlug: string) {
   const posts = await prisma.blogPost.findMany({
-    where: { 
-      published: true,
-      categorySlug: categorySlug,
-    },
-    orderBy: { date: 'desc' },
-    include: {
-      comments: {
-        where: { status: 'APPROVED' },
-        orderBy: { createdAt: 'desc' },
-      },
-    },
+    where: { categorySlug, published: true },
+    orderBy: { date: "desc" },
   });
-  
-  return posts as BlogPost[];
+  // Map through posts and cast each one
+  return posts.map(castBlogPost);
 }
 
-// Get single post by slug
-export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
-  const post = await prisma.blogPost.findUnique({
-    where: { slug },
-    include: {
-      comments: {
-        where: { status: 'APPROVED' },
-        orderBy: { createdAt: 'desc' },
-      },
-    },
+export async function getCategories(): Promise<Category[]> {
+  const posts = await prisma.blogPost.findMany({
+    where: { published: true },
+    select: { categorySlug: true, category: true },
   });
   
-  return post as BlogPost | null;
-}
-
-// Helper function to get categories from any posts array (for backward compatibility)
-export function getCategoriesFromPosts(posts: BlogPost[]): Category[] {
-  const categoryMap = new Map<string, { name: string; slug: string; count: number }>();
-  
-  posts.forEach((post) => {
-    if (categoryMap.has(post.categorySlug)) {
-      const existing = categoryMap.get(post.categorySlug)!;
-      existing.count++;
+  const categoryMap = new Map<string, { name: { fa: string; en: string }; count: number }>();
+  for (const post of posts) {
+    const slug = post.categorySlug;
+    // Cast category to the expected type
+    const name = post.category as { fa: string; en: string };
+    if (categoryMap.has(slug)) {
+      categoryMap.get(slug)!.count++;
     } else {
-      categoryMap.set(post.categorySlug, {
-        name: post.category,
-        slug: post.categorySlug,
-        count: 1,
-      });
+      categoryMap.set(slug, { name, count: 1 });
     }
-  });
+  }
   
-  return Array.from(categoryMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+  return Array.from(categoryMap.entries()).map(([slug, { name, count }]) => ({
+    slug,
+    name,
+    count,
+  }));
 }

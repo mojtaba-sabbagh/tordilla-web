@@ -12,6 +12,28 @@ interface CategorySidebarProps {
   locale: Locale;
 }
 
+function getCategoryName(category: Category, locale: Locale): string {
+  const name = category.name;
+  // If it's a string, try to parse as JSON
+  if (typeof name === "string") {
+    try {
+      const parsed = JSON.parse(name);
+      if (parsed && typeof parsed === "object") {
+        return parsed[locale] || parsed.fa || Object.values(parsed)[0] || name;
+      }
+    } catch {
+      return name;
+    }
+    return name;
+  }
+  // If it's an object
+  if (name && typeof name === "object") {
+    const obj = name as Record<string, string>;
+    return obj[locale] || obj.fa || Object.values(obj)[0] || "";
+  }
+  return String(name);
+}
+
 export function CategorySidebar({ categories, horizontal = false, locale }: CategorySidebarProps) {
   const pathname = usePathname();
   const t = translations[locale].common;
@@ -48,7 +70,7 @@ export function CategorySidebar({ categories, horizontal = false, locale }: Cate
                   : "bg-neutral-100 text-neutral-700 hover:bg-[#8f1d1d]/10 hover:text-[#8f1d1d]"
               }`}
             >
-              {cat.name}
+              {getCategoryName(cat, locale)}
               <span className="mr-1 text-xs opacity-75">({cat.count})</span>
             </Link>
           ))}
@@ -57,7 +79,7 @@ export function CategorySidebar({ categories, horizontal = false, locale }: Cate
     );
   }
 
-  // Vertical sidebar
+  // Vertical sidebar (if used)
   return (
     <div className="mb-8 rounded-2xl border border-neutral-200 bg-white p-6 shadow-md">
       <h3 className="mb-4 text-xl font-bold text-[#8f1d1d] border-r-4 border-[#8f1d1d] pr-3">
@@ -87,7 +109,7 @@ export function CategorySidebar({ categories, horizontal = false, locale }: Cate
                   : "text-neutral-700 hover:bg-[#8f1d1d]/5 hover:text-[#8f1d1d]"
               }`}
             >
-              <span>{cat.name}</span>
+              <span>{getCategoryName(cat, locale)}</span>
               <span className="text-sm text-neutral-400">({cat.count})</span>
             </Link>
           </li>

@@ -10,11 +10,12 @@ import {
 } from "lucide-react";
 import AdminNav from "./components/AdminNav";
 
+// Updated BlogPost interface to support JSON fields
 interface BlogPost {
   id: string;
-  title: string;
+  title: { fa: string; en: string } | string;
   slug: string;
-  category: string;
+  category: { fa: string; en: string } | string;
   date: string;
   published: boolean;
   _count?: {
@@ -22,9 +23,37 @@ interface BlogPost {
   };
 }
 
+// Helper function to extract Persian title from JSON
+function getPersianTitle(title: BlogPost["title"]): string {
+  if (!title) return "";
+  if (typeof title === "string") {
+    try {
+      const parsed = JSON.parse(title);
+      return parsed.fa || parsed.en || title;
+    } catch {
+      return title;
+    }
+  }
+  return title.fa || title.en || "";
+}
+
+// Helper function to extract Persian category from JSON
+function getPersianCategory(category: BlogPost["category"]): string {
+  if (!category) return "";
+  if (typeof category === "string") {
+    try {
+      const parsed = JSON.parse(category);
+      return parsed.fa || parsed.en || category;
+    } catch {
+      return category;
+    }
+  }
+  return category.fa || category.en || "";
+}
+
 export default function AdminDashboard() {
   const router = useRouter();
-  const [posts, setPosts] = useState<BlogPost[]>([]); // This was missing
+  const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [pendingCommentsCount, setPendingCommentsCount] = useState(0);
   const [unseenMessagesCount, setUnseenMessagesCount] = useState(0);
@@ -217,10 +246,10 @@ export default function AdminDashboard() {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    عنوان
+                    عنوان (فارسی)
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    دسته بندی
+                    دسته بندی (فارسی)
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                     تاریخ
@@ -237,61 +266,65 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {posts.map((post) => (
-                  <tr key={post.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4">
-                      <div className="text-sm font-medium text-gray-900">
-                        {post.title}
-                      </div>
-                      <div className="text-xs text-gray-500 mt-1">
-                        slug: {post.slug}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      {post.category}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      {new Date(post.date).toLocaleDateString("fa-IR")}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      {post._count?.comments || 0}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          post.published
-                            ? "bg-green-100 text-green-800"
-                            : "bg-yellow-100 text-yellow-800"
-                        }`}
-                      >
-                        {post.published ? "منتشر شده" : "پیش‌نویس"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-sm">
-                      <div className="flex gap-2">
-                        <Link
-                          href={`/blog/${post.slug}`}
-                          target="_blank"
-                          className="text-blue-600 hover:text-blue-800"
+                {posts.map((post) => {
+                  const titleFa = getPersianTitle(post.title);
+                  const categoryFa = getPersianCategory(post.category);
+                  return (
+                    <tr key={post.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4">
+                        <div className="text-sm font-medium text-gray-900">
+                          {titleFa}
+                        </div>
+                        <div className="text-xs text-gray-500 mt-1">
+                          slug: {post.slug}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {categoryFa}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {new Date(post.date).toLocaleDateString("fa-IR")}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {post._count?.comments || 0}
+                      </td>
+                      <td className="px-6 py-4">
+                        <span
+                          className={`px-2 py-1 text-xs rounded-full ${
+                            post.published
+                              ? "bg-green-100 text-green-800"
+                              : "bg-yellow-100 text-yellow-800"
+                          }`}
                         >
-                          <Eye className="h-5 w-5" />
-                        </Link>
-                        <Link
-                          href={`/admin/posts/${post.id}/edit`}
-                          className="text-green-600 hover:text-green-800"
-                        >
-                          <Edit className="h-5 w-5" />
-                        </Link>
-                        <button
-                          onClick={() => handleDelete(post.id)}
-                          className="text-red-600 hover:text-red-800"
-                        >
-                          <Trash2 className="h-5 w-5" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                          {post.published ? "منتشر شده" : "پیش‌نویس"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-sm">
+                        <div className="flex gap-2">
+                          <Link
+                            href={`/blog/${post.slug}`}
+                            target="_blank"
+                            className="text-blue-600 hover:text-blue-800"
+                          >
+                            <Eye className="h-5 w-5" />
+                          </Link>
+                          <Link
+                            href={`/admin/posts/${post.id}/edit`}
+                            className="text-green-600 hover:text-green-800"
+                          >
+                            <Edit className="h-5 w-5" />
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(post.id)}
+                            className="text-red-600 hover:text-red-800"
+                          >
+                            <Trash2 className="h-5 w-5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
