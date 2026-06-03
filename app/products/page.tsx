@@ -1,16 +1,16 @@
 import Link from "next/link";
-import { products } from "@/lib/seed-content";
+import { products, getLocalizedProduct } from "@/lib/seed-content";
 import { translations } from "@/lib/i18n";
 
-export default function ProductsPage({
+export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams?: { lang?: string | string[] };
+  searchParams?: Promise<{ lang?: string }>;
 }) {
-  const lang = Array.isArray(searchParams?.lang) ? searchParams.lang[0] : searchParams?.lang;
-  const locale = lang === "en" ? "en" : "fa";
+  const params = await searchParams;
+  const locale = params?.lang === "en" ? "en" : "fa";
   const t = translations[locale].products;
-  const localeQuery = locale === "en" ? "?lang=en" : "";
+  const localeQuery = `?lang=${locale}`;
 
   return (
     <div className="products-page" dir={locale === "fa" ? "rtl" : "ltr"} lang={locale}>
@@ -20,7 +20,6 @@ export default function ProductsPage({
           min-height: 100vh;
         }
 
-        /* ── HERO ── */
         .products-hero {
           position: relative;
           background: linear-gradient(135deg, #8f1d1d 0%, #5c1111 100%);
@@ -77,7 +76,6 @@ export default function ProductsPage({
           z-index: 1;
         }
 
-        /* ── GRID ── */
         .products-grid-wrap {
           max-width: 1240px;
           margin: 0 auto;
@@ -89,7 +87,6 @@ export default function ProductsPage({
           gap: 28px;
         }
 
-        /* ── CARD ── */
         .product-card {
           background: #fff;
           border-radius: 26px;
@@ -195,43 +192,44 @@ export default function ProductsPage({
         }
       `}</style>
 
-      {/* Hero */}
       <section className="products-hero">
         <div className="products-hero-badge">{t.heroBadge}</div>
         <h1>{t.heroTitle}</h1>
         <p>{t.heroText}</p>
       </section>
 
-      {/* Grid */}
       <div className="products-grid-wrap">
         <div className="products-grid">
-          {products.map((product, index) => (
-            <article
-              className="product-card"
-              key={product.slug}
-              style={{ animationDelay: `${index * 80}ms` }}
-            >
-              <div className="product-card-img-wrap">
-                <img alt={product.title} src={product.image} />
-                <span className="product-card-badge">{t.tordillaLabel}</span>
-              </div>
-              <div className="product-card-body">
-                <h3>{product.title}</h3>
-                <p>{product.shortDescription}</p>
-                <div className="product-features">
-                  {product.features.slice(0, 3).map((feature) => (
-                    <span className="product-feature-tag" key={feature}>
-                      {feature}
-                    </span>
-                  ))}
+          {products.map((product, index) => {
+            const localized = getLocalizedProduct(product, locale);
+            return (
+              <article
+                className="product-card"
+                key={product.slug}
+                style={{ animationDelay: `${index * 80}ms` }}
+              >
+                <div className="product-card-img-wrap">
+                  <img alt={localized.title} src={product.image} />
+                  <span className="product-card-badge">{t.tordillaLabel}</span>
                 </div>
-                <Link className="product-card-cta" href={`/products/${product.slug}${localeQuery}`}>
-                  {t.viewDetails}
-                  <span className="product-card-cta-arrow">‹</span>
-                </Link>
-              </div>
-            </article>
-          ))}
+                <div className="product-card-body">
+                  <h3>{localized.title}</h3>
+                  <p>{localized.shortDescription}</p>
+                  <div className="product-features">
+                    {localized.features.slice(0, 3).map((feature) => (
+                      <span className="product-feature-tag" key={feature}>
+                        {feature}
+                      </span>
+                    ))}
+                  </div>
+                  <Link className="product-card-cta" href={`/products/${product.slug}${localeQuery}`}>
+                    {t.viewDetails}
+                    <span className="product-card-cta-arrow">‹</span>
+                  </Link>
+                </div>
+              </article>
+            );
+          })}
         </div>
       </div>
     </div>

@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { products } from "@/lib/seed-content";
+import { products, getLocalizedProduct } from "@/lib/seed-content";
 import { translations } from "@/lib/i18n";
 
 type ProductPageProps = {
   params: Promise<{ slug: string }>;
-  searchParams?: { lang?: string | string[] };
+  searchParams?: Promise<{ lang?: string }>;
 };
 
 export function generateStaticParams() {
@@ -13,25 +13,26 @@ export function generateStaticParams() {
 }
 
 export default async function ProductPage({ params, searchParams }: ProductPageProps) {
-  const lang = Array.isArray(searchParams?.lang) ? searchParams.lang[0] : searchParams?.lang;
-  const locale = lang === "en" ? "en" : "fa";
+  const search = await searchParams;
+  const locale = search?.lang === "en" ? "en" : "fa";
   const t = translations[locale].productDetail;
-  const localeQuery = locale === "en" ? "?lang=en" : "";
+  const localeQuery = `?lang=${locale}`;
 
   const { slug } = await params;
   const product = products.find((item) => item.slug === slug);
 
   if (!product) notFound();
 
+  const localized = getLocalizedProduct(product, locale);
   const related = products.filter((p) => p.slug !== product.slug).slice(0, 4);
 
   const nutritionRows = [
-    { label: t.nutritionLabels.serving, value: product.nutrition.serving, icon: "⚖️" },
-    { label: t.nutritionLabels.energy, value: product.nutrition.energy, icon: "⚡" },
-    { label: t.nutritionLabels.sugar, value: product.nutrition.sugar, icon: "🍬" },
-    { label: t.nutritionLabels.fat, value: product.nutrition.fat, icon: "🫧" },
-    { label: t.nutritionLabels.salt, value: product.nutrition.salt, icon: "🧂" },
-    { label: t.nutritionLabels.transFat, value: product.nutrition.transFat, icon: "🔬" },
+    { label: t.nutritionLabels.serving, value: localized.nutrition.serving, icon: "⚖️" },
+    { label: t.nutritionLabels.energy, value: localized.nutrition.energy, icon: "⚡" },
+    { label: t.nutritionLabels.sugar, value: localized.nutrition.sugar, icon: "🍬" },
+    { label: t.nutritionLabels.fat, value: localized.nutrition.fat, icon: "🫧" },
+    { label: t.nutritionLabels.salt, value: localized.nutrition.salt, icon: "🧂" },
+    { label: t.nutritionLabels.transFat, value: localized.nutrition.transFat, icon: "🔬" },
   ];
 
   return (
@@ -42,7 +43,6 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
           min-height: 100vh;
         }
 
-        /* ── BREADCRUMB ── */
         .breadcrumb {
           max-width: 1160px;
           margin: 0 auto;
@@ -61,7 +61,6 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
         .breadcrumb a:hover { text-decoration: underline; }
         .breadcrumb-sep { color: #cbb0a0; }
 
-        /* ── HERO ── */
         .product-hero {
           max-width: 1160px;
           margin: 0 auto;
@@ -207,7 +206,6 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
         }
         .btn-outline:hover { border-color: #8f1d1d; background: rgba(143,29,29,0.05); }
 
-        /* ── BODY SECTIONS ── */
         .product-body {
           max-width: 1160px;
           margin: 60px auto 0;
@@ -217,7 +215,6 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
           gap: 28px;
         }
 
-        /* ── SECTION CARD ── */
         .section-card {
           background: #fff;
           border-radius: 26px;
@@ -250,7 +247,6 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
           line-height: 2;
         }
 
-        /* ── NUTRITION TABLE ── */
         .nutrition-grid {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -275,7 +271,6 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
         .nutrition-cell-label { font-size: 12px; color: #a07060; font-weight: 600; }
         .nutrition-cell-value { font-size: 16px; font-weight: 800; color: #2c1810; }
 
-        /* ── TWO COLUMN ── */
         .two-col {
           display: grid;
           grid-template-columns: 1fr 1fr;
@@ -283,7 +278,6 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
         }
         @media(max-width: 680px) { .two-col { grid-template-columns: 1fr; } }
 
-        /* ── RELATED PRODUCTS ── */
         .related-list {
           display: flex;
           flex-direction: column;
@@ -322,29 +316,27 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
         }
       `}</style>
 
-      {/* Breadcrumb */}
       <nav className="breadcrumb">
-        <Link href={locale === "en" ? "/?lang=en" : "/"}>{t.breadcrumbHome}</Link>
+        <Link href={`/?lang=${locale}`}>{t.breadcrumbHome}</Link>
         <span className="breadcrumb-sep">›</span>
         <Link href={`/products${localeQuery}`}>{t.breadcrumbProducts}</Link>
         <span className="breadcrumb-sep">›</span>
-        <span>{product.title}</span>
+        <span>{localized.title}</span>
       </nav>
 
-      {/* Hero */}
       <div className="product-hero">
         <div className="product-hero-img-wrap">
-          <img alt={product.title} src={product.image} />
+          <img alt={localized.title} src={product.image} />
           <span className="product-hero-img-badge">ترددیلا</span>
         </div>
 
         <div className="product-hero-info">
           <div className="product-hero-badge">{t.heroBadge}</div>
-          <h1>{product.title}</h1>
-          <p>{product.shortDescription}</p>
+          <h1>{localized.title}</h1>
+          <p>{localized.shortDescription}</p>
 
           <div className="product-tags">
-            {product.features.map((f) => (
+            {localized.features.map((f) => (
               <span className="product-tag" key={f}>{f}</span>
             ))}
           </div>
@@ -352,11 +344,11 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
           <div className="product-meta-pills">
             <div className="product-meta-pill">
               <span className="product-meta-pill-label">{t.packagingLabel}</span>
-              <span className="product-meta-pill-value">{product.packaging}</span>
+              <span className="product-meta-pill-value">{localized.packaging}</span>
             </div>
             <div className="product-meta-pill">
               <span className="product-meta-pill-label">{t.audienceLabel}</span>
-              <span className="product-meta-pill-value">{product.audience}</span>
+              <span className="product-meta-pill-value">{localized.audience}</span>
             </div>
           </div>
 
@@ -367,19 +359,15 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
         </div>
       </div>
 
-      {/* Body */}
       <div className="product-body">
-
-        {/* Description */}
         <div className="section-card">
           <h3 className="section-card-title">
             <span className="section-card-title-icon">📖</span>
             {t.descriptionHeading}
           </h3>
-          <p>{product.description}</p>
+          <p>{localized.description}</p>
         </div>
 
-        {/* Nutrition + Related */}
         <div className="two-col">
           <div className="section-card">
             <h3 className="section-card-title">
@@ -403,17 +391,19 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
               {t.relatedHeading}
             </h3>
             <div className="related-list">
-              {related.map((item) => (
-                <Link className="related-item" href={`/products/${item.slug}${localeQuery}`} key={item.slug}>
-                  <img alt={item.title} src={item.image} />
-                  {item.title}
-                  <span className="related-item-arrow">‹</span>
-                </Link>
-              ))}
+              {related.map((item) => {
+                const relatedLocalized = getLocalizedProduct(item, locale);
+                return (
+                  <Link className="related-item" href={`/products/${item.slug}${localeQuery}`} key={item.slug}>
+                    <img alt={relatedLocalized.title} src={item.image} />
+                    {relatedLocalized.title}
+                    <span className="related-item-arrow">‹</span>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );

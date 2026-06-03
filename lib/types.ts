@@ -1,37 +1,38 @@
 // lib/types.ts
 
-export type Product = {
+// lib/types.ts
+export interface Product {
   slug: string;
-  title: string;
+  title: { fa: string; en: string };
   image: string;
-  shortDescription: string;
-  description: string;
-  features: string[];
-  packaging: string;
-  audience: string;
+  shortDescription: { fa: string; en: string };
+  description: { fa: string; en: string };
+  features: { fa: string[]; en: string[] };
+  packaging: { fa: string; en: string };
+  audience: { fa: string; en: string };
   nutrition: {
-    serving: string;
-    energy: string;
-    sugar: string;
-    fat: string;
-    salt: string;
-    transFat: string;
+    serving: { fa: string; en: string };
+    energy: { fa: string; en: string };
+    sugar: { fa: string; en: string };
+    fat: { fa: string; en: string };
+    salt: { fa: string; en: string };
+    transFat: { fa: string; en: string };
   };
-};
+}
 
-export type Post = {
+export interface Post {
   slug: string;
   title: string;
   excerpt: string;
-  content: string;
   publishedAt: string;
-};
+  content: string;
+}
 
-export type CinemaPartner = {
+export interface CinemaPartner {
   city: string;
   venue: string;
   note: string;
-};
+}
 
 // Add category types and function
 export type Category = {
