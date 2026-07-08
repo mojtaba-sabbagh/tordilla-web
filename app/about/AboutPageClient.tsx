@@ -138,7 +138,7 @@ export default function AboutPageClient() {
         .section-card {
           background: #fff;
           border-radius: 26px;
-          padding: 44px;
+          padding: 40px;
           box-shadow: 0 8px 32px rgba(143,29,29,0.07);
         }
         @media(max-width: 600px) { .section-card { padding: 28px 22px; } }
@@ -162,10 +162,10 @@ export default function AboutPageClient() {
           color: #2c1810;
         }
         .section-subheading {
-          font-size: 14px;
+          font-size: 16px;
           font-weight: 700;
           color: #8f1d1d;
-          margin-bottom: 18px;
+          margin-bottom: 6px;
         }
         .section-prose {
           font-size: 15px;
@@ -401,12 +401,16 @@ export default function AboutPageClient() {
             <div className="section-heading-bar" />
             <h2>{t.productsHeading}</h2>
           </div>
-          <div className="section-subheading">{t.productsSubheading}</div>
-          <div className="section-prose">
-            {t.productParagraphs.map((paragraph, index) => (
-              <p key={index}>{paragraph}</p>
+            {t.productSections.map((subSection, idx) => (
+              <div key={idx} className="mb-3">
+                <div className="section-subheading">{subSection.productsSubheading}</div>
+                <div className="section-prose">
+                  {subSection.productParagraphs.map((paragraph, index) => (
+                    <p key={index}>{paragraph}</p>
+                  ))}
+                </div>
+              </div>
             ))}
-          </div>
         </div>
 
         {/* Features grid */}

@@ -58,11 +58,22 @@ export const translations = {
       breadcrumbHome: "خانه",
       heroSubtitle: "آشنایی با برند ترددیلا، محصولات با کیفیت و شرکت کوثر کویر رفسنجان",
       productsHeading: "محصولات ترددیلا",
-      productsSubheading: "چیپس ترتیلا ذرت: تردی اصیل، طعمی دلنشین",
-      productParagraphs: [
-        "لذت یک میان‌وعده بی‌نظیر را با چیپس ترتیلا ذرت تجربه کنید. این چیپس‌های ترد و خوش‌طعم، که از بهترین مواد اولیه و دانه‌های ذرت مرغوب تهیه شده‌اند، همراهی عالی برای لحظات شاد شما هستند. برش‌های مثلثی و فرآوری دقیق، تردی فوق‌العاده‌ای به این چیپس‌ها می‌بخشد که هر کسی را شیفته خود می‌کند.",
-        "چیپس ترتیلا ذرت، چه به تنهایی و چه در کنار انواع دیپ، سس سالسا، گواکاموله یا پنیر، تجربه‌ای فراموش‌نشدنی خلق می‌کند. انتخاب ایده‌آل برای مهمانی‌ها، تماشای فیلم یا هر جمع دوستانه.",
-        "تنوع طعم‌ها یکی از خواسته‌های مهم مصرف‌کنندگان است و به همین جهت، ترددیلا با بهترین طعم‌دهنده‌های وارداتی از کشورهای سوئیس و اسپانیا، در هشت طعم مختلف تولید و به بازار عرضه می‌شود. در تولید ترددیلا از هیچ‌گونه مواد نگهدارنده استفاده نمی‌شود و بسته‌بندی سه لایه و غیرقابل نفوذ، ضامن تازگی و سلامت آن است.",
+      productSections: [
+        {
+          productsSubheading: "تجربه‌ای متفاوت از چیپس ذرت",
+          productParagraphs: [
+            "هر چیپس ذرت، واقعاً یک چیپس ذرت نیست.",
+            "در ترددیلا ما از دانه‌های کامل ذرت غیرتراریخته استفاده می‌کنیم و آن‌ها را با فناوری اصیل نیکستامالیزاسیون فرآوری می‌کنیم؛ روشی که بیش از سه هزار سال قدمت دارد و امروزه نیز پیشرفته‌ترین تولیدکنندگان چیپس ذرت جهان از آن بهره می‌برند.",
+            "این فرآیند، فراتر از یک روش تولید است؛ نیکستامال ارزش تغذیه‌ای ذرت را ارتقا می‌دهد، دسترسی زیستی ویتامین B3 (نیاسین) را افزایش می‌دهد، کلسیم طبیعی محصول را غنی‌تر می‌کند و در کنار آن، طعمی اصیل، عطری دلپذیر و بافتی ترد و یکنواخت ایجاد می‌کند."
+          ],
+        },
+        {
+          productsSubheading: "چیپس ترتیلا ذرت: تردی اصیل، طعمی دلنشین",
+          productParagraphs: [
+          "لذت یک میان‌وعده بی‌نظیر را با چیپس ترتیلا ذرت تجربه کنید. این چیپس‌های ترد و خوش‌طعم، که از بهترین مواد اولیه و دانه‌های ذرت مرغوب تهیه شده‌اند، همراهی عالی برای لحظات شاد شما هستند. برش‌های مثلثی و فرآوری دقیق، تردی فوق‌العاده‌ای به این چیپس‌ها می‌بخشد که هر کسی را شیفته خود می‌کند.",
+          "چیپس ترتیلا ذرت، چه به تنهایی و چه در کنار انواع دیپ، سس سالسا، گواکاموله یا پنیر، تجربه‌ای فراموش‌نشدنی خلق می‌کند. انتخاب ایده‌آل برای مهمانی‌ها، تماشای فیلم یا هر جمع دوستانه.",
+          "تنوع طعم‌ها یکی از خواسته‌های مهم مصرف‌کنندگان است و به همین جهت، ترددیلا با بهترین طعم‌دهنده‌های وارداتی از کشورهای سوئیس و اسپانیا، در هشت طعم مختلف تولید و به بازار عرضه می‌شود. در تولید ترددیلا از هیچ‌گونه مواد نگهدارنده استفاده نمی‌شود و بسته‌بندی سه لایه و غیرقابل نفوذ، ضامن تازگی و سلامت آن است.",
+        ]},
       ],
       brandHeading: "نام تجاری ترددیلا",
       brandQuotes: ["«رنگین‌کمان مزه‌ها»", "«مزه‌ی دورهمی‌های بامزه»"],
@@ -351,11 +362,23 @@ export const translations = {
       breadcrumbHome: "Home",
       heroSubtitle: "Learn about Tordilla, our quality products, and Kosar Kavir Rafsanjan company.",
       productsHeading: "Tordilla Products",
-      productsSubheading: "Corn tortilla chips: authentic crunch, delicious flavor",
-      productParagraphs: [
-        "Enjoy a unique snack experience with our corn tortilla chips. Crispy, flavorful, and made from premium corn, they are a perfect companion for your joyful moments. The triangular shape and precise processing deliver an outstanding crunch that wins everyone over.",
-        "Whether on their own or paired with dips, salsa, guacamole, or cheese, these chips create an unforgettable experience. Ideal for parties, movie nights, or friendly gatherings.",
-        "Flavor variety matters to consumers, so Tordilla offers eight delicious flavors made with premium seasonings sourced from Switzerland and Spain. Our products contain no preservatives, and triple-layer packaging keeps them fresh and safe.",
+      productSections: [
+        {
+          productsSubheading: "A Different Experience of Corn Chips",
+          productParagraphs: [
+            "Not every corn chip is truly a corn chip.",
+            "At Tordilla, we use whole-grain, non-GMO corn kernels and process them using the authentic nixtamalization technique—a method that dates back over three thousand years and is still employed today by the world's most advanced corn chip producers.",
+            "This process goes beyond mere production; nixtamalization enhances the nutritional value of corn, increases the bioavailability of vitamin B3 (niacin), enriches the product's natural calcium content, and simultaneously delivers an authentic flavor, a pleasant aroma, and a crispy, uniform texture."
+          ],
+        },
+        {
+          productsSubheading: "Corn tortilla chips: authentic crunch, delicious flavor",
+          productParagraphs: [
+            "Enjoy a unique snack experience with our corn tortilla chips. Crispy, flavorful, and made from premium corn, they are a perfect companion for your joyful moments. The triangular shape and precise processing deliver an outstanding crunch that wins everyone over.",
+            "Whether on their own or paired with dips, salsa, guacamole, or cheese, these chips create an unforgettable experience. Ideal for parties, movie nights, or friendly gatherings.",
+            "Flavor variety matters to consumers, so Tordilla offers eight delicious flavors made with premium seasonings sourced from Switzerland and Spain. Our products contain no preservatives, and triple-layer packaging keeps them fresh and safe.",
+          ],
+      }
       ],
       brandHeading: "Tordilla Brand",
       brandQuotes: ["“A rainbow of flavors”", "“The taste of joyful gatherings”"],
