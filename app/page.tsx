@@ -1,659 +1,314 @@
-"use client";
+// app/page.tsx
+import Image from "next/image";
+import Link from "next/link";
+import { HomeSlider } from "@/components/home-slider";
+import { ProductCard } from "@/components/product-card";
+import { SectionBadge } from "@/components/ui/section-badge";
+import { CtaLink } from "@/components/ui/cta-link";
+import { AnimatedSection } from "@/components/ui/animated-section";
+import { getLocaleFromSearchParams, translations, Locale } from "@/lib/i18n";
+import { products, getLocalizedProduct } from "@/lib/seed-content";
+import { getPaginatedBlogPosts } from "@/lib/blog-data";
 
-import { useState, useEffect, useRef } from "react";
-import { useSearchParams } from "next/navigation";
-import { getLocaleFromSearchParams, translations } from "@/lib/i18n";
-
-// Type definitions
-interface Flavor {
-  titleFa: string;
-  titleEn: string;
-  title?: string;
-  image: string;
-  href: string;
-  color: string;
-  accent: string;
-}
-
-interface Retailer {
-  name: string;
-  image: string;
-}
-
-interface BlogPost {
-  titleFa: string;
-  titleEn: string;
-  categoryFa: string;
-  categoryEn: string;
-  dateFa: string;
-  dateEn: string;
-  image: string;
-  href: string;
-  featured?: boolean;
-}
-
-interface AnimatedSectionProps {
-  children: React.ReactNode;
-  delay?: number;
-  className?: string;
-  style?: React.CSSProperties;
-}
-
-interface SliderProps {
-  images: string[];
-}
-
-interface FlavorCardProps {
-  flavor: Flavor;
-  index: number;
-  localeQuery: string;
-  titlePrefix: string;
-  flavorCta: string;
-}
-
-const flavors: Flavor[] = [
-  { titleFa: "ماست موسیر", titleEn: "Yogurt & Shallot", image: "/home/flavors/mast1.jpg", href: "/products/mast-o-musir", color: "#e8f5e9", accent: "#2e7d32" },
-  { titleFa: "پنیری", titleEn: "Cheese", image: "/home/flavors/chees1.jpg", href: "/products/paniri", color: "#fff8e1", accent: "#f9a825" },
-  { titleFa: "تنوری", titleEn: "Oven-Baked", image: "/home/flavors/barbiq1.jpg", href: "/products/tanouri", color: "#fbe9e7", accent: "#bf360c" },
-  { titleFa: "سالسا", titleEn: "Salsa", image: "/home/flavors/salsa1.jpg", href: "/products/salsa", color: "#fce4ec", accent: "#c62828" },
-  { titleFa: "مکزیکی", titleEn: "Mexican", image: "/home/flavors/mexican1.jpg", href: "/products/mexican", color: "#e8eaf6", accent: "#283593" },
-  { titleFa: "پیاز جعفری", titleEn: "Onion & Parsley", image: "/home/flavors/piaz1.jpg", href: "/products/piaz-jafari", color: "#e0f2f1", accent: "#00695c" },
-  { titleFa: "کنجدی", titleEn: "Sesame", image: "/home/flavors/seseami.jpg", href: "/products/sesame", color: "#efebe9", accent: "#4e342e" },
+const sliderImages = [
+  "/home/slider/where-1024x447.jpg",
+  "/home/slider/tamas-ba-ma-small-size-min-1024x447.jpg",
+  "/home/slider/tortella-mexico-min-800x350.jpg",
+  "/home/slider/tortella-salsa-min-800x350.jpg",
 ];
 
-const retailers: Retailer[] = [
+const retailers = [
   { name: "دیجی‌کالا", image: "/home/brands/digikala.png" },
   { name: "مزبار", image: "/home/brands/mazbar.png" },
   { name: "شهروند", image: "/home/brands/shahrvand.png" },
+  { name: "رفاه", image: "/home/brands/refah.png" },
   { name: "کنبو", image: "/home/brands/canbo.png" },
   { name: "پالادیوم", image: "/home/brands/paladium.png" },
   { name: "روکو", image: "/home/brands/roco.png" },
 ];
 
-const blogPosts: BlogPost[] = [
-  {
-    titleFa: "ترددیلا در دیجیکالا",
-    titleEn: "Tordilla on Digikala",
-    categoryFa: "بدانیم",
-    categoryEn: "Know",
-    dateFa: "۱۱ اکتبر ۲۰۱۸",
-    dateEn: "October 11, 2018",
-    image: "/home/blog/digikala-logo-1200x480-760x180.jpg",
-    href: "/blog/tordilla-in-digikala",
-    featured: true,
-  },
-  {
-    titleFa: "ناچو ترددیلا در سینماهای سراسر کشور عرضه خواهد شد",
-    titleEn: "Tordilla Nachos Coming to Cinemas Nationwide",
-    categoryFa: "بدانیم",
-    categoryEn: "Know",
-    dateFa: "۲۶ آگوست ۲۰۱۸",
-    dateEn: "August 26, 2018",
-    image: "/home/blog/b4fd571f4b9de34a1599ffdd904f3295-380x180.jpg",
-    href: "/blog/nacho-at-cinemas",
-  },
-  {
-    titleFa: "طرز تهیه تاکو مکزیکی (مرحله به مرحله با عکس)",
-    titleEn: "How to Make Mexican Tacos (Step by Step)",
-    categoryFa: "طرز تهیه غذا",
-    categoryEn: "Recipe",
-    dateFa: "۱۳ آگوست ۲۰۱۸",
-    dateEn: "August 13, 2018",
-    image: "/home/blog/1520956952-chicken-tacos-horizontal-380x180.jpg",
-    href: "/blog/mexican-taco-recipe",
-  },
-  {
-    titleFa: "بهترین دستور تهیه نان ترتیلا مرحله به مرحله",
-    titleEn: "The Best Step-by-Step Tortilla Bread Recipe",
-    categoryFa: "طرز تهیه غذا",
-    categoryEn: "Recipe",
-    dateFa: "۱۳ آگوست ۲۰۱۸",
-    dateEn: "August 13, 2018",
-    image: "/home/blog/lionel-gustave-171881-unsplash-380x180.jpg",
-    href: "/blog/tortilla-bread-recipe",
-  },
-  {
-    titleFa: "طرز تهیه سالسا با طعم‌های متفاوت",
-    titleEn: "Salsa Recipes with Different Flavors",
-    categoryFa: "طرز تهیه دیپ",
-    categoryEn: "Dip Recipe",
-    dateFa: "۱۳ آگوست ۲۰۱۸",
-    dateEn: "August 13, 2018",
-    image: "/home/blog/OG0A1062-380x180.jpg",
-    href: "/blog/salsa-recipe",
-  },
-];
-
-const sliderImages: string[] = [
-  "/home/slider/where-1024x447.jpg",
-  "/home/slider/tamas-ba-ma-small-size-min-1024x447.jpg",
-];
-
-// Custom hook with proper return type
-function useInView(threshold = 0.15) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setInView(true);
-          observer.disconnect();
-        }
-      },
-      { threshold }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [threshold]);
-  return [ref, inView] as const;
+function formatPostDate(date: Date, locale: Locale) {
+  return new Intl.DateTimeFormat(locale === "fa" ? "fa-IR-u-ca-persian" : "en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(date);
 }
 
-// Fixed AnimatedSection with proper typing
-function AnimatedSection({ children, delay = 0, className = "", style }: AnimatedSectionProps) {
-  const [ref, inView] = useInView();
-  return (
-    <div
-      ref={ref}
-      className={className}
-      style={{
-        opacity: inView ? 1 : 0,
-        transform: inView ? "translateY(0)" : "translateY(36px)",
-        transition: `opacity 0.75s ease ${delay}ms, transform 0.75s ease ${delay}ms`,
-        ...style,   // now `style` is defined
-      }}
-    >
-      {children}
-    </div>
-  );
-}
-
-function Slider({ images }: SliderProps) {
-  const [active, setActive] = useState(0);
-  useEffect(() => {
-    const t = setInterval(() => setActive(i => (i + 1) % images.length), 4500);
-    return () => clearInterval(t);
-  }, [images.length]);
-
-  return (
-    <div style={{ position: "relative", width: "100%", overflow: "hidden" }}>
-      <div style={{ position: "relative", width: "100%", height: "clamp(260px, 52vw, 560px)", background: "#1a0a04" }}>
-        {images.map((src, i) => (
-          <img
-            key={src}
-            src={src}
-            alt={`اسلاید ${i + 1}`}
-            style={{
-              position: "absolute",
-              inset: 0,
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              opacity: active === i ? 1 : 0,
-              transition: "opacity 1.1s ease",
-            }}
-          />
-        ))}
-        {/* gradient overlay */}
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15,4,0,0.55) 0%, transparent 60%)" }} />
-
-        {/* arrows */}
-        {[
-          { dir: "right", label: "قبلی", delta: -1 },
-          { dir: "left", label: "بعدی", delta: 1 },
-        ].map(({ dir, label, delta }) => (
-          <button
-            key={dir}
-            aria-label={`اسلاید ${label}`}
-            onClick={() => setActive(i => (i + delta + images.length) % images.length)}
-            style={{
-              position: "absolute",
-              top: "50%",
-              [dir]: "16px",
-              transform: "translateY(-50%)",
-              width: 44,
-              height: 44,
-              borderRadius: "50%",
-              background: "rgba(255,255,255,0.18)",
-              backdropFilter: "blur(8px)",
-              border: "1.5px solid rgba(255,255,255,0.35)",
-              color: "#fff",
-              fontSize: 22,
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              transition: "background 0.2s",
-            }}
-          >
-            {delta === -1 ? "›" : "‹"}
-          </button>
-        ))}
-
-        {/* dots */}
-        <div style={{ position: "absolute", bottom: 20, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 8 }}>
-          {images.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setActive(i)}
-              style={{
-                height: 8,
-                width: active === i ? 28 : 8,
-                borderRadius: 9999,
-                background: active === i ? "#fff" : "rgba(255,255,255,0.45)",
-                border: "none",
-                cursor: "pointer",
-                transition: "all 0.35s ease",
-              }}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function FlavorCard({ flavor, index, localeQuery, titlePrefix, flavorCta }: FlavorCardProps) {
-  const [hovered, setHovered] = useState(false);
-  return (
-    <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        position: "relative",
-        borderRadius: 24,
-        overflow: "hidden",
-        cursor: "pointer",
-        background: "#1a0a04",
-        opacity: 0,
-        animation: `fadeSlideUp 0.6s ease ${120 + index * 70}ms forwards`,
-        boxShadow: hovered ? "0 24px 52px rgba(0,0,0,0.28)" : "0 6px 20px rgba(0,0,0,0.12)",
-        transform: hovered ? "translateY(-6px)" : "translateY(0)",
-        transition: "box-shadow 0.35s, transform 0.35s",
-      }}
-    >
-      <img
-        src={flavor.image}
-        alt={flavor.title}
-        style={{
-          display: "block",
-          width: "100%",
-          height: 240,
-          objectFit: "cover",
-          transition: "transform 0.6s ease",
-          transform: hovered ? "scale(1.07)" : "scale(1)",
-        }}
-      />
-      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.15) 55%, transparent 100%)" }} />
-      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "20px 18px" }}>
-        <p style={{ color: "#fff", fontWeight: 800, fontSize: 18, margin: 0, letterSpacing: "0.01em" }}>{titlePrefix} {flavor.title}</p>
-        <a
-          href={`${flavor.href}${localeQuery}`}
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            marginTop: 10,
-            padding: "7px 18px",
-            borderRadius: 9999,
-            background: "#39a845",
-            color: "#fff",
-            fontWeight: 700,
-            fontSize: 13,
-            textDecoration: "none",
-            opacity: hovered ? 1 : 0,
-            transform: hovered ? "translateY(0)" : "translateY(6px)",
-            transition: "opacity 0.3s, transform 0.3s",
-          }}
-        >
-          {flavorCta}
-        </a>
-      </div>
-    </div>
-  );
-}
-
-export default function HomePage() {
-  const [flavorHintVisible, setFlavorHintVisible] = useState(true); // kept for potential future use
-  const searchParams = useSearchParams();
-  const locale = getLocaleFromSearchParams(searchParams);
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ lang?: string }>;
+}) {
+  const params = await searchParams;
+  const locale = getLocaleFromSearchParams(new URLSearchParams({ lang: params?.lang ?? "fa" }));
   const t = translations[locale].home;
   const localeQuery = `?lang=${locale}`;
+  const isFa = locale === "fa";
 
-  const localizedFlavors = flavors.map((flavor) => ({
-    ...flavor,
-    title: locale === "fa" ? flavor.titleFa : flavor.titleEn,
-  }));
+  let latestPosts: Awaited<ReturnType<typeof getPaginatedBlogPosts>>["posts"] = [];
+  try {
+    const result = await getPaginatedBlogPosts(1, 3);
+    latestPosts = result.posts;
+  } catch {
+    latestPosts = [];
+  }
 
-  const localizedBlogPosts = blogPosts.map((post) => ({
-    ...post,
-    title: locale === "fa" ? post.titleFa : post.titleEn,
-    category: locale === "fa" ? post.categoryFa : post.categoryEn,
-    date: locale === "fa" ? post.dateFa : post.dateEn,
-  }));
-
-  const socialNetworks = translations[locale].home.socialNetworks;
+  const stats = translations[locale].about.stats;
 
   return (
-    <div dir={locale === "fa" ? "rtl" : "ltr"} lang={locale} style={{ background: "#fdf8f3", color: "#2c1810", minHeight: "100vh" }}>
-      <style>{`
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        @keyframes fadeSlideUp {
-          from { opacity: 0; transform: translateY(32px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; } to { opacity: 1; }
-        }
-        @keyframes chip-float {
-          0%, 100% { transform: translateY(0) rotate(-5deg); }
-          50% { transform: translateY(-12px) rotate(-5deg); }
-        }
-        .flavor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 18px; }
-        .retailer-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
-        .blog-grid { display: grid; gap: 20px; }
-        @media(min-width: 760px) { .blog-grid { grid-template-columns: 1.6fr 1fr 1fr; } }
-        .tag { display: inline-block; padding: 3px 12px; border-radius: 9999px; font-size: 12px; font-weight: 700; background: rgba(143,29,29,0.1); color: #8f1d1d; }
-        .btn-primary { display: inline-flex; align-items: center; padding: 12px 28px; border-radius: 9999px; background: #8f1d1d; color: #fff; font-weight: 800; font-size: 15px; text-decoration: none; border: none; cursor: pointer; transition: background 0.2s, transform 0.2s; }
-        .btn-primary:hover { background: #6e1515; transform: translateY(-2px); }
-        .btn-green { background: #39a845; }
-        .btn-green:hover { background: #2f8d39; }
-        .btn-blue { background: #1a6fa8; }
-        .btn-blue:hover { background: #145480; }
-        .section-tag { display: inline-flex; align-items: center; gap: 6px; padding: 5px 16px; border-radius: 9999px; border: 1.5px solid rgba(143,29,29,0.2); background: rgba(143,29,29,0.06); color: #8f1d1d; font-size: 13px; font-weight: 700; margin-bottom: 14px; }
-        hr.divider { border: none; border-top: 1.5px solid rgba(143,29,29,0.1); margin: 0; }
-      `}</style>
-
+    <div dir={isFa ? "rtl" : "ltr"} lang={locale} className="bg-[#fdf8f3]">
       {/* ── SLIDER ── */}
-      <Slider images={sliderImages} />
+      <HomeSlider images={sliderImages} />
 
-      {/* ── HERO TEXT ── */}
-      <section style={{ textAlign: locale === "fa" ? "center" : "left", padding: "72px 24px 60px" }}>
-        <AnimatedSection>
-          <div className="section-tag">{t.heroTag}</div>
-          <h1 style={{ fontSize: "clamp(32px, 5vw, 58px)", fontWeight: 900, color: "#8f1d1d", lineHeight: 1.25, marginBottom: 20 }}>
+      {/* ── HERO ── */}
+      <section className="relative overflow-hidden px-4 py-20 text-center md:px-6 md:py-28">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -left-24 -top-24 h-80 w-80 rounded-full bg-[#ce4a28]/20 blur-3xl" />
+          <div className="absolute -right-20 top-4 h-96 w-96 rounded-full bg-[#214c3f]/15 blur-3xl" />
+          <div className="absolute left-[8%] top-[20%] hidden text-5xl opacity-70 animate-float-a sm:block md:text-6xl">🌽</div>
+          <div className="absolute right-[10%] top-[14%] hidden text-4xl opacity-60 animate-float-b sm:block md:text-5xl">🧀</div>
+          <div className="absolute bottom-[14%] left-[14%] hidden text-4xl opacity-50 animate-float-b sm:block md:text-5xl">🌶️</div>
+          <div className="absolute bottom-[20%] right-[14%] hidden text-3xl opacity-60 animate-float-a sm:block">✨</div>
+        </div>
+
+        <AnimatedSection className="relative z-10 mx-auto max-w-2xl">
+          <SectionBadge className="mb-5">{t.heroTag}</SectionBadge>
+          <h1 className="mb-5 bg-gradient-to-br from-[#e05a30] via-[#8f2e18] to-[#5c1c10] bg-clip-text text-[clamp(2.4rem,6vw,4.4rem)] font-black leading-[1.15] tracking-tight text-transparent">
             {t.heroTitle}
           </h1>
-          <img src="/home/logo.png" alt={locale === "fa" ? "لوگوی ترددیلا" : "Tordilla logo"} style={{ width: "clamp(120px, 12vw, 170px)", height: "auto", margin: "0 auto 24px", display: "block" }} />
-          <p style={{ maxWidth: 600, margin: "0 auto 32px", fontSize: 18, lineHeight: 1.9, color: "#5a3728" }}>
+          <Image
+            src="/home/logo.png"
+            alt={isFa ? "لوگوی ترددیلا" : "Tordilla logo"}
+            width={150}
+            height={150}
+            className="mx-auto mb-6 h-auto w-[clamp(110px,12vw,150px)] drop-shadow-[0_12px_24px_rgba(206,74,40,0.25)]"
+          />
+          <p className="mx-auto mb-7 max-w-lg text-lg leading-[1.9] text-[#675247]">
             {t.heroText}
           </p>
-          <a href={`/products${localeQuery}`} className="btn-primary">{t.heroButton}</a>
+
+          <div className="mb-9 flex flex-wrap items-center justify-center gap-3">
+            {stats.map((s) => (
+              <div
+                key={s.label}
+                className="flex items-center gap-2 rounded-full border border-[rgba(206,74,40,0.15)] bg-white/75 px-4 py-2 shadow-sm backdrop-blur"
+              >
+                <span dir="ltr" className="text-base font-black text-[#ce4a28]">
+                  {s.value}
+                </span>
+                <span className="text-xs font-semibold text-[#675247]">{s.label}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <CtaLink href={`/products${localeQuery}`} variant="primary">
+              {t.heroButton}
+            </CtaLink>
+            <CtaLink href={`/tordilla-finder${localeQuery}`} variant="outline">
+              {t.finderButton}
+            </CtaLink>
+          </div>
         </AnimatedSection>
       </section>
 
-      <hr className="divider" />
+      <hr className="border-t border-[rgba(76,50,33,0.12)]" />
 
       {/* ── FLAVORS ── */}
-      <section style={{ padding: "72px 24px", maxWidth: 1240, margin: "0 auto" }}>
-        <AnimatedSection style={{ textAlign: "center", marginBottom: 48 }}>
-          <div style={{ textAlign: locale === "fa" ? "center" : "left", marginBottom: 48 }}>
-            <div className="section-tag">{t.flavorsTag}</div>
-            <h2 style={{ fontSize: "clamp(26px, 3.5vw, 42px)", fontWeight: 900, color: "#8f1d1d" }}>{t.flavorsHeading}</h2>
-            <p style={{ marginTop: 10, color: "#7a5040", fontSize: 15 }}>{t.flavorsSubheading}</p>
-          </div>
-        </AnimatedSection>
+      <section className="relative overflow-hidden px-4 py-16 md:px-6 md:py-20">
+        <div className="pointer-events-none absolute -right-32 top-1/3 h-96 w-96 rounded-full bg-[#ce4a28]/10 blur-3xl" />
+        <div className="pointer-events-none absolute -left-24 bottom-0 h-72 w-72 rounded-full bg-[#214c3f]/10 blur-3xl" />
 
-        <div className="flavor-grid">
-          {localizedFlavors.map((flavor, i) => (
-            <FlavorCard key={flavor.title} flavor={flavor} index={i} localeQuery={localeQuery} titlePrefix={locale === "fa" ? "ترددیلا" : "Tordilla"} flavorCta={t.flavorCta} />
-          ))}
-          {/* decorative 8th card */}
-          <div style={{ position: "relative", borderRadius: 24, overflow: "hidden", background: "#8f1d1d", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: 240, padding: 24, textAlign: "center", opacity: 0, animation: "fadeSlideUp 0.6s ease 640ms forwards" }}>
-            <div style={{ fontSize: 48, animation: "chip-float 3s ease-in-out infinite" }}>🌽</div>
-            <p style={{ color: "#fff", fontWeight: 800, fontSize: 18, marginTop: 16 }}>{t.allFlavorsTitle}</p>
-            <a href={`/products${localeQuery}`} style={{ marginTop: 14, padding: "8px 20px", borderRadius: 9999, background: "rgba(255,255,255,0.18)", color: "#fff", fontWeight: 700, fontSize: 13, textDecoration: "none", border: "1.5px solid rgba(255,255,255,0.35)" }}>{t.allFlavorsButton}</a>
+        <div className="relative z-10 mx-auto max-w-6xl">
+          <AnimatedSection className={`mb-11 ${isFa ? "text-center" : "text-left"}`}>
+            <SectionBadge className="mb-3">{t.flavorsTag}</SectionBadge>
+            <h2 className="text-[clamp(1.6rem,3.5vw,2.6rem)] font-black tracking-tight text-[#8f2e18]">
+              {t.flavorsHeading}
+            </h2>
+            <p className="mt-2.5 text-[15px] text-[#7a5040]">{t.flavorsSubheading}</p>
+          </AnimatedSection>
+
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {products.map((product, index) => {
+              const localized = getLocalizedProduct(product, locale);
+              return (
+                <AnimatedSection key={product.slug} delay={index * 60}>
+                  <ProductCard
+                    href={`/products/${product.slug}${localeQuery}`}
+                    image={product.image}
+                    title={localized.title}
+                    description={localized.shortDescription}
+                    badgeLabel={isFa ? "ترددیلا" : "Tordilla"}
+                    ctaLabel={t.flavorCta}
+                    priority={index < 2}
+                  />
+                </AnimatedSection>
+              );
+            })}
+          </div>
+
+          <div className="mt-10 text-center">
+            <CtaLink href={`/products${localeQuery}`} variant="outline">
+              {t.allFlavorsButton}
+            </CtaLink>
           </div>
         </div>
       </section>
 
-      <hr className="divider" />
-
       {/* ── CINEMA ── */}
-      <section style={{ background: "linear-gradient(135deg, #8f1d1d 0%, #5c1111 100%)", padding: "72px 24px", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", top: -60, left: -60, width: 240, height: 240, borderRadius: "50%", background: "rgba(255,255,255,0.06)", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", bottom: -80, right: -40, width: 300, height: 300, borderRadius: "50%", background: "rgba(255,255,255,0.04)", pointerEvents: "none" }} />
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#ce4a28] to-[#7a2412] px-4 py-16 md:px-6 md:py-20">
+        <div className="pointer-events-none absolute -left-16 -top-16 h-60 w-60 rounded-full bg-white/[0.06]" />
+        <div className="pointer-events-none absolute -bottom-20 -right-10 h-72 w-72 rounded-full bg-white/[0.04]" />
 
-        <AnimatedSection className="" style={{ maxWidth: 800, margin: "0 auto" }}>
-          <div style={{ maxWidth: 800, margin: "0 auto" }}>
-            <div style={{ textAlign: "center", marginBottom: 36 }}>
-              <div className="section-tag" style={{ borderColor: "rgba(255,255,255,0.25)", background: "rgba(255,255,255,0.1)", color: "#fff" }}>{t.cinemaTag}</div>
-              <h2 style={{ fontSize: "clamp(24px, 3vw, 38px)", fontWeight: 900, color: "#fff" }}>{t.cinemaHeading}</h2>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              {["/home/cinema/cinema-01.png", "/home/cinema/cinema-02.png"].map((src, i) => (
-                <div key={i} style={{ borderRadius: 18, overflow: "hidden", background: "rgba(255,255,255,0.08)", padding: 6 }}>
-                  <img src={src} alt="سینما" style={{ width: "100%", borderRadius: 13, display: "block", objectFit: "cover" }} />
+        <AnimatedSection className="relative mx-auto max-w-2xl">
+          <div className="mb-9 text-center">
+            <SectionBadge tone="invert" className="mb-3">
+              {t.cinemaTag}
+            </SectionBadge>
+            <h2 className="text-[clamp(1.4rem,3vw,2.3rem)] font-black text-white">
+              {t.cinemaHeading}
+            </h2>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            {["/home/cinema/cinema-01.png", "/home/cinema/cinema-02.png"].map((src) => (
+              <div key={src} className="overflow-hidden rounded-2xl bg-white/10 p-1.5">
+                <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl">
+                  <Image src={src} alt={isFa ? "سینما" : "Cinema"} fill sizes="(max-width: 640px) 50vw, 320px" className="object-cover" />
                 </div>
-              ))}
-            </div>
-            <div style={{ textAlign: "center", marginTop: 28 }}>
-              <a href={`/cinema${localeQuery}`} className="btn-primary" style={{ background: "#39a845" }}>{t.cinemaButton}</a>
-            </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-8 text-center">
+            <CtaLink href={`/cinema${localeQuery}`} variant="accent">
+              {t.cinemaButton}
+            </CtaLink>
           </div>
         </AnimatedSection>
       </section>
 
       {/* ── WHERE TO BUY ── */}
-      <section style={{ background: "#fef4ec", padding: "80px 24px" }}>
-        <div style={{ maxWidth: 1240, margin: "0 auto" }}>
-          <AnimatedSection>
-            <div style={{ textAlign: "center", marginBottom: 52 }}>
-              <div className="section-tag">{t.whereBuyTag}</div>
-              <h2 style={{ fontSize: "clamp(26px, 3.5vw, 42px)", fontWeight: 900, color: "#8f1d1d" }}>{t.whereBuyHeading}</h2>
-              <p style={{ marginTop: 10, color: "#7a5040", fontSize: 15 }}>{t.whereBuyText}</p>
-            </div>
+      <section className="overflow-hidden bg-[#fdf1e6] py-20">
+        <div className="mx-auto max-w-6xl px-4 md:px-6">
+          <AnimatedSection className="mb-12 text-center">
+            <SectionBadge className="mb-3">{t.whereBuyTag}</SectionBadge>
+            <h2 className="text-[clamp(1.6rem,3.5vw,2.6rem)] font-black tracking-tight text-[#8f2e18]">
+              {t.whereBuyHeading}
+            </h2>
+            <p className="mt-2.5 text-[15px] text-[#7a5040]">{t.whereBuyText}</p>
           </AnimatedSection>
+        </div>
 
-          <div className="retailer-grid">
-            {retailers.map((r, i) => (
-              <AnimatedSection key={r.name} delay={i * 60}>
-                <a
-                  href="#"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    minHeight: 140,
-                    borderRadius: 22,
-                    background: "#fff",
-                    padding: 24,
-                    boxShadow: "0 8px 32px rgba(143,29,29,0.08)",
-                    textDecoration: "none",
-                    transition: "transform 0.25s, box-shadow 0.25s",
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.transform = "translateY(-5px)";
-                    e.currentTarget.style.boxShadow = "0 18px 48px rgba(143,29,29,0.16)";
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.transform = "";
-                    e.currentTarget.style.boxShadow = "0 8px 32px rgba(143,29,29,0.08)";
-                  }}
-                >
-                  <img src={r.image} alt={r.name} style={{ maxHeight: 72, maxWidth: "100%", objectFit: "contain" }} />
-                </a>
-              </AnimatedSection>
+        <div className="group relative [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
+          <div dir="ltr" className="flex w-max gap-5 animate-marquee group-hover:[animation-play-state:paused]">
+            {[...retailers, ...retailers].map((r, i) => (
+              <div
+                key={`${r.name}-${i}`}
+                className="flex h-28 w-44 flex-shrink-0 items-center justify-center rounded-[22px] bg-white p-6 shadow-[0_8px_32px_rgba(206,74,40,0.08)] transition-all duration-250 hover:-translate-y-1 hover:shadow-[0_18px_48px_rgba(206,74,40,0.16)]"
+              >
+                <Image
+                  src={r.image}
+                  alt={r.name}
+                  width={140}
+                  height={72}
+                  className="h-auto max-h-[64px] w-auto max-w-full object-contain"
+                />
+              </div>
             ))}
           </div>
+        </div>
 
-          <AnimatedSection delay={400}>
-            <div style={{ textAlign: "center", marginTop: 44 }}>
-              <a href={`/tordilla-finder${localeQuery}`} className="btn-primary btn-blue">{t.finderButton}</a>
-            </div>
-          </AnimatedSection>
+        <div className="mx-auto mt-12 max-w-6xl px-4 text-center md:px-6">
+          <CtaLink href={`/tordilla-finder${localeQuery}`} variant="accent">
+            {t.finderButton}
+          </CtaLink>
         </div>
       </section>
 
-      <hr className="divider" />
+      <hr className="border-t border-[rgba(76,50,33,0.12)]" />
 
       {/* ── BLOG ── */}
-      <section style={{ padding: "80px 24px", maxWidth: 1240, margin: "0 auto" }}>
-        <AnimatedSection>
-          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", flexWrap: "wrap", gap: 12, marginBottom: 44 }}>
-            <div>
-              <div className="section-tag">{t.blogTag}</div>
-              <h2 style={{ fontSize: "clamp(24px, 3vw, 38px)", fontWeight: 900, color: "#8f1d1d", marginTop: 6 }}>{t.blogHeading}</h2>
-            </div>
-            <a href={`/blog${localeQuery}`} style={{ color: "#8f1d1d", fontWeight: 700, fontSize: 14, textDecoration: "none", borderBottom: "2px solid #8f1d1d", paddingBottom: 2 }}>{t.blogAllPosts}</a>
+      <section className="mx-auto max-w-6xl px-4 py-20 md:px-6">
+        <AnimatedSection className="mb-11 flex flex-wrap items-baseline justify-between gap-3">
+          <div>
+            <SectionBadge className="mb-1.5">{t.blogTag}</SectionBadge>
+            <h2 className="mt-1.5 text-[clamp(1.4rem,3vw,2.3rem)] font-black text-[#8f2e18]">
+              {t.blogHeading}
+            </h2>
           </div>
+          <Link
+            href={`/blog${localeQuery}`}
+            className="border-b-2 border-[#8f2e18] pb-0.5 text-sm font-bold text-[#8f2e18]"
+          >
+            {t.blogAllPosts}
+          </Link>
         </AnimatedSection>
 
-        <div className="blog-grid">
-          {/* featured */}
-          <AnimatedSection delay={60}>
-            <a
-              href={`${localizedBlogPosts[0].href}${localeQuery}`}
-              style={{
-                display: "block",
-                borderRadius: 22,
-                overflow: "hidden",
-                background: "#fff",
-                boxShadow: "0 8px 32px rgba(0,0,0,0.09)",
-                textDecoration: "none",
-                color: "inherit",
-                gridRow: "span 2",
-                transition: "box-shadow 0.3s, transform 0.3s",
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.boxShadow = "0 22px 52px rgba(0,0,0,0.16)";
-                e.currentTarget.style.transform = "translateY(-4px)";
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,0,0,0.09)";
-                e.currentTarget.style.transform = "";
-              }}
-            >
-              <img src={localizedBlogPosts[0].image} alt={localizedBlogPosts[0].title} style={{ width: "100%", height: 240, objectFit: "cover", display: "block" }} />
-              <div style={{ padding: "22px 22px 26px" }}>
-                <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
-                  <span className="tag">{localizedBlogPosts[0].category}</span>
-                  <span style={{ fontSize: 12, color: "#999", lineHeight: "26px" }}>{localizedBlogPosts[0].date}</span>
-                </div>
-                <h3 style={{ fontSize: 20, fontWeight: 800, lineHeight: 1.6, color: "#2c1810" }}>{localizedBlogPosts[0].title}</h3>
-              </div>
-            </a>
-          </AnimatedSection>
-
-          {/* secondary posts */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-            {localizedBlogPosts.slice(1, 3).map((post, i) => (
-              <AnimatedSection key={post.title} delay={120 + i * 80}>
-                <a
-                  href={`${post.href}${localeQuery}`}
-                  style={{
-                    display: "flex",
-                    gap: 14,
-                    borderRadius: 18,
-                    overflow: "hidden",
-                    background: "#fff",
-                    boxShadow: "0 6px 20px rgba(0,0,0,0.07)",
-                    textDecoration: "none",
-                    color: "inherit",
-                    transition: "box-shadow 0.3s, transform 0.3s",
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.boxShadow = "0 16px 40px rgba(0,0,0,0.13)";
-                    e.currentTarget.style.transform = "translateY(-3px)";
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,0,0,0.07)";
-                    e.currentTarget.style.transform = "";
-                  }}
+        {latestPosts.length === 0 ? (
+          <p className="rounded-2xl bg-white p-10 text-center text-[#7a5040] shadow-[0_8px_32px_rgba(0,0,0,0.06)]">
+            {isFa ? "به‌زودی مطالب تازه منتشر می‌شود." : "New posts are coming soon."}
+          </p>
+        ) : (
+          <div className="grid gap-5 md:grid-cols-3">
+            {latestPosts.map((post, i) => (
+              <AnimatedSection key={post.slug} delay={i * 80}>
+                <Link
+                  href={`/blog/${post.slug}${localeQuery}`}
+                  className="group flex h-full flex-col overflow-hidden rounded-[22px] bg-white shadow-[0_6px_20px_rgba(0,0,0,0.07)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_44px_rgba(0,0,0,0.13)]"
                 >
-                  <img src={post.image} alt={post.title} style={{ width: 110, minHeight: "100%", objectFit: "cover", flexShrink: 0 }} />
-                  <div style={{ padding: "14px 14px 14px 0" }}>
-                    <span className="tag">{post.category}</span>
-                    <h3 style={{ marginTop: 8, fontSize: 14, fontWeight: 700, lineHeight: 1.7, color: "#2c1810" }}>{post.title}</h3>
-                    <p style={{ marginTop: 6, fontSize: 12, color: "#999" }}>{post.date}</p>
+                  <div className="relative aspect-[16/9] w-full overflow-hidden">
+                    <Image
+                      src={post.image}
+                      alt={post.title[locale]}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
                   </div>
-                </a>
+                  <div className="flex flex-1 flex-col p-5">
+                    <div className="mb-2.5 flex flex-wrap items-center gap-2">
+                      <span className="inline-flex rounded-full bg-[rgba(206,74,40,0.1)] px-3 py-0.5 text-xs font-bold text-[#8f2e18]">
+                        {post.category[locale]}
+                      </span>
+                      <span className="text-xs text-neutral-400">
+                        {formatPostDate(post.date, locale)}
+                      </span>
+                    </div>
+                    <h3 className="text-[15px] font-extrabold leading-[1.6] text-[#2c1810]">
+                      {post.title[locale]}
+                    </h3>
+                  </div>
+                </Link>
               </AnimatedSection>
             ))}
           </div>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-            {localizedBlogPosts.slice(3).map((post, i) => (
-              <AnimatedSection key={post.title} delay={200 + i * 80}>
-                <a
-                  href={`${post.href}${localeQuery}`}
-                  style={{
-                    display: "flex",
-                    gap: 14,
-                    borderRadius: 18,
-                    overflow: "hidden",
-                    background: "#fff",
-                    boxShadow: "0 6px 20px rgba(0,0,0,0.07)",
-                    textDecoration: "none",
-                    color: "inherit",
-                    transition: "box-shadow 0.3s, transform 0.3s",
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.boxShadow = "0 16px 40px rgba(0,0,0,0.13)";
-                    e.currentTarget.style.transform = "translateY(-3px)";
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,0,0,0.07)";
-                    e.currentTarget.style.transform = "";
-                  }}
-                >
-                  <img src={post.image} alt={post.title} style={{ width: 110, minHeight: "100%", objectFit: "cover", flexShrink: 0 }} />
-                  <div style={{ padding: "14px 14px 14px 0" }}>
-                    <span className="tag">{post.category}</span>
-                    <h3 style={{ marginTop: 8, fontSize: 14, fontWeight: 700, lineHeight: 1.7, color: "#2c1810" }}>{post.title}</h3>
-                    <p style={{ marginTop: 6, fontSize: 12, color: "#999" }}>{post.date}</p>
-                  </div>
-                </a>
-              </AnimatedSection>
-            ))}
-          </div>
-        </div>
+        )}
       </section>
 
       {/* ── SOCIAL ── */}
-      <section style={{ background: "linear-gradient(135deg, #8f1d1d 0%, #5c1111 100%)", padding: "72px 24px" }}>
-        <AnimatedSection>
-          <div style={{ maxWidth: 760, margin: "0 auto", textAlign: "center" }}>
-            <div className="section-tag" style={{ borderColor: "rgba(255,255,255,0.25)", background: "rgba(255,255,255,0.1)", color: "#fff", marginBottom: 14 }}>{t.socialTag}</div>
-            <h2 style={{ fontSize: "clamp(22px, 3vw, 36px)", fontWeight: 900, color: "#fff", marginBottom: 12 }}>{t.socialHeading}</h2>
-            <p style={{ color: "rgba(255,255,255,0.72)", fontSize: 15, marginBottom: 40 }}>{t.socialText}</p>
-            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center", gap: 20 }}>
-              {socialNetworks.map(({ label, href, emoji }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label={label}
-                  style={{
-                    display: "inline-flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: 8,
-                    padding: "18px 24px",
-                    borderRadius: 20,
-                    background: "rgba(255,255,255,0.12)",
-                    border: "1.5px solid rgba(255,255,255,0.2)",
-                    color: "#fff",
-                    textDecoration: "none",
-                    fontWeight: 700,
-                    fontSize: 13,
-                    minWidth: 100,
-                    transition: "background 0.25s, transform 0.25s",
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.background = "rgba(255,255,255,0.22)";
-                    e.currentTarget.style.transform = "translateY(-4px)";
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.background = "rgba(255,255,255,0.12)";
-                    e.currentTarget.style.transform = "";
-                  }}
-                >
-                  <span style={{ fontSize: 28 }}>{emoji}</span>
-                  {label}
-                </a>
-              ))}
-            </div>
+      <section className="bg-gradient-to-br from-[#8f2e18] to-[#4a1509] px-4 py-16 md:px-6">
+        <AnimatedSection className="mx-auto max-w-2xl text-center">
+          <SectionBadge tone="invert" className="mb-3.5">
+            {t.socialTag}
+          </SectionBadge>
+          <h2 className="mb-3 text-[clamp(1.3rem,3vw,2.1rem)] font-black text-white">
+            {t.socialHeading}
+          </h2>
+          <p className="mb-9 text-[15px] text-white/70">{t.socialText}</p>
+          <div className="flex flex-wrap items-center justify-center gap-5">
+            {t.socialNetworks.map(({ label, href, emoji }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={label}
+                className="inline-flex min-w-[100px] flex-col items-center gap-2 rounded-2xl border border-white/20 bg-white/10 px-6 py-4.5 text-[13px] font-bold text-white transition-all duration-250 hover:-translate-y-1 hover:bg-white/20"
+              >
+                <span className="text-2xl">{emoji}</span>
+                {label}
+              </a>
+            ))}
           </div>
         </AnimatedSection>
       </section>

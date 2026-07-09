@@ -1,7 +1,8 @@
-// app/tordilla-finder/page.tsx
 import Link from "next/link";
-import { MapPin, Navigation, Store } from "lucide-react";
+import { Store } from "lucide-react";
 import { getLocaleFromSearchParams, translations } from "@/lib/i18n";
+import { PageHero } from "@/components/ui/page-hero";
+import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 
 interface TordillaFinderPageProps {
   searchParams: Promise<{ lang?: string }>;
@@ -21,37 +22,21 @@ export default async function TordillaFinderPage({ searchParams }: TordillaFinde
   const { lang } = await searchParams;
   const locale = getLocaleFromSearchParams(new URLSearchParams({ lang: lang || "fa" }));
   const t = translations[locale].tordillaFinder;
-  const commonT = translations[locale].common;
   const localeQuery = `?lang=${locale}`;
 
   return (
-    <div className="bg-white" dir={locale === "fa" ? "rtl" : "ltr"}>
-      {/* Hero Section with Breadcrumb */}
-      <section className="bg-[#f6f1ec] pt-8 pb-4">
-        <div className="mx-auto max-w-[1240px] px-4 md:px-6 lg:px-8">
-          <div className="text-sm text-neutral-500 mb-4">
-            <Link href={`/?lang=${locale}`} className="hover:text-[#8f1d1d] transition">
-              {t.breadcrumbHome}
-            </Link>{" "}
-            &gt; <span className="text-[#8f1d1d]">{t.breadcrumbCurrent}</span>
-          </div>
-          <div className="text-center">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#8f1d1d]/10 mb-6">
-              <Navigation className="w-10 h-10 text-[#8f1d1d]" />
-            </div>
-            <h1 className="text-3xl md:text-5xl font-black text-[#8f1d1d] mb-4">
-              {t.heroTitle}
-            </h1>
-            <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-              {t.heroText}
-            </p>
-          </div>
-        </div>
-      </section>
+    <div className="min-h-screen bg-[#fdf8f3]" dir={locale === "fa" ? "rtl" : "ltr"}>
+      <PageHero title={t.heroTitle} text={t.heroText} showLogo={false} />
 
-      {/* Google Maps Section */}
+      <BreadcrumbNav
+        items={[
+          { label: t.breadcrumbHome, href: `/?lang=${locale}` },
+          { label: t.breadcrumbCurrent },
+        ]}
+      />
+
       <section className="mx-auto max-w-[1240px] px-4 py-12 md:px-6 lg:px-8">
-        <div className="bg-white rounded-[24px] overflow-hidden shadow-[0_18px_40px_rgba(0,0,0,0.08)] border border-neutral-100">
+        <div className="overflow-hidden rounded-[24px] border border-neutral-100 bg-white shadow-[0_18px_40px_rgba(0,0,0,0.08)]">
           <div className="aspect-video w-full">
             <iframe
               src="https://www.google.com/maps/d/embed?mid=1XXtufbZufrihTNWzWRG8mugSpE9cAkCT"
@@ -61,28 +46,23 @@ export default async function TordillaFinderPage({ searchParams }: TordillaFinde
               allowFullScreen
               loading="lazy"
               title={t.mapTitle}
-              className="w-full h-full min-h-[500px]"
+              className="h-full min-h-[500px] w-full"
             />
           </div>
         </div>
       </section>
 
-      {/* Info Section */}
-      <section className="bg-[#f6f1ec] py-16">
+      <section className="bg-[#fdf1e6] py-16">
         <div className="mx-auto max-w-[1240px] px-4 text-center md:px-6 lg:px-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#8f1d1d]/10 mb-4">
-            <Store className="w-8 h-8 text-[#8f1d1d]" />
+          <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-[rgba(206,74,40,0.1)]">
+            <Store className="h-8 w-8 text-[#ce4a28]" />
           </div>
-          <h3 className="text-2xl md:text-3xl font-bold text-[#8f1d1d] mb-3">
-            {t.infoTitle}
-          </h3>
-          <p className="text-neutral-600 leading-relaxed max-w-2xl mx-auto">
-            {t.infoText}
-          </p>
+          <h3 className="mb-3 text-2xl font-bold text-[#8f2e18] md:text-3xl">{t.infoTitle}</h3>
+          <p className="mx-auto max-w-2xl leading-relaxed text-neutral-600">{t.infoText}</p>
           <div className="mt-8">
             <Link
               href={`/contact${localeQuery}`}
-              className="inline-flex min-h-12 items-center rounded-full bg-[#1f86c7] px-8 text-base font-extrabold text-white transition hover:bg-[#15689b]"
+              className="inline-flex min-h-12 items-center rounded-full bg-[#214c3f] px-8 text-base font-extrabold text-white transition hover:bg-[#173630]"
             >
               {t.contactButton}
             </Link>
@@ -90,27 +70,22 @@ export default async function TordillaFinderPage({ searchParams }: TordillaFinde
         </div>
       </section>
 
-      {/* CTA Section similar to home page cinema section */}
-      <section className="bg-[#8f1d1d] py-6 md:py-8">
-        <div className="mx-auto max-w-[760px] px-4 md:px-5 text-center">
-          <h4 className="text-xl md:text-2xl font-black text-white mb-4">
-            {t.socialHeading}
-          </h4>
-          <p className="text-white/80 mb-6">
-            {t.socialText}
-          </p>
+      <section className="bg-gradient-to-br from-[#8f2e18] to-[#4a1509] py-8">
+        <div className="mx-auto max-w-[760px] px-5 text-center">
+          <h4 className="mb-4 text-xl font-black text-white md:text-2xl">{t.socialHeading}</h4>
+          <p className="mb-6 text-white/80">{t.socialText}</p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <a
               href="https://instagram.com/tordillachips/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-10 items-center rounded-full bg-white px-5 text-sm font-bold text-[#8f1d1d] transition hover:bg-gray-100"
+              className="inline-flex min-h-10 items-center rounded-full bg-white px-5 text-sm font-bold text-[#8f2e18] transition hover:bg-gray-100"
             >
               {t.instagramButton}
             </a>
             <Link
               href={`/contact${localeQuery}`}
-              className="inline-flex min-h-10 items-center rounded-full border-2 border-white px-5 text-sm font-bold text-white transition hover:bg-white hover:text-[#8f1d1d]"
+              className="inline-flex min-h-10 items-center rounded-full border-2 border-white px-5 text-sm font-bold text-white transition hover:bg-white hover:text-[#8f2e18]"
             >
               {t.contactLink}
             </Link>

@@ -1,233 +1,104 @@
-import Link from "next/link";
-import { products, getLocalizedProduct } from "@/lib/seed-content";
-import { translations } from "@/lib/i18n";
+import type { Metadata } from "next";
+import { ProductCard } from "@/components/product-card";
+import { SectionBadge } from "@/components/ui/section-badge";
+import { products, getLocalizedProduct, siteMeta } from "@/lib/seed-content";
+import { translations, getLocaleFromSearchParams } from "@/lib/i18n";
 
-export default async function ProductsPage({
-  searchParams,
-}: {
+type ProductsPageProps = {
   searchParams?: Promise<{ lang?: string }>;
-}) {
+};
+
+export async function generateMetadata({ searchParams }: ProductsPageProps): Promise<Metadata> {
+  const params = await searchParams;
+  const locale = getLocaleFromSearchParams(new URLSearchParams({ lang: params?.lang ?? "fa" }));
+  const t = translations[locale].products;
+  return {
+    title: t.heroTitle,
+    description: t.heroText,
+    openGraph: {
+      title: t.heroTitle,
+      description: t.heroText,
+    },
+  };
+}
+
+export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   const params = await searchParams;
   const locale = params?.lang === "en" ? "en" : "fa";
   const t = translations[locale].products;
   const localeQuery = `?lang=${locale}`;
+  const isFa = locale === "fa";
+
+  const itemListJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: products.map((product, index) => {
+      const localized = getLocalizedProduct(product, locale);
+      return {
+        "@type": "ListItem",
+        position: index + 1,
+        url: `${siteMeta.url}/products/${product.slug}`,
+        name: localized.title,
+      };
+    }),
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: isFa ? "خانه" : "Home", item: siteMeta.url },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: t.heroTitle,
+        item: `${siteMeta.url}/products`,
+      },
+    ],
+  };
 
   return (
-    <div className="products-page" dir={locale === "fa" ? "rtl" : "ltr"} lang={locale}>
-      <style>{`
-        .products-page {
-          background: #fdf8f3;
-          min-height: 100vh;
-        }
+    <div dir={isFa ? "rtl" : "ltr"} lang={locale} className="min-h-screen bg-[#fdf8f3]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
 
-        .products-hero {
-          position: relative;
-          background: linear-gradient(135deg, #8f1d1d 0%, #5c1111 100%);
-          padding: 72px 24px 80px;
-          text-align: center;
-          overflow: hidden;
-        }
-        .products-hero::before {
-          content: '';
-          position: absolute;
-          top: -80px; left: -80px;
-          width: 320px; height: 320px;
-          border-radius: 50%;
-          background: rgba(255,255,255,0.05);
-          pointer-events: none;
-        }
-        .products-hero::after {
-          content: '';
-          position: absolute;
-          bottom: -100px; right: -60px;
-          width: 380px; height: 380px;
-          border-radius: 50%;
-          background: rgba(255,255,255,0.04);
-          pointer-events: none;
-        }
-        .products-hero-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 5px 18px;
-          border-radius: 9999px;
-          border: 1.5px solid rgba(255,255,255,0.25);
-          background: rgba(255,255,255,0.1);
-          color: #fff;
-          font-size: 13px;
-          font-weight: 700;
-          margin-bottom: 20px;
-        }
-        .products-hero h1 {
-          font-size: clamp(30px, 5vw, 52px);
-          font-weight: 900;
-          color: #fff;
-          margin-bottom: 16px;
-          position: relative;
-          z-index: 1;
-        }
-        .products-hero p {
-          max-width: 580px;
-          margin: 0 auto;
-          color: rgba(255,255,255,0.78);
-          font-size: 16px;
-          line-height: 2;
-          position: relative;
-          z-index: 1;
-        }
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#ce4a28] to-[#7a2412] px-4 py-16 text-center md:px-6 md:py-20">
+        <div className="pointer-events-none absolute -left-20 -top-20 h-80 w-80 rounded-full bg-white/5" />
+        <div className="pointer-events-none absolute -bottom-24 -right-14 h-96 w-96 rounded-full bg-white/[0.04]" />
 
-        .products-grid-wrap {
-          max-width: 1240px;
-          margin: 0 auto;
-          padding: 72px 24px;
-        }
-        .products-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-          gap: 28px;
-        }
-
-        .product-card {
-          background: #fff;
-          border-radius: 26px;
-          overflow: hidden;
-          box-shadow: 0 8px 32px rgba(143,29,29,0.08);
-          display: flex;
-          flex-direction: column;
-          transition: transform 0.32s ease, box-shadow 0.32s ease;
-          opacity: 0;
-          animation: fadeUp 0.6s ease forwards;
-        }
-        .product-card:hover {
-          transform: translateY(-7px);
-          box-shadow: 0 24px 56px rgba(143,29,29,0.16);
-        }
-        .product-card-img-wrap {
-          position: relative;
-          overflow: hidden;
-          background: #f5ede6;
-        }
-        .product-card-img-wrap img {
-          display: block;
-          width: 100%;
-          aspect-ratio: 4/3;
-          object-fit: cover;
-          transition: transform 0.55s ease;
-        }
-        .product-card:hover .product-card-img-wrap img {
-          transform: scale(1.06);
-        }
-        .product-card-badge {
-          position: absolute;
-          top: 14px;
-          right: 14px;
-          padding: 4px 13px;
-          border-radius: 9999px;
-          background: rgba(143,29,29,0.88);
-          color: #fff;
-          font-size: 12px;
-          font-weight: 700;
-          backdrop-filter: blur(6px);
-        }
-        .product-card-body {
-          padding: 22px 22px 26px;
-          display: flex;
-          flex-direction: column;
-          flex: 1;
-        }
-        .product-card-body h3 {
-          font-size: 20px;
-          font-weight: 800;
-          color: #2c1810;
-          margin-bottom: 10px;
-        }
-        .product-card-body p {
-          font-size: 14px;
-          color: #7a5040;
-          line-height: 1.85;
-          flex: 1;
-        }
-        .product-features {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 6px;
-          margin: 14px 0;
-        }
-        .product-feature-tag {
-          display: inline-block;
-          padding: 3px 11px;
-          border-radius: 9999px;
-          background: rgba(143,29,29,0.07);
-          color: #8f1d1d;
-          font-size: 12px;
-          font-weight: 600;
-        }
-        .product-card-cta {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          margin-top: 18px;
-          padding: 11px 22px;
-          border-radius: 9999px;
-          background: #8f1d1d;
-          color: #fff;
-          font-size: 14px;
-          font-weight: 700;
-          text-decoration: none;
-          align-self: flex-start;
-          transition: background 0.2s, transform 0.2s;
-        }
-        .product-card-cta:hover {
-          background: #6e1515;
-          transform: translateX(-3px);
-        }
-        .product-card-cta-arrow {
-          font-size: 18px;
-          line-height: 1;
-        }
-
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(30px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
-
-      <section className="products-hero">
-        <div className="products-hero-badge">{t.heroBadge}</div>
-        <h1>{t.heroTitle}</h1>
-        <p>{t.heroText}</p>
+        <div className="relative">
+          <SectionBadge tone="invert" className="mb-5">
+            {t.heroBadge}
+          </SectionBadge>
+          <h1 className="mb-4 text-[clamp(1.9rem,5vw,3.2rem)] font-black text-white">
+            {t.heroTitle}
+          </h1>
+          <p className="mx-auto max-w-xl text-base leading-[2] text-white/80">{t.heroText}</p>
+        </div>
       </section>
 
-      <div className="products-grid-wrap">
-        <div className="products-grid">
+      <div className="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-20">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {products.map((product, index) => {
             const localized = getLocalizedProduct(product, locale);
             return (
-              <article
-                className="product-card"
+              <ProductCard
                 key={product.slug}
-                style={{ animationDelay: `${index * 80}ms` }}
-              >
-                <div className="product-card-img-wrap">
-                  <img alt={localized.title} src={product.image} />
-                  <span className="product-card-badge">{t.tordillaLabel}</span>
-                </div>
-                <div className="product-card-body">
-                  <h3>{localized.title}</h3>
-                  <p>{localized.shortDescription}</p>
-                  <div className="product-features">
-                    {localized.features.slice(0, 3).map((feature) => (
-                      <span className="product-feature-tag" key={feature}>
-                        {feature}
-                      </span>
-                    ))}
-                  </div>
-                  <Link className="product-card-cta" href={`/products/${product.slug}${localeQuery}`}>
-                    {t.viewDetails}
-                    <span className="product-card-cta-arrow">‹</span>
-                  </Link>
-                </div>
-              </article>
+                href={`/products/${product.slug}${localeQuery}`}
+                image={product.image}
+                title={localized.title}
+                description={localized.shortDescription}
+                features={localized.features}
+                badgeLabel={t.tordillaLabel}
+                ctaLabel={t.viewDetails}
+                priority={index < 4}
+              />
             );
           })}
         </div>

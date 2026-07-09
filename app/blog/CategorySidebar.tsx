@@ -53,8 +53,8 @@ export function CategorySidebar({ categories, horizontal = false, locale }: Cate
             href={`/blog${localeQuery}`}
             className={`px-4 py-2 rounded-full text-sm font-medium transition whitespace-nowrap ${
               pathname === "/blog"
-                ? "bg-[#8f1d1d] !text-white"
-                : "bg-neutral-100 text-neutral-700 hover:bg-[#8f1d1d]/10 hover:text-[#8f1d1d]"
+                ? "bg-[#ce4a28] !text-white"
+                : "bg-neutral-100 text-neutral-700 hover:bg-[#ce4a28]/10 hover:text-[#ce4a28]"
             }`}
           >
             {t.allPosts}
@@ -66,8 +66,8 @@ export function CategorySidebar({ categories, horizontal = false, locale }: Cate
               href={`/blog/category/${cat.slug}${localeQuery}`}
               className={`px-4 py-2 rounded-full text-sm font-medium transition whitespace-nowrap ${
                 isCategoryActive(cat.slug)
-                  ? "bg-[#8f1d1d] !text-white"
-                  : "bg-neutral-100 text-neutral-700 hover:bg-[#8f1d1d]/10 hover:text-[#8f1d1d]"
+                  ? "bg-[#ce4a28] !text-white"
+                  : "bg-neutral-100 text-neutral-700 hover:bg-[#ce4a28]/10 hover:text-[#ce4a28]"
               }`}
             >
               {getCategoryName(cat, locale)}
@@ -82,7 +82,7 @@ export function CategorySidebar({ categories, horizontal = false, locale }: Cate
   // Vertical sidebar (if used)
   return (
     <div className="mb-8 rounded-2xl border border-neutral-200 bg-white p-6 shadow-md">
-      <h3 className="mb-4 text-xl font-bold text-[#8f1d1d] border-r-4 border-[#8f1d1d] pr-3">
+      <h3 className="mb-4 text-xl font-bold text-[#ce4a28] border-r-4 border-[#ce4a28] pr-3">
         {t.category}
       </h3>
       <ul className="space-y-2">
@@ -91,8 +91,8 @@ export function CategorySidebar({ categories, horizontal = false, locale }: Cate
             href={`/blog${localeQuery}`}
             className={`flex items-center justify-between rounded-lg p-2 transition ${
               pathname === "/blog"
-                ? "bg-[#8f1d1d]/10 text-[#8f1d1d] font-medium"
-                : "text-neutral-700 hover:bg-[#8f1d1d]/5 hover:text-[#8f1d1d]"
+                ? "bg-[#ce4a28]/10 text-[#ce4a28] font-medium"
+                : "text-neutral-700 hover:bg-[#ce4a28]/5 hover:text-[#ce4a28]"
             }`}
           >
             <span>{t.allPosts}</span>
@@ -105,8 +105,8 @@ export function CategorySidebar({ categories, horizontal = false, locale }: Cate
               href={`/blog/category/${cat.slug}${localeQuery}`}
               className={`flex items-center justify-between rounded-lg p-2 transition ${
                 isCategoryActive(cat.slug)
-                  ? "bg-[#8f1d1d]/10 text-[#8f1d1d] font-medium"
-                  : "text-neutral-700 hover:bg-[#8f1d1d]/5 hover:text-[#8f1d1d]"
+                  ? "bg-[#ce4a28]/10 text-[#ce4a28] font-medium"
+                  : "text-neutral-700 hover:bg-[#ce4a28]/5 hover:text-[#ce4a28]"
               }`}
             >
               <span>{getCategoryName(cat, locale)}</span>

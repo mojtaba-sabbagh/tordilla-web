@@ -344,3 +344,39 @@ img {
     grid-template-columns: 1fr;
   }
 }
+
+/* ── Motion utilities (bold/modern homepage) ── */
+@keyframes float-a {
+  0%, 100% { transform: translateY(0) rotate(-8deg); }
+  50% { transform: translateY(-16px) rotate(-8deg); }
+}
+
+@keyframes float-b {
+  0%, 100% { transform: translateY(0) rotate(10deg); }
+  50% { transform: translateY(14px) rotate(10deg); }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.animate-float-a {
+  animation: float-a 6s ease-in-out infinite;
+}
+
+.animate-float-b {
+  animation: float-b 7.5s ease-in-out infinite;
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-float-a,
+  .animate-float-b,
+  .animate-marquee {
+    animation: none;
+  }
+}

@@ -31,15 +31,49 @@ const yekan = localFont({
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteMeta.url),
-  title: siteMeta.title,
+  title: {
+    default: siteMeta.title,
+    template: `%s | ${siteMeta.name}`,
+  },
   description: siteMeta.description,
   alternates: {
     canonical: "/",
     languages: {
       fa: "/",
-      en: "/en",
+      en: "/?lang=en",
     },
   },
+  openGraph: {
+    type: "website",
+    locale: "fa_IR",
+    url: siteMeta.url,
+    siteName: siteMeta.name,
+    title: siteMeta.title,
+    description: siteMeta.description,
+    images: [{ url: "/home/logo.png" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteMeta.title,
+    description: siteMeta.description,
+    images: ["/home/logo.png"],
+  },
+};
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: siteMeta.name,
+  alternateName: "Tordilla",
+  url: siteMeta.url,
+  logo: `${siteMeta.url}/home/logo.png`,
+  description: siteMeta.description,
+  sameAs: [
+    "https://instagram.com/tordillachips/",
+    "https://twitter.com/tordillachips",
+    "https://www.facebook.com/tordillachips",
+    "https://www.aparat.com/tordilla.chips",
+  ],
 };
 
 export default function RootLayout({
@@ -48,13 +82,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html 
-      data-scroll-behavior="smooth" 
-      dir="rtl" 
+    <html
+      data-scroll-behavior="smooth"
+      dir="rtl"
       lang="fa"
       suppressHydrationWarning
     >
       <body className={yekan.className} suppressHydrationWarning>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
         <Suspense fallback={null}>
           <div className="site-shell min-h-screen flex flex-col">
             <SiteHeader />

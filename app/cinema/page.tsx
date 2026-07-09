@@ -1,7 +1,9 @@
 // app/cinema/page.tsx
 import Link from "next/link";
-import { MapPin, Ticket, Popcorn } from "lucide-react";
+import { MapPin, Ticket } from "lucide-react";
 import { getLocaleFromSearchParams, translations } from "@/lib/i18n";
+import { PageHero } from "@/components/ui/page-hero";
+import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 
 interface CinemaPageProps {
   searchParams: Promise<{ lang?: string }>;
@@ -61,64 +63,38 @@ export default async function CinemaPage({ searchParams }: CinemaPageProps) {
   const t = translations[locale].cinema;
   const localeQuery = `?lang=${locale}`;
 
-  const localizedCinemas = cinemas.map(cinema => ({
+  const localizedCinemas = cinemas.map((cinema) => ({
     name: locale === "fa" ? cinema.nameFa : cinema.nameEn,
     address: locale === "fa" ? cinema.addressFa : cinema.addressEn,
     ticketUrl: cinema.ticketUrl,
   }));
 
   return (
-    <main className="bg-white" dir={locale === "fa" ? "rtl" : "ltr"}>
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#fbf5ec] to-white py-12 md:py-16">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="text-center max-w-3xl mx-auto">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#8f1d1d]/10 mb-6">
-              <Popcorn className="w-10 h-10 text-[#8f1d1d]" />
-            </div>
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-[#8f1d1d] mb-4">
-              {t.heroTitle}
-            </h1>
-            <p className="text-base md:text-lg text-neutral-600">
-              {t.heroText}
-            </p>
-          </div>
-        </div>
+    <main className="min-h-screen bg-[#fdf8f3]" dir={locale === "fa" ? "rtl" : "ltr"}>
+      <PageHero title={t.heroTitle} text={t.heroText} logoAlt="Tordilla" />
+
+      <BreadcrumbNav
+        items={[
+          { label: t.breadcrumbHome, href: `/?lang=${locale}` },
+          { label: t.breadcrumbCurrent },
+        ]}
+      />
+
+      <section className="mx-auto max-w-3xl px-4 py-4 text-center md:px-6">
+        <h2 className="text-xl font-bold text-[#8f2e18] md:text-2xl">{t.sectionTitle}</h2>
       </section>
 
-      {/* Breadcrumb */}
-      <div className="container mx-auto px-4 md:px-6 py-3">
-        <div className="text-sm text-neutral-500">
-          <Link href={`/?lang=${locale}`} className="hover:text-[#8f1d1d] transition">
-            {t.breadcrumbHome}
-          </Link>{" "}
-          &gt; <span className="text-[#8f1d1d]">{t.breadcrumbCurrent}</span>
-        </div>
-      </div>
-
-      {/* Title Section */}
-      <section className="container mx-auto px-4 md:px-6 py-4">
-        <div className="text-center">
-          <h2 className="text-xl md:text-2xl font-bold text-[#8f1d1d]">
-            {t.sectionTitle}
-          </h2>
-        </div>
-      </section>
-
-      {/* Cinemas List */}
-      <section className="container mx-auto px-4 md:px-6 py-8 md:py-12">
-        <div className="max-w-3xl mx-auto space-y-4">
+      <section className="mx-auto max-w-3xl px-4 py-8 md:px-6 md:py-12">
+        <div className="space-y-4">
           {localizedCinemas.map((cinema) => (
             <div
               key={cinema.name}
-              className="bg-white rounded-xl shadow-md overflow-hidden border border-neutral-100 transition hover:shadow-lg"
+              className="overflow-hidden rounded-2xl border border-neutral-100 bg-white shadow-md transition hover:shadow-lg"
             >
               <div className="p-5 md:p-6">
-                <h3 className="text-lg md:text-xl font-bold text-[#8f1d1d] mb-2">
-                  {cinema.name}
-                </h3>
-                <div className="flex items-start gap-2 text-neutral-600 text-sm mb-4">
-                  <MapPin className="w-4 h-4 text-[#8f1d1d] flex-shrink-0 mt-0.5" />
+                <h3 className="mb-2 text-lg font-bold text-[#8f2e18] md:text-xl">{cinema.name}</h3>
+                <div className="mb-4 flex items-start gap-2 text-sm text-neutral-600">
+                  <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#ce4a28]" />
                   <p>{cinema.address}</p>
                 </div>
                 {cinema.ticketUrl ? (
@@ -126,14 +102,14 @@ export default async function CinemaPage({ searchParams }: CinemaPageProps) {
                     href={cinema.ticketUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-[#8f1d1d] !text-white px-4 py-2 rounded-full text-sm font-bold transition hover:bg-[#6b1616]"
+                    className="inline-flex items-center gap-2 rounded-full bg-[#ce4a28] px-4 py-2 text-sm font-bold !text-white transition hover:bg-[#8f2e18]"
                   >
-                    <Ticket className="w-4 h-4 text-white" />
+                    <Ticket className="h-4 w-4 text-white" />
                     {t.buyTicket}
                   </a>
                 ) : (
-                  <span className="inline-flex items-center gap-2 bg-neutral-100 text-neutral-500 px-4 py-2 rounded-full text-sm font-bold">
-                    <Ticket className="w-4 h-4" />
+                  <span className="inline-flex items-center gap-2 rounded-full bg-neutral-100 px-4 py-2 text-sm font-bold text-neutral-500">
+                    <Ticket className="h-4 w-4" />
                     {t.buyTicket}
                   </span>
                 )}
@@ -143,36 +119,24 @@ export default async function CinemaPage({ searchParams }: CinemaPageProps) {
         </div>
       </section>
 
-      {/* Info Section */}
-      <section className="bg-[#f6f1ec] py-12 md:py-16">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="max-w-3xl mx-auto text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#8f1d1d]/10 mb-4">
-              <span className="text-2xl">🎬</span>
-            </div>
-            <h3 className="text-xl md:text-2xl font-bold text-[#8f1d1d] mb-3">
-              {t.infoTitle}
-            </h3>
-            <p className="text-neutral-600 leading-relaxed">
-              {t.infoText}
-            </p>
+      <section className="bg-[#fdf1e6] py-12 md:py-16">
+        <div className="mx-auto max-w-3xl px-4 text-center md:px-6">
+          <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-[rgba(206,74,40,0.1)]">
+            <span className="text-2xl">🎬</span>
           </div>
+          <h3 className="mb-3 text-xl font-bold text-[#8f2e18] md:text-2xl">{t.infoTitle}</h3>
+          <p className="leading-relaxed text-neutral-600">{t.infoText}</p>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="bg-[#8f1d1d] py-12 text-white">
-        <div className="container mx-auto px-4 md:px-6 text-center">
-          <h4 className="text-xl md:text-2xl font-black mb-4">
-            {t.ctaTitle}
-          </h4>
-          <p className="text-white/80 mb-6 max-w-2xl mx-auto">
-            {t.ctaText}
-          </p>
-          <div className="flex flex-wrap gap-4 justify-center">
+      <section className="bg-gradient-to-br from-[#8f2e18] to-[#4a1509] py-12 text-white">
+        <div className="mx-auto max-w-3xl px-4 text-center md:px-6">
+          <h4 className="mb-4 text-xl font-black md:text-2xl">{t.ctaTitle}</h4>
+          <p className="mx-auto mb-6 max-w-2xl text-white/80">{t.ctaText}</p>
+          <div className="flex flex-wrap justify-center gap-4">
             <Link
               href={`/contact${localeQuery}`}
-              className="inline-block rounded-full border-2 border-white text-[#8f1d1d] px-6 py-2.5 font-bold transition"
+              className="inline-flex min-h-12 items-center rounded-full border-2 border-white px-6 font-bold text-white transition hover:bg-white hover:text-[#8f2e18]"
             >
               {t.contactButton}
             </Link>
@@ -180,7 +144,7 @@ export default async function CinemaPage({ searchParams }: CinemaPageProps) {
               href="https://instagram.com/tordillachips/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block rounded-full border-2 border-white px-6 py-2.5 font-bold transition"
+              className="inline-flex min-h-12 items-center rounded-full border-2 border-white px-6 font-bold text-white transition hover:bg-white hover:text-[#8f2e18]"
             >
               {t.instagramButton}
             </a>

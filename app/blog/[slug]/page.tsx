@@ -6,13 +6,15 @@ import Link from "next/link";
 import { Calendar, User, FolderOpen, MessageCircle } from "lucide-react";
 import { CommentForm } from "./CommentForm";
 import { getLocaleFromSearchParams, translations } from "@/lib/i18n";
+import { PageHero } from "@/components/ui/page-hero";
+import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
+import { siteMeta } from "@/lib/seed-content";
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ lang?: string }>;
 }
 
-// Helper to safely get localized text from JSON string or object
 function getLocalizedText(value: unknown, locale: string): string {
   if (!value) return "";
   if (typeof value === "string") {
@@ -22,7 +24,6 @@ function getLocalizedText(value: unknown, locale: string): string {
         return parsed[locale] || parsed.fa || Object.values(parsed)[0] || "";
       }
     } catch {
-      // Not JSON, return as is
       return value;
     }
     return value;
@@ -41,7 +42,12 @@ export async function generateMetadata({ params, searchParams }: BlogPostPagePro
   const post = await prisma.blogPost.findUnique({ where: { slug, published: true } });
   if (!post) return { title: locale === "fa" ? "پست یافت نشد" : "Post not found" };
   const title = getLocalizedText(post.title, locale);
-  return { title };
+  const description = getLocalizedText(post.excerpt, locale);
+  return {
+    title,
+    description,
+    openGraph: { title, description, images: [{ url: post.image }] },
+  };
 }
 
 export default async function BlogPostPage({ params, searchParams }: BlogPostPageProps) {
@@ -54,12 +60,11 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
   });
   if (!post) notFound();
 
-  // Safely extract localized values
   const title = getLocalizedText(post.title, locale);
   const category = getLocalizedText(post.category, locale);
   const author = getLocalizedText(post.author, locale);
   const contentHtml = getLocalizedText(post.content, locale);
-  const excerpt = getLocalizedText(post.excerpt, locale); // for meta or future use
+  const excerpt = getLocalizedText(post.excerpt, locale);
 
   const relatedPosts = await prisma.blogPost.findMany({
     where: { categorySlug: post.categorySlug, id: { not: post.id }, published: true },
@@ -70,214 +75,81 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
   const t = translations[locale];
   const blogT = t.blog;
   const commonT = t.common;
-  const localeQuery = `?lang=${locale}`;
+
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: title,
+    description: excerpt,
+    image: `${siteMeta.url}${post.image}`,
+    datePublished: post.date.toISOString(),
+    author: { "@type": "Organization", name: author || siteMeta.name },
+    publisher: { "@type": "Organization", name: siteMeta.name, logo: `${siteMeta.url}/home/logo.png` },
+    mainEntityOfPage: `${siteMeta.url}/blog/${post.slug}`,
+  };
 
   return (
-    <main className="single-post-page" dir={locale === "fa" ? "rtl" : "ltr"}>
-      <style>{`
-        .single-post-page {
-          background: #fdf8f3;
-          min-height: 100vh;
-        }
-        .post-hero {
-          position: relative;
-          background: linear-gradient(135deg, #8f1d1d 0%, #5c1111 100%);
-          padding: 80px 24px 100px;
-          text-align: center;
-          overflow: hidden;
-        }
-        .post-hero::before,
-        .post-hero::after {
-          content: '';
-          position: absolute;
-          border-radius: 50%;
-          pointer-events: none;
-        }
-        .post-hero::before {
-          width: 360px; height: 360px;
-          top: -120px; left: -80px;
-          background: rgba(255,255,255,0.05);
-        }
-        .post-hero::after {
-          width: 280px; height: 280px;
-          bottom: -100px; right: -60px;
-          background: rgba(255,255,255,0.04);
-        }
-        .post-hero-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 5px 18px;
-          border-radius: 9999px;
-          border: 1.5px solid rgba(255,255,255,0.28);
-          background: rgba(255,255,255,0.1);
-          color: #fff;
-          font-size: 13px;
-          font-weight: 700;
-          margin-bottom: 20px;
-          position: relative;
-          z-index: 1;
-        }
-        .post-hero h1 {
-          font-size: clamp(30px, 5vw, 54px);
-          font-weight: 900;
-          color: #fff;
-          margin-bottom: 16px;
-          position: relative;
-          z-index: 1;
-        }
-        .post-hero-logo-ring {
-          width: 148px;
-          height: 148px;
-          border-radius: 50%;
-          background: rgba(255,255,255,0.12);
-          border: 2px solid rgba(255,255,255,0.2);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          backdrop-filter: blur(8px);
-          margin: 0 auto;
-        }
-        .post-wave {
-          display: block;
-          width: 100%;
-          overflow: hidden;
-          line-height: 0;
-          margin-top: -2px;
-        }
-        .post-wave svg { display: block; width: 100%; }
-        .post-breadcrumb {
-          max-width: 1080px;
-          margin: 0 auto;
-          padding: 20px 24px;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          font-size: 13px;
-          color: #a07060;
-          border-bottom: 1.5px solid rgba(143,29,29,0.08);
-        }
-        .post-breadcrumb a {
-          color: #8f1d1d;
-          text-decoration: none;
-          font-weight: 600;
-        }
-        .post-breadcrumb a:hover { text-decoration: underline; }
-        .post-breadcrumb-sep { color: #cbb0a0; }
-        .post-container {
-          max-width: 800px;
-          margin: 0 auto;
-          padding: 40px 24px;
-        }
-        .post-meta-bar {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 16px;
-          padding-bottom: 20px;
-          margin-bottom: 32px;
-          border-bottom: 2px solid rgba(143,29,29,0.15);
-          color: #5a3728;
-          font-size: 14px;
-        }
-        .post-meta-bar span { display: inline-flex; align-items: center; gap: 6px; }
-        .featured-image {
-          border-radius: 24px;
-          overflow: hidden;
-          margin-bottom: 32px;
-          box-shadow: 0 12px 40px rgba(0,0,0,0.1);
-        }
-        .post-content {
-          font-size: 16px;
-          line-height: 1.9;
-          color: #2c1810;
-        }
-        .post-content h2 { color: #8f1d1d; margin-top: 32px; }
-        .comments-section {
-          margin-top: 48px;
-          padding-top: 32px;
-          border-top: 2px solid rgba(143,29,29,0.15);
-        }
-        .comment {
-          background: #fff;
-          border-radius: 20px;
-          padding: 20px;
-          margin-bottom: 20px;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-        .related-section {
-          background: #f6f1ec;
-          padding: 48px 24px;
-        }
-        .related-grid {
-          max-width: 1080px;
-          margin: 0 auto;
-          display: grid;
-          gap: 24px;
-          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        }
-        .related-card {
-          background: #fff;
-          border-radius: 20px;
-          overflow: hidden;
-          transition: transform 0.25s;
-        }
-        .related-card:hover { transform: translateY(-5px); }
-        .related-card img { width: 100%; height: 160px; object-fit: cover; }
-        .related-card h4 { padding: 16px; font-weight: 800; color: #2c1810; }
-      `}</style>
+    <main className="min-h-screen bg-[#fdf8f3]" dir={locale === "fa" ? "rtl" : "ltr"}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
 
-      <section className="post-hero">
-        <div className="post-hero-badge">{blogT.articleBadge}</div>
-        <h1>{title}</h1>
-        <div className="post-hero-logo-ring">
-          <Image src="/home/logo.png" alt="Logo" width={108} height={108} />
-        </div>
-      </section>
+      <PageHero badge={blogT.articleBadge} title={title} />
 
-      <div className="post-wave">
-        <svg viewBox="0 0 1200 60" preserveAspectRatio="none" style={{ height: 52 }}>
-          <path d="M0,0 C300,60 900,60 1200,0 L1200,60 L0,60 Z" fill="#fdf8f3" />
-        </svg>
-      </div>
+      <BreadcrumbNav
+        items={[
+          { label: commonT.home, href: `/?lang=${locale}` },
+          { label: commonT.blog, href: `/blog?lang=${locale}` },
+          { label: category, href: `/blog/category/${post.categorySlug}?lang=${locale}` },
+          { label: title },
+        ]}
+      />
 
-      <nav className="post-breadcrumb">
-        <Link href={`/?lang=${locale}`}>{commonT.home}</Link>
-        <span className="post-breadcrumb-sep">›</span>
-        <Link href={`/blog?lang=${locale}`}>{commonT.blog}</Link>
-        <span className="post-breadcrumb-sep">›</span>
-        <Link href={`/blog/category/${post.categorySlug}?lang=${locale}`}>{category}</Link>
-        <span className="post-breadcrumb-sep">›</span>
-        <span>{title}</span>
-      </nav>
-
-      <div className="post-container">
-        <div className="post-meta-bar">
-          <span><Calendar size={16} /> {new Date(post.date).toLocaleDateString(locale === "fa" ? "fa-IR" : "en-US")}</span>
-          <span><User size={16} /> {author}</span>
-          <span><FolderOpen size={16} /> <Link href={`/blog/category/${post.categorySlug}?lang=${locale}`}>{category}</Link></span>
-          <span><MessageCircle size={16} /> {post.comments.length} {post.comments.length === 1 ? blogT.commentsCount : blogT.commentsCount + "s"}</span>
+      <div className="mx-auto max-w-[800px] px-6 py-10">
+        <div className="mb-8 flex flex-wrap gap-4 border-b-2 border-[rgba(206,74,40,0.15)] pb-5 text-sm text-[#5a3728]">
+          <span className="inline-flex items-center gap-1.5">
+            <Calendar size={16} /> {new Date(post.date).toLocaleDateString(locale === "fa" ? "fa-IR" : "en-US")}
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <User size={16} /> {author}
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <FolderOpen size={16} />
+            <Link href={`/blog/category/${post.categorySlug}?lang=${locale}`} className="hover:text-[#ce4a28]">
+              {category}
+            </Link>
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <MessageCircle size={16} /> {post.comments.length}{" "}
+            {post.comments.length === 1 ? blogT.commentsCount : blogT.commentsCount + "s"}
+          </span>
         </div>
 
-        <div className="featured-image">
-          <Image src={post.image} alt={title} width={800} height={450} className="w-full h-auto" />
+        <div className="mb-8 overflow-hidden rounded-3xl shadow-[0_12px_40px_rgba(0,0,0,0.1)]">
+          <Image src={post.image} alt={title} width={800} height={450} className="h-auto w-full" />
         </div>
 
-        <div className="post-content" dangerouslySetInnerHTML={{ __html: contentHtml }} />
+        <div
+          className="prose-content text-base leading-[1.9] text-[#2c1810] [&_h2]:mt-8 [&_h2]:text-[#8f2e18]"
+          dangerouslySetInnerHTML={{ __html: contentHtml }}
+        />
 
-        <div className="comments-section">
-          <h3 className="text-2xl font-bold text-[#8f1d1d] mb-6">{blogT.commentsHeading} ({post.comments.length})</h3>
+        <div className="mt-12 border-t-2 border-[rgba(206,74,40,0.15)] pt-8">
+          <h3 className="mb-6 text-2xl font-bold text-[#8f2e18]">
+            {blogT.commentsHeading} ({post.comments.length})
+          </h3>
           <CommentForm blogPostId={post.id} locale={locale} />
           {post.comments.length > 0 && (
             <div className="mt-8 space-y-4">
-              {post.comments.map(comment => (
-                <div key={comment.id} className="comment">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 bg-[#8f1d1d]/10 rounded-full flex items-center justify-center font-bold text-[#8f1d1d]">
+              {post.comments.map((comment) => (
+                <div key={comment.id} className="rounded-[20px] bg-white p-5 shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
+                  <div className="mb-2 flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[rgba(206,74,40,0.1)] font-bold text-[#ce4a28]">
                       {comment.name.charAt(0)}
                     </div>
                     <div>
                       <div className="font-bold">{comment.name}</div>
-                      <div className="text-xs text-neutral-500">{new Date(comment.createdAt).toLocaleDateString(locale === "fa" ? "fa-IR" : "en-US")}</div>
+                      <div className="text-xs text-neutral-500">
+                        {new Date(comment.createdAt).toLocaleDateString(locale === "fa" ? "fa-IR" : "en-US")}
+                      </div>
                     </div>
                   </div>
                   <p className="text-neutral-700">{comment.content}</p>
@@ -289,15 +161,21 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
       </div>
 
       {relatedPosts.length > 0 && (
-        <section className="related-section">
-          <h3 className="text-2xl font-bold text-[#8f1d1d] text-center mb-8">{commonT.relatedPosts}</h3>
-          <div className="related-grid">
-            {relatedPosts.map(p => {
+        <section className="bg-[#fdf1e6] px-6 py-12">
+          <h3 className="mb-8 text-center text-2xl font-bold text-[#8f2e18]">{commonT.relatedPosts}</h3>
+          <div className="mx-auto grid max-w-[1080px] grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6">
+            {relatedPosts.map((p) => {
               const relatedTitle = getLocalizedText(p.title, locale);
               return (
-                <Link key={p.id} href={`/blog/${p.slug}?lang=${locale}`} className="related-card">
-                  <img src={p.image} alt={relatedTitle} />
-                  <h4>{relatedTitle}</h4>
+                <Link
+                  key={p.id}
+                  href={`/blog/${p.slug}?lang=${locale}`}
+                  className="overflow-hidden rounded-[20px] bg-white transition-transform duration-250 hover:-translate-y-1.5"
+                >
+                  <div className="relative aspect-[16/9] w-full">
+                    <Image src={p.image} alt={relatedTitle} fill sizes="280px" className="object-cover" />
+                  </div>
+                  <h4 className="p-4 font-extrabold text-[#2c1810]">{relatedTitle}</h4>
                 </Link>
               );
             })}

@@ -68,10 +68,10 @@ export function BlogPostsGrid({ posts, locale }: BlogPostsGridProps) {
                 />
               </div>
               <div className="p-4 md:p-5">
-                <span className="inline-block rounded-full bg-[#8f1d1d]/10 px-2.5 py-1 text-xs font-medium text-[#8f1d1d]">
+                <span className="inline-block rounded-full bg-[#ce4a28]/10 px-2.5 py-1 text-xs font-medium text-[#ce4a28]">
                   {category}
                 </span>
-                <h2 className="mt-3 line-clamp-2 text-lg md:text-xl font-bold text-neutral-800 group-hover:text-[#8f1d1d] transition">
+                <h2 className="mt-3 line-clamp-2 text-lg md:text-xl font-bold text-neutral-800 group-hover:text-[#ce4a28] transition">
                   {title}
                 </h2>
                 <p className="mt-2 line-clamp-3 text-sm text-neutral-600">
@@ -83,7 +83,7 @@ export function BlogPostsGrid({ posts, locale }: BlogPostsGridProps) {
                       locale === "fa" ? "fa-IR" : "en-US"
                     )}
                   </span>
-                  <span className="text-[#8f1d1d] font-medium">{t.readMore}</span>
+                  <span className="text-[#ce4a28] font-medium">{t.readMore}</span>
                 </div>
               </div>
             </Link>

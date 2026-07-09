@@ -20,7 +20,7 @@ export function Pagination({ currentPage, totalPages, basePath = "/blog", locale
       {currentPage > 1 && (
         <Link
           href={`${currentPage === 2 ? basePath : `${basePath}/page/${currentPage - 1}`}${localeQuery}`}
-          className="inline-flex h-10 items-center justify-center rounded-full bg-neutral-100 px-4 text-neutral-700 transition hover:bg-[#8f1d1d] hover:text-white"
+          className="inline-flex h-10 items-center justify-center rounded-full bg-neutral-100 px-4 text-neutral-700 transition hover:bg-[#ce4a28] hover:text-white"
         >
           {t.previous}
         </Link>
@@ -34,8 +34,8 @@ export function Pagination({ currentPage, totalPages, basePath = "/blog", locale
             href={`${page === 1 ? basePath : `${basePath}/page/${page}`}${localeQuery}`}
             className={`inline-flex h-10 w-10 items-center justify-center rounded-full transition ${
               isActive
-                ? "bg-[#8f1d1d] text-white"
-                : "bg-neutral-100 text-neutral-700 hover:bg-[#8f1d1d] hover:text-white"
+                ? "bg-[#ce4a28] text-white"
+                : "bg-neutral-100 text-neutral-700 hover:bg-[#ce4a28] hover:text-white"
             }`}
           >
             {page}
@@ -46,7 +46,7 @@ export function Pagination({ currentPage, totalPages, basePath = "/blog", locale
       {currentPage < totalPages && (
         <Link
           href={`${basePath}/page/${currentPage + 1}${localeQuery}`}
-          className="inline-flex h-10 items-center justify-center rounded-full bg-neutral-100 px-4 text-neutral-700 transition hover:bg-[#8f1d1d] hover:text-white"
+          className="inline-flex h-10 items-center justify-center rounded-full bg-neutral-100 px-4 text-neutral-700 transition hover:bg-[#ce4a28] hover:text-white"
         >
           {t.next}
         </Link>
