@@ -1,7 +1,8 @@
 // app/shop/page.tsx
 import Link from "next/link";
 import { Clock, Package, Truck, Shield, Mail } from "lucide-react";
-import { getLocaleFromSearchParams, translations } from "@/lib/i18n";
+import { getLocaleFromSearchParams } from "@/lib/i18n";
+import { getSiteTranslations } from "@/lib/site-content";
 import { PageHero } from "@/components/ui/page-hero";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { SectionCard, SectionHeading } from "@/components/ui/section-card";
@@ -26,9 +27,10 @@ export async function generateMetadata({ searchParams }: ShopPageProps) {
 export default async function ShopPage({ searchParams }: ShopPageProps) {
   const { lang } = await searchParams;
   const locale = getLocaleFromSearchParams(new URLSearchParams({ lang: lang || "fa" }));
-  const t = translations[locale].shop;
-  const commonT = translations[locale].common;
-  const contactT = translations[locale].contact;
+  const content = await getSiteTranslations(locale);
+  const t = content.shop as Record<string, any>;
+  const commonT = content.common as Record<string, any>;
+  const contactT = content.contact as Record<string, any>;
   const localeQuery = `?lang=${locale}`;
 
   const features = [

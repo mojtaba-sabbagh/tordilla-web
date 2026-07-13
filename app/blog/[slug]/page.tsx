@@ -5,7 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Calendar, User, FolderOpen, MessageCircle } from "lucide-react";
 import { CommentForm } from "./CommentForm";
-import { getLocaleFromSearchParams, translations } from "@/lib/i18n";
+import { getLocaleFromSearchParams } from "@/lib/i18n";
+import { getSiteTranslations } from "@/lib/site-content";
 import { PageHero } from "@/components/ui/page-hero";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { siteMeta } from "@/lib/seed-content";
@@ -72,9 +73,9 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
     orderBy: { date: "desc" },
   });
 
-  const t = translations[locale];
-  const blogT = t.blog;
-  const commonT = t.common;
+  const content = await getSiteTranslations(locale);
+  const blogT = content.blog as Record<string, any>;
+  const commonT = content.common as Record<string, any>;
 
   const articleJsonLd = {
     "@context": "https://schema.org",
@@ -136,7 +137,7 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
           <h3 className="mb-6 text-2xl font-bold text-[#8f2e18]">
             {blogT.commentsHeading} ({post.comments.length})
           </h3>
-          <CommentForm blogPostId={post.id} locale={locale} />
+          <CommentForm blogPostId={post.id} locale={locale} content={content.blog.commentForm as Record<string, any>} />
           {post.comments.length > 0 && (
             <div className="mt-8 space-y-4">
               {post.comments.map((comment) => (

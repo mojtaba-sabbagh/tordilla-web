@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Store } from "lucide-react";
-import { getLocaleFromSearchParams, translations } from "@/lib/i18n";
+import { getLocaleFromSearchParams } from "@/lib/i18n";
+import { getSiteTranslations } from "@/lib/site-content";
 import { PageHero } from "@/components/ui/page-hero";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 
@@ -11,7 +12,8 @@ interface TordillaFinderPageProps {
 export async function generateMetadata({ searchParams }: TordillaFinderPageProps) {
   const { lang } = await searchParams;
   const locale = getLocaleFromSearchParams(new URLSearchParams({ lang: lang || "fa" }));
-  const t = translations[locale].tordillaFinder;
+  const content = await getSiteTranslations(locale);
+  const t = content.tordillaFinder as Record<string, any>;
   return {
     title: t.pageTitle,
     description: t.metaDescription,
@@ -21,7 +23,8 @@ export async function generateMetadata({ searchParams }: TordillaFinderPageProps
 export default async function TordillaFinderPage({ searchParams }: TordillaFinderPageProps) {
   const { lang } = await searchParams;
   const locale = getLocaleFromSearchParams(new URLSearchParams({ lang: lang || "fa" }));
-  const t = translations[locale].tordillaFinder;
+  const content = await getSiteTranslations(locale);
+  const t = content.tordillaFinder as Record<string, any>;
   const localeQuery = `?lang=${locale}`;
 
   return (

@@ -4,12 +4,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Category } from "@/lib/blog-data";
-import { Locale, translations } from "@/lib/i18n";
+import { Locale } from "@/lib/i18n";
 
 interface CategorySidebarProps {
   categories: Category[];
   horizontal?: boolean;
   locale: Locale;
+  commonContent?: Record<string, any>;
 }
 
 function getCategoryName(category: Category, locale: Locale): string {
@@ -34,9 +35,9 @@ function getCategoryName(category: Category, locale: Locale): string {
   return String(name);
 }
 
-export function CategorySidebar({ categories, horizontal = false, locale }: CategorySidebarProps) {
+export function CategorySidebar({ categories, horizontal = false, locale, commonContent }: CategorySidebarProps) {
   const pathname = usePathname();
-  const t = translations[locale].common;
+  const t = commonContent ?? {};
   const localeQuery = `?lang=${locale}`;
 
   const isCategoryActive = (categorySlug: string) => {

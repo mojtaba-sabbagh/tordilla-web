@@ -1,7 +1,8 @@
 // app/cinema/page.tsx
 import Link from "next/link";
 import { MapPin, Ticket } from "lucide-react";
-import { getLocaleFromSearchParams, translations } from "@/lib/i18n";
+import { getLocaleFromSearchParams } from "@/lib/i18n";
+import { getSiteTranslations } from "@/lib/site-content";
 import { PageHero } from "@/components/ui/page-hero";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 
@@ -12,7 +13,8 @@ interface CinemaPageProps {
 export async function generateMetadata({ searchParams }: CinemaPageProps) {
   const { lang } = await searchParams;
   const locale = getLocaleFromSearchParams(new URLSearchParams({ lang: lang || "fa" }));
-  const t = translations[locale].cinema;
+  const content = await getSiteTranslations(locale);
+  const t = content.cinema as Record<string, any>;
   return {
     title: t.pageTitle,
     description: t.metaDescription,
@@ -60,7 +62,8 @@ const cinemas = [
 export default async function CinemaPage({ searchParams }: CinemaPageProps) {
   const { lang } = await searchParams;
   const locale = getLocaleFromSearchParams(new URLSearchParams({ lang: lang || "fa" }));
-  const t = translations[locale].cinema;
+  const content = await getSiteTranslations(locale);
+  const t = content.cinema as Record<string, any>;
   const localeQuery = `?lang=${locale}`;
 
   const localizedCinemas = cinemas.map((cinema) => ({

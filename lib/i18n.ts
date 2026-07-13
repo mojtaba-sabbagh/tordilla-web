@@ -224,7 +224,7 @@ export const translations = {
       commentsCount: "نظر",
       relatedPostsHeading: "مطالب مرتبط",
       categoryBadge: "📂 دسته‌بندی",
-      categoryPosts: (count: number) => `${count} مطلب در این دسته`,
+      categoryPosts: "{count} مطلب در این دسته",
       commentForm: {
         nameLabel: "نام",
         emailLabel: "ایمیل",
@@ -529,7 +529,7 @@ export const translations = {
       commentsCount: "comment",
       relatedPostsHeading: "Related posts",
       categoryBadge: "📂 Category",
-      categoryPosts: (count: number) => `${count} posts in this category`,
+      categoryPosts: "{count} posts in this category",
       commentForm: {
         nameLabel: "Name",
         emailLabel: "Email",

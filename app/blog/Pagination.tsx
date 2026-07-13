@@ -1,6 +1,7 @@
 // app/blog/Pagination.tsx
 import Link from "next/link";
-import { Locale, translations } from "@/lib/i18n";
+import { Locale } from "@/lib/i18n";
+import { getSiteTranslations } from "@/lib/site-content";
 
 interface PaginationProps {
   currentPage: number;
@@ -9,10 +10,11 @@ interface PaginationProps {
   locale: Locale;
 }
 
-export function Pagination({ currentPage, totalPages, basePath = "/blog", locale }: PaginationProps) {
+export async function Pagination({ currentPage, totalPages, basePath = "/blog", locale }: PaginationProps) {
   if (totalPages <= 1) return null;
 
-  const t = translations[locale].common;
+  const content = await getSiteTranslations(locale);
+  const t = content.common as Record<string, any>;
   const localeQuery = `?lang=${locale}`;
 
   return (

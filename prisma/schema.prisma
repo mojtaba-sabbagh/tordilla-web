@@ -50,6 +50,20 @@ enum CommentStatus {
   REJECTED
 }
 
+model SitePageContent {
+  id            String    @id @default(cuid())
+  pageKey       String
+  language      String
+  title         String
+  content       Json
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([pageKey, language])
+  @@index([pageKey])
+  @@index([language])
+}
+
 model Admin {
   id            String    @id @default(cuid())
   username      String    @unique

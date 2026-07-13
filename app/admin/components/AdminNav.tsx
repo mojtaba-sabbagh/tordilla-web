@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { MessageSquare, Mail, LayoutDashboard, LogOut } from 'lucide-react';
+import { MessageSquare, Mail, LayoutDashboard, LogOut, FileText } from 'lucide-react';
 
 interface AdminNavProps {
   unseenMessagesCount?: number;
@@ -37,6 +37,12 @@ export default function AdminNav({ unseenMessagesCount = 0, pendingCommentsCount
       label: 'نظرات',
       icon: MessageSquare,
       badge: pendingCommentsCount > 0 ? pendingCommentsCount : null,
+    },
+    {
+      href: '/admin/site-content',
+      label: 'محتوای سایت',
+      icon: FileText,
+      badge: null,
     },
   ];
 

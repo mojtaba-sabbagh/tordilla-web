@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { getLocaleFromSearchParams, translations } from "@/lib/i18n";
+import { getLocaleFromSearchParams } from "@/lib/i18n";
+import { getSiteTranslations } from "@/lib/site-content";
 import { PageHero } from "@/components/ui/page-hero";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { SectionCard, SectionHeading } from "@/components/ui/section-card";
@@ -17,7 +18,8 @@ interface AboutPageProps {
 export default async function AboutPage({ searchParams }: AboutPageProps) {
   const { lang } = await searchParams;
   const locale = getLocaleFromSearchParams(new URLSearchParams({ lang: lang || "fa" }));
-  const t = translations[locale].about;
+  const content = await getSiteTranslations(locale);
+  const t = content.about as Record<string, any>;
 
   return (
     <main className="min-h-screen bg-[#fdf8f3]" dir={locale === "fa" ? "rtl" : "ltr"}>

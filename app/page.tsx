@@ -6,7 +6,8 @@ import { ProductCard } from "@/components/product-card";
 import { SectionBadge } from "@/components/ui/section-badge";
 import { CtaLink } from "@/components/ui/cta-link";
 import { AnimatedSection } from "@/components/ui/animated-section";
-import { getLocaleFromSearchParams, translations, Locale } from "@/lib/i18n";
+import { getLocaleFromSearchParams, Locale } from "@/lib/i18n";
+import { getSiteTranslations } from "@/lib/site-content";
 import { products, getLocalizedProduct } from "@/lib/seed-content";
 import { getPaginatedBlogPosts } from "@/lib/blog-data";
 
@@ -42,7 +43,8 @@ export default async function HomePage({
 }) {
   const params = await searchParams;
   const locale = getLocaleFromSearchParams(new URLSearchParams({ lang: params?.lang ?? "fa" }));
-  const t = translations[locale].home;
+  const content = await getSiteTranslations(locale);
+  const t = content.home as Record<string, any>;
   const localeQuery = `?lang=${locale}`;
   const isFa = locale === "fa";
 
@@ -54,7 +56,7 @@ export default async function HomePage({
     latestPosts = [];
   }
 
-  const stats = translations[locale].about.stats;
+  const stats = (content.about as Record<string, any>).stats;
 
   return (
     <div dir={isFa ? "rtl" : "ltr"} lang={locale} className="bg-[#fdf8f3]">

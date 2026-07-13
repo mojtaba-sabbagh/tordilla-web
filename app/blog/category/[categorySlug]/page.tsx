@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { getPostsByCategory, getCategories } from "@/lib/blog-data";
 import { BlogPostsGrid } from "../../BlogPostsGrid";
 import { CategorySidebar } from "../../CategorySidebar";
-import { getLocaleFromSearchParams, translations } from "@/lib/i18n";
+import { getLocaleFromSearchParams } from "@/lib/i18n";
+import { getSiteTranslations } from "@/lib/site-content";
 import { PageHero } from "@/components/ui/page-hero";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { SocialSection } from "@/components/social-icons";
@@ -46,14 +47,18 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   const categoryNameObj = posts[0].category as { fa: string; en: string };
   const categoryName = categoryNameObj[locale];
 
-  const t = translations[locale];
-  const blogT = t.blog;
-  const commonT = t.common;
-  const contactT = t.contact;
+  const content = await getSiteTranslations(locale);
+  const blogT = content.blog as Record<string, any>;
+  const commonT = content.common as Record<string, any>;
+  const contactT = content.contact as Record<string, any>;
+  const categoryPostsText =
+    typeof blogT.categoryPosts === "string"
+      ? blogT.categoryPosts.replace("{count}", String(posts.length))
+      : blogT.categoryPosts;
 
   return (
     <main className="min-h-screen bg-[#fdf8f3]" dir={locale === "fa" ? "rtl" : "ltr"}>
-      <PageHero badge={blogT.categoryBadge} title={categoryName} text={blogT.categoryPosts(posts.length)} />
+      <PageHero badge={blogT.categoryBadge} title={categoryName} text={categoryPostsText} />
 
       <BreadcrumbNav
         items={[
@@ -65,7 +70,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
       <div className="mx-auto max-w-[1080px] px-6 py-16 md:py-20">
         <div className="mb-12">
-          <CategorySidebar categories={allCategories} horizontal locale={locale} />
+          <CategorySidebar categories={allCategories} horizontal locale={locale} commonContent={commonT} />
         </div>
 
         <BlogPostsGrid posts={posts} locale={locale} />

@@ -4,7 +4,8 @@ import { BlogPostsGrid } from "./BlogPostsGrid";
 import { Pagination } from "./Pagination";
 import { CategorySidebar } from "./CategorySidebar";
 import { POSTS_PER_PAGE } from "@/lib/constants";
-import { translations, getLocaleFromSearchParams } from "@/lib/i18n";
+import { getLocaleFromSearchParams } from "@/lib/i18n";
+import { getSiteTranslations } from "@/lib/site-content";
 import { PageHero } from "@/components/ui/page-hero";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { SocialSection } from "@/components/social-icons";
@@ -16,7 +17,8 @@ interface BlogPageProps {
 export async function generateMetadata({ searchParams }: BlogPageProps) {
   const { lang } = await searchParams;
   const locale = getLocaleFromSearchParams(new URLSearchParams({ lang: lang || "fa" }));
-  const t = translations[locale];
+  const content = await getSiteTranslations(locale);
+  const t = content;
   return {
     title: locale === "fa" ? "وبلاگ | چیپس ذرت ترددیلا" : "Blog | Tordilla Corn Chips",
     description: t.blog.heroText,
@@ -31,10 +33,10 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   const { posts: currentPosts, totalPages } = await getPaginatedBlogPosts(currentPage, POSTS_PER_PAGE);
   const categories = await getCategories();
 
-  const t = translations[locale];
-  const blogT = t.blog;
-  const commonT = t.common;
-  const contactT = t.contact;
+  const content = await getSiteTranslations(locale);
+  const blogT = content.blog as Record<string, any>;
+  const commonT = content.common as Record<string, any>;
+  const contactT = content.contact as Record<string, any>;
 
   return (
     <main className="min-h-screen bg-[#fdf8f3]" dir={locale === "fa" ? "rtl" : "ltr"}>

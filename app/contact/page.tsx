@@ -1,7 +1,8 @@
 // app/contact/page.tsx
 import type { Metadata } from "next";
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
-import { translations, getLocaleFromSearchParams } from "@/lib/i18n";
+import { getLocaleFromSearchParams } from "@/lib/i18n";
+import { getSiteTranslations } from "@/lib/site-content";
 import { PageHero } from "@/components/ui/page-hero";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { SectionCard } from "@/components/ui/section-card";
@@ -15,7 +16,8 @@ interface ContactPageProps {
 export async function generateMetadata({ searchParams }: ContactPageProps): Promise<Metadata> {
   const { lang } = await searchParams;
   const locale = getLocaleFromSearchParams(new URLSearchParams({ lang: lang || "fa" }));
-  const t = translations[locale].contact;
+  const content = await getSiteTranslations(locale);
+  const t = content.contact as Record<string, any>;
   return {
     title: t.heroTitle,
     description: t.heroText,
@@ -26,8 +28,9 @@ export async function generateMetadata({ searchParams }: ContactPageProps): Prom
 export default async function ContactPage({ searchParams }: ContactPageProps) {
   const { lang } = await searchParams;
   const locale = getLocaleFromSearchParams(new URLSearchParams({ lang: lang || "fa" }));
-  const t = translations[locale].contact;
-  const commonT = translations[locale].common;
+  const content = await getSiteTranslations(locale);
+  const t = content.contact as Record<string, any>;
+  const commonT = content.common as Record<string, any>;
 
   const infoCards = [
     { icon: MapPin, title: t.addressTitle, content: <>{t.addressLines[0]}<br />{t.addressLines[1]}</> },
@@ -67,7 +70,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
                 <span className="h-9 w-1.5 flex-shrink-0 rounded-full bg-gradient-to-b from-[#8f2e18] to-[#ce4a28]" />
                 <h2 className="text-[clamp(20px,2.8vw,28px)] font-black text-[#2c1810]">{t.formHeading}</h2>
               </div>
-              <ContactForm locale={locale} />
+              <ContactForm locale={locale} content={t} />
             </SectionCard>
           </div>
 

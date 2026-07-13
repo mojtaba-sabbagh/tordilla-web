@@ -3,15 +3,16 @@
 
 import { useState } from "react";
 import { Send } from "lucide-react";
-import { Locale, translations } from "@/lib/i18n";
+import { Locale } from "@/lib/i18n";
 
 interface CommentFormProps {
   blogPostId: string;
   locale: Locale;
+  content: Record<string, any>;
 }
 
-export function CommentForm({ blogPostId, locale }: CommentFormProps) {
-  const t = translations[locale].blog.commentForm;
+export function CommentForm({ blogPostId, locale, content }: CommentFormProps) {
+  const t = content;
   const [formData, setFormData] = useState({ name: "", email: "", content: "" });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);

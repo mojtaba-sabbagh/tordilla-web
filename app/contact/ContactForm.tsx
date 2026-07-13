@@ -2,14 +2,15 @@
 
 import { useState } from "react";
 import { Send } from "lucide-react";
-import { translations, Locale } from "@/lib/i18n";
+import { Locale } from "@/lib/i18n";
 
 type ContactFormProps = {
   locale: Locale;
+  content: Record<string, any>;
 };
 
-export function ContactForm({ locale }: ContactFormProps) {
-  const t = translations[locale].contact;
+export function ContactForm({ locale, content }: ContactFormProps) {
+  const t = content;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
 

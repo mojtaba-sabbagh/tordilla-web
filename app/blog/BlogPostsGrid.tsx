@@ -2,7 +2,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { BlogPost } from "@/lib/blog-data";
-import { Locale, translations } from "@/lib/i18n";
+import { Locale } from "@/lib/i18n";
+import { getSiteTranslations } from "@/lib/site-content";
 
 interface BlogPostsGridProps {
   posts: BlogPost[];
@@ -32,8 +33,9 @@ function getLocalizedText(value: unknown, locale: Locale): string {
   return String(value);
 }
 
-export function BlogPostsGrid({ posts, locale }: BlogPostsGridProps) {
-  const t = translations[locale].blog;
+export async function BlogPostsGrid({ posts, locale }: BlogPostsGridProps) {
+  const content = await getSiteTranslations(locale);
+  const t = content.blog as Record<string, any>;
   const noPostsText = locale === "fa" ? "هیچ مطلبی یافت نشد." : "No posts found.";
 
   if (posts.length === 0) {

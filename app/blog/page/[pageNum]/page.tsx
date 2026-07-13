@@ -3,7 +3,8 @@ import { getPaginatedBlogPosts, getCategories } from "@/lib/blog-data";
 import { BlogPostsGrid } from "../../BlogPostsGrid";
 import { Pagination } from "../../Pagination";
 import { CategorySidebar } from "../../CategorySidebar";
-import { translations, getLocaleFromSearchParams } from "@/lib/i18n";
+import { getLocaleFromSearchParams } from "@/lib/i18n";
+import { getSiteTranslations } from "@/lib/site-content";
 import { PageHero } from "@/components/ui/page-hero";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { SocialSection } from "@/components/social-icons";
@@ -45,10 +46,10 @@ export default async function PaginatedBlogPage({ params, searchParams }: Pagina
     notFound();
   }
 
-  const t = translations[locale];
-  const blogT = t.blog;
-  const commonT = t.common;
-  const contactT = t.contact;
+  const content = await getSiteTranslations(locale);
+  const blogT = content.blog as Record<string, any>;
+  const commonT = content.common as Record<string, any>;
+  const contactT = content.contact as Record<string, any>;
 
   return (
     <main className="min-h-screen bg-[#fdf8f3]" dir={locale === "fa" ? "rtl" : "ltr"}>
@@ -64,7 +65,7 @@ export default async function PaginatedBlogPage({ params, searchParams }: Pagina
 
       <div className="mx-auto max-w-[1080px] px-6 py-16 md:py-20">
         <div className="mb-12">
-          <CategorySidebar categories={categories} horizontal locale={locale} />
+          <CategorySidebar categories={categories} horizontal locale={locale} commonContent={commonT} />
         </div>
 
         <BlogPostsGrid posts={currentPosts} locale={locale} />

@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { ProductCard } from "@/components/product-card";
 import { SectionBadge } from "@/components/ui/section-badge";
 import { products, getLocalizedProduct, siteMeta } from "@/lib/seed-content";
-import { translations, getLocaleFromSearchParams } from "@/lib/i18n";
+import { getLocaleFromSearchParams } from "@/lib/i18n";
+import { getSiteTranslations } from "@/lib/site-content";
 
 type ProductsPageProps = {
   searchParams?: Promise<{ lang?: string }>;
@@ -11,7 +12,8 @@ type ProductsPageProps = {
 export async function generateMetadata({ searchParams }: ProductsPageProps): Promise<Metadata> {
   const params = await searchParams;
   const locale = getLocaleFromSearchParams(new URLSearchParams({ lang: params?.lang ?? "fa" }));
-  const t = translations[locale].products;
+  const content = await getSiteTranslations(locale);
+  const t = content.products as Record<string, any>;
   return {
     title: t.heroTitle,
     description: t.heroText,
@@ -24,8 +26,9 @@ export async function generateMetadata({ searchParams }: ProductsPageProps): Pro
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   const params = await searchParams;
-  const locale = params?.lang === "en" ? "en" : "fa";
-  const t = translations[locale].products;
+  const locale = getLocaleFromSearchParams(new URLSearchParams({ lang: params?.lang ?? "fa" }));
+  const content = await getSiteTranslations(locale);
+  const t = content.products as Record<string, any>;
   const localeQuery = `?lang=${locale}`;
   const isFa = locale === "fa";
 

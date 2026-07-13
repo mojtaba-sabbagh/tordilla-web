@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { products, getLocalizedProduct, siteMeta } from "@/lib/seed-content";
-import { translations } from "@/lib/i18n";
+import { getSiteTranslations } from "@/lib/site-content";
 import { SectionBadge } from "@/components/ui/section-badge";
 import { CtaLink } from "@/components/ui/cta-link";
 
@@ -38,7 +38,8 @@ export async function generateMetadata({ params, searchParams }: ProductPageProp
 export default async function ProductPage({ params, searchParams }: ProductPageProps) {
   const search = await searchParams;
   const locale = search?.lang === "en" ? "en" : "fa";
-  const t = translations[locale].productDetail;
+  const content = await getSiteTranslations(locale);
+  const t = content.productDetail as Record<string, any>;
   const localeQuery = `?lang=${locale}`;
   const isFa = locale === "fa";
 
