@@ -101,6 +101,9 @@ export const translations = {
         { icon: "✅", title: "بدون مواد نگهدارنده", desc: "محصولی سالم و طبیعی" },
         { icon: "🎨", title: "هشت طعم متنوع", desc: "مناسب برای همه سلیقه‌ها" },
         { icon: "🌱", title: "رنگ طبیعی", desc: "آنتی‌اکسیدان طبیعی، سالم و لذت‌بخش" },
+        { icon: "🌾", title: "گلوتن فری", desc: "ذرت گلوتن ندارد" },
+        { icon: "🦴", title: "کلسیم مضاعف", desc: "بدلیل پخت در آهک" },
+        { icon: "💧", title: "جذب روغن بسیار کم", desc: "بدلیل پخت دو مرحله ای" },
       ],
     },
     contact: {
@@ -406,6 +409,9 @@ export const translations = {
         { icon: "✅", title: "No preservatives", desc: "A healthy, natural product" },
         { icon: "🎨", title: "Eight flavors", desc: "Suitable for every preference" },
         { icon: "🌱", title: "Natural color", desc: "Natural antioxidants, healthy and delightful" },
+        { icon: "🌾", title: "Gluten-free", desc: "Corn is naturally gluten-free" },
+        { icon: "🦴", title: "Extra calcium", desc: "Thanks to lime-cooking (nixtamalization)" },
+        { icon: "💧", title: "Very low oil absorption", desc: "Thanks to two-stage frying" },
       ],
     },
     contact: {

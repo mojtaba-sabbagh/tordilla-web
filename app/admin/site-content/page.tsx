@@ -16,7 +16,7 @@ interface SitePageItem {
 
 type LocaleOption = "fa" | "en";
 
-type EditableValue = string | number | boolean | null | EditableValue[] | Record<string, EditableValue>;
+type EditableValue = string | number | boolean | null | unknown[] | Record<string, unknown>;
 
 const localeLabels: Record<LocaleOption, string> = {
   fa: "فارسی",

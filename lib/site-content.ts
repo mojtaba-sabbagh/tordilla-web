@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import type { Prisma } from '@prisma/client';
 import { locales, translations, type Locale } from '@/lib/i18n';
 
 export type SiteContentSection = Record<string, unknown>;
@@ -72,7 +73,7 @@ export async function ensureSiteContentSeeded() {
         pageKey,
         language: locale,
         title: getPageLabel(pageKey),
-        content: normalizeForStorage(value) as Record<string, unknown>,
+        content: normalizeForStorage(value) as Prisma.InputJsonValue,
       }));
     });
 
@@ -115,9 +116,13 @@ export async function getSitePageContent(locale: Locale, pageKey: string) {
 
 export async function upsertSitePageContent(pageKey: string, language: Locale, content: unknown) {
   const fallbackValue = {
+    id: 'fallback',
     pageKey,
     language,
-    content: normalizeForStorage(content) as Record<string, unknown>,
+    title: getPageLabel(pageKey),
+    content: normalizeForStorage(content) as Prisma.JsonValue,
+    createdAt: new Date(),
+    updatedAt: new Date(),
   };
 
   return runWithFallback(async () => {
@@ -131,14 +136,14 @@ export async function upsertSitePageContent(pageKey: string, language: Locale, c
         },
       },
       update: {
-        content: normalizeForStorage(content) as Record<string, unknown>,
+        content: normalizeForStorage(content) as Prisma.InputJsonValue,
         title: getPageLabel(pageKey),
       },
       create: {
         pageKey,
         language,
         title: getPageLabel(pageKey),
-        content: normalizeForStorage(content) as Record<string, unknown>,
+        content: normalizeForStorage(content) as Prisma.InputJsonValue,
       },
     });
   }, fallbackValue);

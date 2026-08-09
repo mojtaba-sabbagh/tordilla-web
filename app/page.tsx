@@ -91,7 +91,7 @@ export default async function HomePage({
           </p>
 
           <div className="mb-9 flex flex-wrap items-center justify-center gap-3">
-            {stats.map((s) => (
+            {stats.map((s: any) => (
               <div
                 key={s.label}
                 className="flex items-center gap-2 rounded-full border border-[rgba(206,74,40,0.15)] bg-white/75 px-4 py-2 shadow-sm backdrop-blur"
@@ -298,7 +298,7 @@ export default async function HomePage({
           </h2>
           <p className="mb-9 text-[15px] text-white/70">{t.socialText}</p>
           <div className="flex flex-wrap items-center justify-center gap-5">
-            {t.socialNetworks.map(({ label, href, emoji }) => (
+            {t.socialNetworks.map(({ label, href, emoji }: any) => (
               <a
                 key={label}
                 href={href}

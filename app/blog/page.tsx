@@ -18,7 +18,7 @@ export async function generateMetadata({ searchParams }: BlogPageProps) {
   const { lang } = await searchParams;
   const locale = getLocaleFromSearchParams(new URLSearchParams({ lang: lang || "fa" }));
   const content = await getSiteTranslations(locale);
-  const t = content;
+  const t = content as Record<string, Record<string, any>>;
   return {
     title: locale === "fa" ? "وبلاگ | چیپس ذرت ترددیلا" : "Blog | Tordilla Corn Chips",
     description: t.blog.heroText,

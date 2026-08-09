@@ -74,8 +74,9 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
   });
 
   const content = await getSiteTranslations(locale);
-  const blogT = content.blog as Record<string, any>;
-  const commonT = content.common as Record<string, any>;
+  const contentTyped = content as Record<string, Record<string, any>>;
+  const blogT = contentTyped.blog as Record<string, any>;
+  const commonT = contentTyped.common as Record<string, any>;
 
   const articleJsonLd = {
     "@context": "https://schema.org",
@@ -137,7 +138,7 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
           <h3 className="mb-6 text-2xl font-bold text-[#8f2e18]">
             {blogT.commentsHeading} ({post.comments.length})
           </h3>
-          <CommentForm blogPostId={post.id} locale={locale} content={content.blog.commentForm as Record<string, any>} />
+          <CommentForm blogPostId={post.id} locale={locale} content={blogT.commentForm as Record<string, any>} />
           {post.comments.length > 0 && (
             <div className="mt-8 space-y-4">
               {post.comments.map((comment) => (
