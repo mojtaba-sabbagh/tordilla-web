@@ -3,19 +3,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { mkdir, writeFile } from 'fs/promises';
 import path from 'path';
 import { verifyAdminAuth } from '@/lib/admin-auth';
-
-// Uploaded images land in public/home/blog/ so they are served from /home/blog/<name>
-const UPLOAD_DIR = path.join(process.cwd(), 'public', 'home', 'blog');
-const PUBLIC_PREFIX = '/home/blog';
-const MAX_BYTES = 5 * 1024 * 1024;
-
-const ALLOWED_TYPES: Record<string, string> = {
-  'image/jpeg': '.jpg',
-  'image/png': '.png',
-  'image/webp': '.webp',
-  'image/gif': '.gif',
-  'image/avif': '.avif',
-};
+import {
+  ALLOWED_MEDIA_TYPES as ALLOWED_TYPES,
+  MAX_MEDIA_FILE_BYTES as MAX_BYTES,
+  MEDIA_DIR as UPLOAD_DIR,
+  MEDIA_PUBLIC_PREFIX as PUBLIC_PREFIX,
+} from '@/lib/media';
 
 function buildFileName(originalName: string, mimeType: string) {
   const extension = ALLOWED_TYPES[mimeType];
