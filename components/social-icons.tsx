@@ -52,11 +52,10 @@ type SocialLinksRowProps = {
 };
 
 export function SocialLinksRow({ labels, size = "lg" }: SocialLinksRowProps) {
-  const dimension = size === "lg" ? "h-14 w-14 md:h-[72px] md:w-[72px]" : "h-12 w-12";
-  const iconSize = size === "lg" ? "h-full w-full" : "h-7 w-7";
+  const dimension = size === "lg" ? "h-16 w-16 md:h-[68px] md:w-[68px]" : "h-12 w-12";
 
   return (
-    <div className="flex flex-wrap items-center justify-center gap-5 md:gap-7">
+    <div className="flex flex-wrap items-center justify-center gap-4 md:gap-5">
       {socialLinks.map(({ key, href, Icon }) => (
         <a
           key={key}
@@ -64,9 +63,9 @@ export function SocialLinksRow({ labels, size = "lg" }: SocialLinksRowProps) {
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className={`inline-flex items-center justify-center rounded-full bg-white/15 transition hover:scale-105 hover:bg-white/25 ${dimension}`}
+          className={`group inline-flex items-center justify-center rounded-full bg-white/10 p-1.5 ring-1 ring-white/15 transition-all duration-300 hover:-translate-y-1 hover:bg-corn-400/20 hover:ring-corn-300/60 ${dimension}`}
         >
-          <Icon className={iconSize} />
+          <Icon className="h-full w-full opacity-85 transition-opacity duration-300 group-hover:opacity-100" />
         </a>
       ))}
     </div>
@@ -81,9 +80,15 @@ type SocialSectionProps = {
 
 export function SocialSection({ heading, labels, className = "" }: SocialSectionProps) {
   return (
-    <div className={`rounded-[28px] bg-gradient-to-br from-[#8f2e18] to-[#4a1509] px-6 py-12 text-center ${className}`}>
-      <h3 className="mb-6 text-xl font-black text-white md:text-2xl">{heading}</h3>
-      <SocialLinksRow labels={labels} />
+    <div
+      className={`grain relative overflow-hidden rounded-card-lg bg-leaf-800 px-6 py-12 text-center ${className}`}
+    >
+      <div className="pointer-events-none absolute -left-16 -top-16 h-56 w-56 rounded-full bg-leaf-500/30 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-20 -right-10 h-64 w-64 rounded-full bg-corn-500/15 blur-3xl" />
+      <h3 className="relative mb-7 text-xl font-black text-white md:text-2xl">{heading}</h3>
+      <div className="relative">
+        <SocialLinksRow labels={labels} />
+      </div>
     </div>
   );
 }

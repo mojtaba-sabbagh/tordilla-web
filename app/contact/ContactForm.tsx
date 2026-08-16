@@ -50,18 +50,18 @@ export function ContactForm({ locale, content }: ContactFormProps) {
   }
 
   const inputClasses =
-    "w-full rounded-[20px] border-[1.5px] border-[rgba(206,74,40,0.15)] bg-white px-4 py-3 text-sm transition focus:border-[#ce4a28] focus:outline-none focus:ring-[3px] focus:ring-[rgba(206,74,40,0.1)]";
+    "w-full rounded-tile border border-line bg-cream px-4 py-3.5 text-sm text-ink placeholder:text-ink-mute/70 transition-all focus:border-leaf-400 focus:bg-surface focus:outline-none focus:ring-[3px] focus:ring-leaf-500/15";
 
   return (
     <form onSubmit={handleSubmit}>
       <div className="mb-5">
-        <label htmlFor="name" className="mb-2 block text-[13px] font-bold text-[#2c1810]">
+        <label htmlFor="name" className="mb-2 block text-[13px] font-bold text-ink">
           {t.formNameLabel}
         </label>
         <input type="text" id="name" name="name" required placeholder={t.formNamePlaceholder} className={inputClasses} />
       </div>
       <div className="mb-5">
-        <label htmlFor="email" className="mb-2 block text-[13px] font-bold text-[#2c1810]">
+        <label htmlFor="email" className="mb-2 block text-[13px] font-bold text-ink">
           {t.formEmailLabel}
         </label>
         <input
@@ -75,7 +75,7 @@ export function ContactForm({ locale, content }: ContactFormProps) {
         />
       </div>
       <div className="mb-5">
-        <label htmlFor="phone" className="mb-2 block text-[13px] font-bold text-[#2c1810]">
+        <label htmlFor="phone" className="mb-2 block text-[13px] font-bold text-ink">
           {t.formPhoneLabel}
         </label>
         <input
@@ -88,13 +88,13 @@ export function ContactForm({ locale, content }: ContactFormProps) {
         />
       </div>
       <div className="mb-5">
-        <label htmlFor="subject" className="mb-2 block text-[13px] font-bold text-[#2c1810]">
+        <label htmlFor="subject" className="mb-2 block text-[13px] font-bold text-ink">
           {t.formSubjectLabel}
         </label>
         <input type="text" id="subject" name="subject" required placeholder={t.formSubjectPlaceholder} className={inputClasses} />
       </div>
       <div className="mb-5">
-        <label htmlFor="message" className="mb-2 block text-[13px] font-bold text-[#2c1810]">
+        <label htmlFor="message" className="mb-2 block text-[13px] font-bold text-ink">
           {t.formMessageLabel}
         </label>
         <textarea id="message" name="message" rows={5} required placeholder={t.formMessagePlaceholder} className={inputClasses} />
@@ -102,17 +102,17 @@ export function ContactForm({ locale, content }: ContactFormProps) {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#ce4a28] px-6 py-3.5 text-[15px] font-extrabold text-white transition-all hover:-translate-y-0.5 hover:bg-[#8f2e18] disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-leaf-600 px-6 py-4 text-[15px] font-extrabold text-white shadow-glow transition-all hover:-translate-y-0.5 hover:bg-leaf-700 disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
       >
         <Send size={18} />
         {isSubmitting ? t.formSubmitting : t.formSubmit}
       </button>
       {submitStatus && (
         <div
-          className={`mt-4 rounded-[20px] p-3 text-center text-[13px] font-semibold ${
+          className={`mt-4 rounded-tile p-3.5 text-center text-[13px] font-bold ${
             submitStatus.type === "success"
-              ? "border border-[#c0e0c5] bg-[#e6f4ea] text-[#2e6b3e]"
-              : "border border-[#f5cdca] bg-[#fee8e7] text-[#b13a32]"
+              ? "border border-leaf-200 bg-leaf-50 text-leaf-700"
+              : "border border-paprika-200 bg-paprika-100 text-paprika-700"
           }`}
         >
           {submitStatus.message}

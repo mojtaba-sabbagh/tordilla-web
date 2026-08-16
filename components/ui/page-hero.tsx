@@ -16,35 +16,69 @@ export function PageHero({
   text,
   showLogo = true,
   logoAlt = "Tordilla logo",
-  waveColor = "#fdf8f3",
+  waveColor = "#fbf8f1",
 }: PageHeroProps) {
   return (
     <>
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#ce4a28] to-[#7a2412] px-4 py-16 text-center md:px-6 md:py-20">
-        <div className="pointer-events-none absolute -left-20 -top-20 h-80 w-80 rounded-full bg-white/5" />
-        <div className="pointer-events-none absolute -bottom-24 -right-14 h-96 w-96 rounded-full bg-white/[0.04]" />
+      <section className="grain relative overflow-hidden bg-leaf-800 px-4 pb-20 pt-16 text-center md:px-6 md:pb-24 md:pt-20">
+        {/* ambient light */}
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -top-32 left-1/2 h-[28rem] w-[28rem] -translate-x-1/2 rounded-full bg-leaf-500/40 blur-3xl" />
+          <div className="absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-corn-500/20 blur-3xl" />
+          <div className="absolute -right-16 top-4 h-72 w-72 rounded-full bg-paprika-500/15 blur-3xl" />
+        </div>
 
-        <div className="relative">
+        {/* seed-grid texture */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.13]"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle, rgba(255,255,255,0.9) 1px, transparent 1px)",
+            backgroundSize: "26px 26px",
+          }}
+        />
+
+        <div className="relative mx-auto max-w-3xl">
           {badge && (
-            <SectionBadge tone="invert" className="mb-5">
+            <SectionBadge tone="invert" className="mb-6">
               {badge}
             </SectionBadge>
           )}
-          <h1 className="mb-4 text-[clamp(1.9rem,5vw,3.4rem)] font-black text-white">{title}</h1>
-          {text && <p className="mx-auto mb-8 max-w-xl text-base leading-[2] text-white/80">{text}</p>}
+
           {showLogo && (
-            <div className="flex justify-center">
-              <div className="flex h-[148px] w-[148px] items-center justify-center rounded-full border-2 border-white/20 bg-white/10 backdrop-blur">
-                <Image src="/home/logo.png" alt={logoAlt} width={108} height={108} className="object-contain" priority />
+            <div className="mb-7 flex justify-center">
+              <div className="relative">
+                <span className="absolute inset-0 rounded-full border border-white/25 animate-pulse-ring" />
+                <div className="relative flex h-[124px] w-[124px] items-center justify-center rounded-full border border-white/20 bg-white/10 backdrop-blur-sm">
+                  <Image
+                    src="/home/logo.png"
+                    alt={logoAlt}
+                    width={92}
+                    height={92}
+                    className="object-contain drop-shadow-[0_10px_24px_rgba(0,0,0,0.3)]"
+                    priority
+                  />
+                </div>
               </div>
             </div>
+          )}
+
+          <h1 className="display text-balance mb-4 text-[clamp(2rem,5vw,3.4rem)] text-white">
+            {title}
+          </h1>
+
+          {text && (
+            <p className="text-balance mx-auto max-w-xl text-[15px] leading-[2.05] text-leaf-100/85">
+              {text}
+            </p>
           )}
         </div>
       </section>
 
-      <div className="-mt-0.5 block w-full leading-[0]">
-        <svg viewBox="0 0 1200 60" preserveAspectRatio="none" className="block h-[52px] w-full">
-          <path d="M0,0 C300,60 900,60 1200,0 L1200,60 L0,60 Z" fill={waveColor} />
+      <div className="hill-divider -mt-px">
+        <svg viewBox="0 0 1200 70" preserveAspectRatio="none" className="block h-[46px] w-full md:h-[64px]">
+          <path d="M0,18 C240,72 420,72 640,36 C840,4 1010,4 1200,42 L1200,70 L0,70 Z" fill={waveColor} />
         </svg>
       </div>
     </>

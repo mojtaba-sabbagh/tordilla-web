@@ -3,24 +3,38 @@ import Link from "next/link";
 type CtaLinkProps = {
   href: string;
   children: React.ReactNode;
-  variant?: "primary" | "accent" | "outline";
+  variant?: "primary" | "accent" | "outline" | "invert";
+  size?: "md" | "lg";
   className?: string;
 };
 
 const variantClasses: Record<NonNullable<CtaLinkProps["variant"]>, string> = {
   primary:
-    "bg-gradient-to-br from-[#e05a30] via-[#ce4a28] to-[#8f2e18] text-white shadow-[0_10px_28px_rgba(206,74,40,0.35)] hover:shadow-[0_16px_36px_rgba(206,74,40,0.45)] hover:brightness-105",
+    "bg-leaf-600 text-white shadow-glow hover:bg-leaf-700",
   accent:
-    "bg-gradient-to-br from-[#2a5c4c] to-[#173630] text-white shadow-[0_10px_28px_rgba(33,76,63,0.32)] hover:shadow-[0_16px_36px_rgba(33,76,63,0.42)] hover:brightness-110",
+    "bg-corn-400 text-leaf-900 shadow-glow-corn hover:bg-corn-300",
   outline:
-    "border-2 border-[rgba(206,74,40,0.3)] text-[#8f2e18] hover:border-[#ce4a28] hover:bg-[rgba(206,74,40,0.06)]",
+    "border-2 border-leaf-200 bg-white/70 text-leaf-700 hover:border-leaf-400 hover:bg-white",
+  invert:
+    "border-2 border-white/40 bg-white/10 text-white backdrop-blur hover:bg-white hover:text-leaf-800",
 };
 
-export function CtaLink({ href, children, variant = "primary", className = "" }: CtaLinkProps) {
+const sizeClasses: Record<NonNullable<CtaLinkProps["size"]>, string> = {
+  md: "min-h-[46px] px-6 text-[14px]",
+  lg: "min-h-[54px] px-8 text-[15px]",
+};
+
+export function CtaLink({
+  href,
+  children,
+  variant = "primary",
+  size = "lg",
+  className = "",
+}: CtaLinkProps) {
   return (
     <Link
       href={href}
-      className={`inline-flex min-h-[52px] items-center justify-center gap-2 rounded-full px-8 text-[15px] font-extrabold tracking-tight transition-all duration-250 hover:-translate-y-1 hover:scale-[1.03] active:scale-[0.98] ${variantClasses[variant]} ${className}`}
+      className={`group/cta inline-flex items-center justify-center gap-2 rounded-full font-extrabold tracking-tight transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 ${sizeClasses[size]} ${variantClasses[variant]} ${className}`}
     >
       {children}
     </Link>

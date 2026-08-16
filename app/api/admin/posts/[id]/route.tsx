@@ -50,17 +50,37 @@ export async function PUT(
   try {
     const { id } = await params; // Await params
     const body = await request.json();
-    
+
+    // Only accept fields that belong to the post; the edit form also sends `id`,
+    // and anything unexpected would make Prisma reject the whole update.
+    const { slug, title, category, categorySlug, date, image, imageWidth, imageHeight, excerpt, content, author, published } = body;
+
+    const parsedDate = date ? new Date(date) : null;
+    const publishedAt = parsedDate && !Number.isNaN(parsedDate.getTime()) ? parsedDate : undefined;
+
     const post = await prisma.blogPost.update({
       where: { id },
-      data: body,
+      data: {
+        ...(slug !== undefined && { slug }),
+        ...(title !== undefined && { title }),
+        ...(category !== undefined && { category }),
+        ...(categorySlug !== undefined && { categorySlug }),
+        ...(publishedAt !== undefined && { date: publishedAt }),
+        ...(image !== undefined && { image }),
+        ...(imageWidth !== undefined && { imageWidth: Number(imageWidth) || 800 }),
+        ...(imageHeight !== undefined && { imageHeight: Number(imageHeight) || 600 }),
+        ...(excerpt !== undefined && { excerpt }),
+        ...(content !== undefined && { content }),
+        ...(author !== undefined && { author }),
+        ...(published !== undefined && { published }),
+      },
     });
-    
+
     return NextResponse.json({ post });
   } catch (error) {
     console.error('Error updating post:', error);
     return NextResponse.json(
-      { error: 'Failed to update post' },
+      { error: error instanceof Error ? `خطا در ویرایش مطلب: ${error.message}` : 'Failed to update post' },
       { status: 500 }
     );
   }

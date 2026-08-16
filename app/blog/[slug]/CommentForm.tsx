@@ -44,8 +44,8 @@ export function CommentForm({ blogPostId, locale, content }: CommentFormProps) {
 
   if (submitted) {
     return (
-      <div className="bg-green-50 border border-green-200 rounded-xl p-5 text-center">
-        <p className="text-green-700 font-medium">{t.successMessage}</p>
+      <div className="rounded-card border border-leaf-200 bg-leaf-50 p-6 text-center">
+        <p className="font-bold text-leaf-700">{t.successMessage}</p>
       </div>
     );
   }
@@ -54,24 +54,24 @@ export function CommentForm({ blogPostId, locale, content }: CommentFormProps) {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid gap-4 md:grid-cols-2">
         <div>
-          <label className="block text-sm font-medium text-neutral-700 mb-1">{t.nameLabel} *</label>
+          <label className="mb-2 block text-[13px] font-bold text-ink">{t.nameLabel} *</label>
           <input type="text" required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})}
-            className="w-full rounded-xl border border-neutral-300 px-4 py-2 focus:border-[#ce4a28] focus:ring-2 focus:ring-[#ce4a28]/20" />
+            className="w-full rounded-tile border border-line bg-cream px-4 py-3 text-sm text-ink transition-all focus:border-leaf-400 focus:bg-surface focus:outline-none focus:ring-[3px] focus:ring-leaf-500/15" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-neutral-700 mb-1">{t.emailLabel} *</label>
+          <label className="mb-2 block text-[13px] font-bold text-ink">{t.emailLabel} *</label>
           <input type="email" required value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})}
-            className="w-full rounded-xl border border-neutral-300 px-4 py-2 focus:border-[#ce4a28] focus:ring-2 focus:ring-[#ce4a28]/20" />
+            className="w-full rounded-tile border border-line bg-cream px-4 py-3 text-sm text-ink transition-all focus:border-leaf-400 focus:bg-surface focus:outline-none focus:ring-[3px] focus:ring-leaf-500/15" />
         </div>
       </div>
       <div>
-        <label className="block text-sm font-medium text-neutral-700 mb-1">{t.contentLabel} *</label>
+        <label className="mb-2 block text-[13px] font-bold text-ink">{t.contentLabel} *</label>
         <textarea rows={5} required value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})}
-          className="w-full rounded-xl border border-neutral-300 px-4 py-2 focus:border-[#ce4a28] focus:ring-2 focus:ring-[#ce4a28]/20" />
+          className="w-full rounded-tile border border-line bg-cream px-4 py-3 text-sm text-ink transition-all focus:border-leaf-400 focus:bg-surface focus:outline-none focus:ring-[3px] focus:ring-leaf-500/15" />
       </div>
-      {error && <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-600 text-sm">{error}</div>}
+      {error && <div className="rounded-tile border border-paprika-200 bg-paprika-100 p-3.5 text-[13px] font-bold text-paprika-700">{error}</div>}
       <button type="submit" disabled={submitting}
-        className="inline-flex items-center gap-2 bg-[#ce4a28] text-white px-6 py-2.5 rounded-xl hover:bg-[#8f2e18] transition disabled:opacity-50">
+        className="inline-flex items-center gap-2 rounded-full bg-leaf-600 px-7 py-3 text-[14px] font-extrabold text-white shadow-glow transition-all hover:-translate-y-0.5 hover:bg-leaf-700 disabled:opacity-50 disabled:shadow-none">
         <Send size={16} /> {submitting ? t.submittingButton : t.submitButton}
       </button>
     </form>

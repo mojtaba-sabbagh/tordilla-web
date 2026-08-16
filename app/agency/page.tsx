@@ -47,22 +47,22 @@ export default async function AgencyPage({ searchParams }: AgencyPageProps) {
   ];
 
   return (
-    <main className="min-h-screen bg-[#fdf8f3]" dir={locale === "fa" ? "rtl" : "ltr"}>
+    <main className="min-h-screen" dir={locale === "fa" ? "rtl" : "ltr"}>
       <PageHero badge={t.heroBadge} title={t.heroTitle} text={t.heroText} />
 
       <BreadcrumbNav items={[{ label: commonT.home, href: `/?lang=${locale}` }, { label: t.breadcrumbCurrent }]} />
 
-      <div className="mx-auto max-w-[1080px] px-6 py-16 md:py-20">
+      <div className="mx-auto max-w-[1120px] px-6 pb-20 pt-8 md:pb-24">
         <SectionCard className="mb-12 text-center">
-          <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-[rgba(206,74,40,0.08)]">
-            <Clock className="h-12 w-12 text-[#ce4a28]" />
+          <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-leaf-50">
+            <Clock className="h-12 w-12 text-leaf-600" />
           </div>
-          <h2 className="mb-4 text-2xl font-bold text-neutral-800 md:text-3xl">{t.comingSoonTitle}</h2>
-          <p className="mx-auto mb-8 max-w-2xl leading-relaxed text-neutral-600">{t.comingSoonText}</p>
+          <h2 className="mb-4 text-2xl font-bold text-ink md:text-3xl">{t.comingSoonTitle}</h2>
+          <p className="mx-auto mb-8 max-w-2xl leading-relaxed text-ink-soft">{t.comingSoonText}</p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link
               href={`/contact${localeQuery}`}
-              className="inline-flex items-center gap-2 rounded-full bg-[#ce4a28] px-7 py-3 font-extrabold text-white transition-all hover:-translate-y-0.5 hover:bg-[#8f2e18]"
+              className="inline-flex items-center gap-2 rounded-full bg-leaf-600 px-7 py-3 font-extrabold text-white transition-all hover:-translate-y-0.5 hover:bg-leaf-700"
             >
               <Mail size={18} />
               {t.contactButton}
@@ -71,7 +71,7 @@ export default async function AgencyPage({ searchParams }: AgencyPageProps) {
               href="https://instagram.com/tordillachips/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border-2 border-[#ce4a28] px-7 py-3 font-extrabold text-[#ce4a28] transition-all hover:-translate-y-0.5 hover:bg-[#ce4a28] hover:text-white"
+              className="inline-flex items-center gap-2 rounded-full border-2 border-leaf-500 px-7 py-3 font-extrabold text-leaf-600 transition-all hover:-translate-y-0.5 hover:bg-leaf-600 hover:text-white"
             >
               {t.instagramButton}
             </a>
@@ -82,12 +82,12 @@ export default async function AgencyPage({ searchParams }: AgencyPageProps) {
           <SectionHeading>{t.benefitsTitle}</SectionHeading>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {benefits.map(({ icon: Icon, title, desc }) => (
-              <div key={title} className="rounded-2xl bg-[#fdf8f3] p-6 text-center transition-transform duration-250 hover:-translate-y-1.5">
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[rgba(206,74,40,0.1)]">
-                  <Icon className="h-8 w-8 text-[#ce4a28]" />
+              <div key={title} className="rounded-card border border-line bg-cream p-6 text-center transition-all duration-300 hover:-translate-y-1.5 hover:border-leaf-200 hover:bg-leaf-50">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-leaf-50">
+                  <Icon className="h-8 w-8 text-leaf-600" />
                 </div>
-                <div className="mb-2 text-lg font-extrabold text-[#2c1810]">{title}</div>
-                <div className="text-[13px] leading-relaxed text-[#a07060]">{desc}</div>
+                <div className="mb-2 text-lg font-extrabold text-ink">{title}</div>
+                <div className="text-[13px] leading-relaxed text-ink-mute">{desc}</div>
               </div>
             ))}
           </div>
@@ -97,14 +97,14 @@ export default async function AgencyPage({ searchParams }: AgencyPageProps) {
           <SectionHeading>{t.contactTitle}</SectionHeading>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
             {contactCards.map(({ icon: Icon, title, value }) => (
-              <div key={title} className="rounded-2xl border-b-[3px] border-[#ce4a28] bg-[#fdf8f3] p-6 text-center">
-                <Icon className="mx-auto mb-3 h-8 w-8 text-[#ce4a28]" />
-                <h4 className="mb-1.5 font-extrabold text-[#2c1810]">{title}</h4>
-                <p className="text-[13px] text-[#5a3728]">{value}</p>
+              <div key={title} className="rounded-card border border-line bg-cream p-6 text-center shadow-soft">
+                <Icon className="mx-auto mb-3 h-8 w-8 text-leaf-600" />
+                <h4 className="mb-1.5 font-extrabold text-ink">{title}</h4>
+                <p className="text-[13px] text-ink-soft">{value}</p>
               </div>
             ))}
           </div>
-          <p className="mt-4 text-center text-sm text-neutral-500">{t.contactNote}</p>
+          <p className="mt-4 text-center text-sm text-ink-mute">{t.contactNote}</p>
         </SectionCard>
 
         <SocialSection

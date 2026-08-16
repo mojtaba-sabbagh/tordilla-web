@@ -41,7 +41,7 @@ export async function BlogPostsGrid({ posts, locale }: BlogPostsGridProps) {
   if (posts.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-neutral-500">{noPostsText}</p>
+        <p className="text-ink-mute">{noPostsText}</p>
       </div>
     );
   }
@@ -55,37 +55,34 @@ export async function BlogPostsGrid({ posts, locale }: BlogPostsGridProps) {
         const altText = title || (locale === "fa" ? "تصویر مطلب" : "Blog image");
 
         return (
-          <article
-            key={post.id}
-            className="group overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-md transition hover:-translate-y-1 hover:shadow-xl"
-          >
-            <Link href={`/blog/${post.slug}?lang=${locale}`} className="block">
-              <div className="relative aspect-[4/3] w-full overflow-hidden bg-neutral-100">
+          <article key={post.id} className="surface surface-hover group overflow-hidden p-2.5">
+            <Link href={`/blog/${post.slug}?lang=${locale}`} className="flex h-full flex-col">
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-tile bg-cream-warm">
                 <Image
                   src={post.image}
                   alt={altText}
                   fill
-                  className="object-cover transition duration-500 group-hover:scale-105"
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
                 />
               </div>
-              <div className="p-4 md:p-5">
-                <span className="inline-block rounded-full bg-[#ce4a28]/10 px-2.5 py-1 text-xs font-medium text-[#ce4a28]">
+              <div className="flex flex-1 flex-col px-3 pb-2.5 pt-4">
+                <span className="inline-flex w-fit rounded-full bg-leaf-50 px-3 py-1 text-[11px] font-bold text-leaf-600">
                   {category}
                 </span>
-                <h2 className="mt-3 line-clamp-2 text-lg md:text-xl font-bold text-neutral-800 group-hover:text-[#ce4a28] transition">
+                <h2 className="mt-3 line-clamp-2 text-[16px] font-black leading-[1.7] text-ink transition-colors group-hover:text-leaf-600">
                   {title}
                 </h2>
-                <p className="mt-2 line-clamp-3 text-sm text-neutral-600">
+                <p className="mt-2 line-clamp-3 flex-1 text-[13px] leading-[1.9] text-ink-mute">
                   {excerpt}
                 </p>
-                <div className="mt-4 flex items-center justify-between text-xs text-neutral-400">
+                <div className="mt-4 flex items-center justify-between border-t border-line pt-3 text-[11.5px] text-ink-mute">
                   <span>
                     {new Date(post.date).toLocaleDateString(
                       locale === "fa" ? "fa-IR" : "en-US"
                     )}
                   </span>
-                  <span className="text-[#ce4a28] font-medium">{t.readMore}</span>
+                  <span className="font-bold text-leaf-600">{t.readMore}</span>
                 </div>
               </div>
             </Link>

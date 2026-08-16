@@ -39,12 +39,12 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   const contactT = content.contact as Record<string, any>;
 
   return (
-    <main className="min-h-screen bg-[#fdf8f3]" dir={locale === "fa" ? "rtl" : "ltr"}>
+    <main className="min-h-screen" dir={locale === "fa" ? "rtl" : "ltr"}>
       <PageHero badge={blogT.heroBadge} title={blogT.heroTitle} text={blogT.heroText} />
 
       <BreadcrumbNav items={[{ label: commonT.home, href: `/?lang=${locale}` }, { label: commonT.blog }]} />
 
-      <div className="mx-auto max-w-[1080px] px-6 py-16 md:py-20">
+      <div className="mx-auto max-w-[1120px] px-6 pb-20 pt-8 md:pb-24">
         <div className="mb-12">
           <CategorySidebar categories={categories} horizontal locale={locale} />
         </div>

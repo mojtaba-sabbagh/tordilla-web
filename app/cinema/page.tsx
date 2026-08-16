@@ -73,7 +73,7 @@ export default async function CinemaPage({ searchParams }: CinemaPageProps) {
   }));
 
   return (
-    <main className="min-h-screen bg-[#fdf8f3]" dir={locale === "fa" ? "rtl" : "ltr"}>
+    <main className="min-h-screen" dir={locale === "fa" ? "rtl" : "ltr"}>
       <PageHero title={t.heroTitle} text={t.heroText} logoAlt="Tordilla" />
 
       <BreadcrumbNav
@@ -84,7 +84,7 @@ export default async function CinemaPage({ searchParams }: CinemaPageProps) {
       />
 
       <section className="mx-auto max-w-3xl px-4 py-4 text-center md:px-6">
-        <h2 className="text-xl font-bold text-[#8f2e18] md:text-2xl">{t.sectionTitle}</h2>
+        <h2 className="text-xl font-bold text-leaf-700 md:text-2xl">{t.sectionTitle}</h2>
       </section>
 
       <section className="mx-auto max-w-3xl px-4 py-8 md:px-6 md:py-12">
@@ -92,12 +92,12 @@ export default async function CinemaPage({ searchParams }: CinemaPageProps) {
           {localizedCinemas.map((cinema) => (
             <div
               key={cinema.name}
-              className="overflow-hidden rounded-2xl border border-neutral-100 bg-white shadow-md transition hover:shadow-lg"
+              className="surface surface-hover overflow-hidden"
             >
               <div className="p-5 md:p-6">
-                <h3 className="mb-2 text-lg font-bold text-[#8f2e18] md:text-xl">{cinema.name}</h3>
-                <div className="mb-4 flex items-start gap-2 text-sm text-neutral-600">
-                  <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#ce4a28]" />
+                <h3 className="mb-2 text-lg font-bold text-leaf-700 md:text-xl">{cinema.name}</h3>
+                <div className="mb-4 flex items-start gap-2 text-sm text-ink-soft">
+                  <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-leaf-600" />
                   <p>{cinema.address}</p>
                 </div>
                 {cinema.ticketUrl ? (
@@ -105,13 +105,13 @@ export default async function CinemaPage({ searchParams }: CinemaPageProps) {
                     href={cinema.ticketUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full bg-[#ce4a28] px-4 py-2 text-sm font-bold !text-white transition hover:bg-[#8f2e18]"
+                    className="inline-flex items-center gap-2 rounded-full bg-leaf-600 px-4 py-2 text-sm font-bold !text-white transition hover:bg-leaf-700"
                   >
                     <Ticket className="h-4 w-4 text-white" />
                     {t.buyTicket}
                   </a>
                 ) : (
-                  <span className="inline-flex items-center gap-2 rounded-full bg-neutral-100 px-4 py-2 text-sm font-bold text-neutral-500">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-line bg-cream px-4 py-2 text-sm font-bold text-ink-mute">
                     <Ticket className="h-4 w-4" />
                     {t.buyTicket}
                   </span>
@@ -122,24 +122,24 @@ export default async function CinemaPage({ searchParams }: CinemaPageProps) {
         </div>
       </section>
 
-      <section className="bg-[#fdf1e6] py-12 md:py-16">
+      <section className="bg-cream-warm py-12 md:py-16">
         <div className="mx-auto max-w-3xl px-4 text-center md:px-6">
-          <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-[rgba(206,74,40,0.1)]">
+          <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-leaf-50">
             <span className="text-2xl">🎬</span>
           </div>
-          <h3 className="mb-3 text-xl font-bold text-[#8f2e18] md:text-2xl">{t.infoTitle}</h3>
-          <p className="leading-relaxed text-neutral-600">{t.infoText}</p>
+          <h3 className="mb-3 text-xl font-bold text-leaf-700 md:text-2xl">{t.infoTitle}</h3>
+          <p className="leading-relaxed text-ink-soft">{t.infoText}</p>
         </div>
       </section>
 
-      <section className="bg-gradient-to-br from-[#8f2e18] to-[#4a1509] py-12 text-white">
+      <section className="grain relative overflow-hidden bg-leaf-800 py-12 text-white">
         <div className="mx-auto max-w-3xl px-4 text-center md:px-6">
           <h4 className="mb-4 text-xl font-black md:text-2xl">{t.ctaTitle}</h4>
           <p className="mx-auto mb-6 max-w-2xl text-white/80">{t.ctaText}</p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link
               href={`/contact${localeQuery}`}
-              className="inline-flex min-h-12 items-center rounded-full border-2 border-white px-6 font-bold text-white transition hover:bg-white hover:text-[#8f2e18]"
+              className="inline-flex min-h-12 items-center rounded-full border-2 border-white px-6 font-bold text-white transition hover:bg-white hover:text-leaf-700"
             >
               {t.contactButton}
             </Link>
@@ -147,7 +147,7 @@ export default async function CinemaPage({ searchParams }: CinemaPageProps) {
               href="https://instagram.com/tordillachips/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-12 items-center rounded-full border-2 border-white px-6 font-bold text-white transition hover:bg-white hover:text-[#8f2e18]"
+              className="inline-flex min-h-12 items-center rounded-full border-2 border-white px-6 font-bold text-white transition hover:bg-white hover:text-leaf-700"
             >
               {t.instagramButton}
             </a>

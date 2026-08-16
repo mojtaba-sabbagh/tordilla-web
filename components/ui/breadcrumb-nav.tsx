@@ -13,17 +13,21 @@ type BreadcrumbNavProps = {
 export function BreadcrumbNav({ items, className = "" }: BreadcrumbNavProps) {
   return (
     <nav
-      className={`mx-auto flex max-w-[1080px] flex-wrap items-center gap-2 border-b-[1.5px] border-[rgba(206,74,40,0.08)] px-6 py-5 text-[13px] text-[#a07060] ${className}`}
+      aria-label="breadcrumb"
+      className={`mx-auto flex max-w-[1120px] flex-wrap items-center gap-2 px-6 py-4 text-[13px] text-ink-mute ${className}`}
     >
       {items.map((item, index) => (
         <span key={index} className="flex items-center gap-2">
-          {index > 0 && <span className="text-[#cbb0a0]">›</span>}
+          {index > 0 && <span className="text-leaf-300 rtl:rotate-180">›</span>}
           {item.href ? (
-            <Link href={item.href} className="font-semibold text-[#8f2e18] hover:underline">
+            <Link
+              href={item.href}
+              className="font-bold text-leaf-600 transition-colors hover:text-leaf-800"
+            >
               {item.label}
             </Link>
           ) : (
-            <span>{item.label}</span>
+            <span className="font-semibold text-ink-soft">{item.label}</span>
           )}
         </span>
       ))}

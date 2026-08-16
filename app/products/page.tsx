@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ProductCard } from "@/components/product-card";
-import { SectionBadge } from "@/components/ui/section-badge";
+import { PageHero } from "@/components/ui/page-hero";
+import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { products, getLocalizedProduct, siteMeta } from "@/lib/seed-content";
 import { getLocaleFromSearchParams } from "@/lib/i18n";
 import { getSiteTranslations } from "@/lib/site-content";
@@ -29,6 +30,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const locale = getLocaleFromSearchParams(new URLSearchParams({ lang: params?.lang ?? "fa" }));
   const content = await getSiteTranslations(locale);
   const t = content.products as Record<string, any>;
+  const commonT = content.common as Record<string, any>;
   const localeQuery = `?lang=${locale}`;
   const isFa = locale === "fa";
 
@@ -61,7 +63,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   };
 
   return (
-    <div dir={isFa ? "rtl" : "ltr"} lang={locale} className="min-h-screen bg-[#fdf8f3]">
+    <div dir={isFa ? "rtl" : "ltr"} lang={locale}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
@@ -71,23 +73,17 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#ce4a28] to-[#7a2412] px-4 py-16 text-center md:px-6 md:py-20">
-        <div className="pointer-events-none absolute -left-20 -top-20 h-80 w-80 rounded-full bg-white/5" />
-        <div className="pointer-events-none absolute -bottom-24 -right-14 h-96 w-96 rounded-full bg-white/[0.04]" />
+      <PageHero badge={t.heroBadge} title={t.heroTitle} text={t.heroText} showLogo={false} />
 
-        <div className="relative">
-          <SectionBadge tone="invert" className="mb-5">
-            {t.heroBadge}
-          </SectionBadge>
-          <h1 className="mb-4 text-[clamp(1.9rem,5vw,3.2rem)] font-black text-white">
-            {t.heroTitle}
-          </h1>
-          <p className="mx-auto max-w-xl text-base leading-[2] text-white/80">{t.heroText}</p>
-        </div>
-      </section>
+      <BreadcrumbNav
+        items={[
+          { label: commonT.home, href: `/?lang=${locale}` },
+          { label: t.heroTitle },
+        ]}
+      />
 
-      <div className="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-20">
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="mx-auto max-w-6xl px-4 pb-20 pt-8 md:px-6 md:pb-24">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {products.map((product, index) => {
             const localized = getLocalizedProduct(product, locale);
             return (

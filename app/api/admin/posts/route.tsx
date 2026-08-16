@@ -40,29 +40,49 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { slug, title, category, categorySlug, date, image, imageWidth, imageHeight, excerpt, content, author, published } = body;
-    
+
+    if (!slug || !categorySlug) {
+      return NextResponse.json(
+        { error: 'آدرس مطلب (slug) و دسته‌بندی الزامی است.' },
+        { status: 400 }
+      );
+    }
+
+    // `date` is optional from the form; the column defaults to now(). Only pass a
+    // value through when it actually parses, otherwise Prisma rejects Invalid Date.
+    const parsedDate = date ? new Date(date) : null;
+    const publishedAt = parsedDate && !Number.isNaN(parsedDate.getTime()) ? parsedDate : new Date();
+
+    const existing = await prisma.blogPost.findUnique({ where: { slug } });
+    if (existing) {
+      return NextResponse.json(
+        { error: 'مطلبی با این آدرس (slug) از قبل وجود دارد.' },
+        { status: 409 }
+      );
+    }
+
     const post = await prisma.blogPost.create({
       data: {
         slug,
         title,
         category,
         categorySlug,
-        date: new Date(date),
-        image,
-        imageWidth: imageWidth || 800,
-        imageHeight: imageHeight || 600,
+        date: publishedAt,
+        image: image || '',
+        imageWidth: Number(imageWidth) || 800,
+        imageHeight: Number(imageHeight) || 600,
         excerpt,
         content,
         author,
-        published: published || false,
+        published: published ?? false,
       },
     });
-    
+
     return NextResponse.json({ post }, { status: 201 });
   } catch (error) {
     console.error('Error creating post:', error);
     return NextResponse.json(
-      { error: 'Failed to create post' },
+      { error: error instanceof Error ? `خطا در ایجاد مطلب: ${error.message}` : 'Failed to create post' },
       { status: 500 }
     );
   }

@@ -1,0 +1,19 @@
+{
+  "title": {
+    "fa": "چرا چیپس ذرت ترددیلا گلوتن فری است؟",
+    "en": "Why Tordilla corn chips are gluten free"
+  },
+  "slug": "why-tordilla-is-gluten-free",
+  "category": { "slug": "healthy-eating", "fa": "سالم بخوریم", "en": "Healthy Eating" },
+  "author": { "fa": "تیم ترددیلا", "en": "Tordilla Team" },
+  "excerpt": {
+    "fa": "ذرت به‌طور طبیعی گلوتن ندارد؛ در این مطلب توضیح می‌دهیم چرا چیپس ذرت ترددیلا انتخاب مناسبی برای رژیم بدون گلوتن است.",
+    "en": "Corn is naturally gluten free. Here is why Tordilla corn chips fit a gluten free diet."
+  },
+  "content": {
+    "fa": "<p>ذرت یکی از غلاتی است که به‌طور طبیعی فاقد گلوتن است.</p><h2>پخت در آهک</h2><p>فرآیند نیکستامالیزاسیون علاوه بر بهبود طعم، کلسیم محصول را افزایش می‌دهد.</p><ul><li>گلوتن فری</li><li>کلسیم مضاعف</li><li>جذب روغن بسیار کم</li></ul>",
+    "en": "<p>Corn is naturally free of gluten.</p><h2>Cooked in lime</h2><p>Nixtamalization improves the flavour and raises the calcium content of the chips.</p><ul><li>Gluten free</li><li>Extra calcium</li><li>Very low oil absorption</li></ul>"
+  },
+  "image": { "url": "/home/blog/OG0A1062-380x180.jpg", "width": 380, "height": 180 },
+  "published": true
+}

@@ -57,7 +57,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
       : blogT.categoryPosts;
 
   return (
-    <main className="min-h-screen bg-[#fdf8f3]" dir={locale === "fa" ? "rtl" : "ltr"}>
+    <main className="min-h-screen" dir={locale === "fa" ? "rtl" : "ltr"}>
       <PageHero badge={blogT.categoryBadge} title={categoryName} text={categoryPostsText} />
 
       <BreadcrumbNav
@@ -68,7 +68,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         ]}
       />
 
-      <div className="mx-auto max-w-[1080px] px-6 py-16 md:py-20">
+      <div className="mx-auto max-w-[1120px] px-6 pb-20 pt-8 md:pb-24">
         <div className="mb-12">
           <CategorySidebar categories={allCategories} horizontal locale={locale} commonContent={commonT} />
         </div>

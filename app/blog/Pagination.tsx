@@ -22,7 +22,7 @@ export async function Pagination({ currentPage, totalPages, basePath = "/blog", 
       {currentPage > 1 && (
         <Link
           href={`${currentPage === 2 ? basePath : `${basePath}/page/${currentPage - 1}`}${localeQuery}`}
-          className="inline-flex h-10 items-center justify-center rounded-full bg-neutral-100 px-4 text-neutral-700 transition hover:bg-[#ce4a28] hover:text-white"
+          className="inline-flex h-11 items-center justify-center rounded-full border border-line bg-surface px-5 text-[13px] font-bold text-ink-soft shadow-soft transition-all hover:-translate-y-0.5 hover:border-leaf-300 hover:text-leaf-700"
         >
           {t.previous}
         </Link>
@@ -34,10 +34,10 @@ export async function Pagination({ currentPage, totalPages, basePath = "/blog", 
           <Link
             key={page}
             href={`${page === 1 ? basePath : `${basePath}/page/${page}`}${localeQuery}`}
-            className={`inline-flex h-10 w-10 items-center justify-center rounded-full transition ${
+            className={`inline-flex h-11 w-11 items-center justify-center rounded-full text-[13px] font-bold transition-all ${
               isActive
-                ? "bg-[#ce4a28] text-white"
-                : "bg-neutral-100 text-neutral-700 hover:bg-[#ce4a28] hover:text-white"
+                ? "bg-leaf-600 text-white shadow-glow"
+                : "border border-line bg-surface text-ink-soft shadow-soft hover:-translate-y-0.5 hover:border-leaf-300 hover:text-leaf-700"
             }`}
           >
             {page}
@@ -48,7 +48,7 @@ export async function Pagination({ currentPage, totalPages, basePath = "/blog", 
       {currentPage < totalPages && (
         <Link
           href={`${basePath}/page/${currentPage + 1}${localeQuery}`}
-          className="inline-flex h-10 items-center justify-center rounded-full bg-neutral-100 px-4 text-neutral-700 transition hover:bg-[#ce4a28] hover:text-white"
+          className="inline-flex h-11 items-center justify-center rounded-full border border-line bg-surface px-5 text-[13px] font-bold text-ink-soft shadow-soft transition-all hover:-translate-y-0.5 hover:border-leaf-300 hover:text-leaf-700"
         >
           {t.next}
         </Link>

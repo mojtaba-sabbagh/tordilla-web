@@ -6,6 +6,7 @@ import { products, getLocalizedProduct, siteMeta } from "@/lib/seed-content";
 import { getSiteTranslations } from "@/lib/site-content";
 import { SectionBadge } from "@/components/ui/section-badge";
 import { CtaLink } from "@/components/ui/cta-link";
+import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 
 type ProductPageProps = {
   params: Promise<{ slug: string }>;
@@ -90,7 +91,7 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
   };
 
   return (
-    <div dir={isFa ? "rtl" : "ltr"} lang={locale} className="min-h-screen bg-[#fdf8f3]">
+    <div dir={isFa ? "rtl" : "ltr"} lang={locale}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
@@ -100,20 +101,17 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
-      <nav className="mx-auto flex max-w-5xl items-center gap-2 px-4 pt-6 text-[13px] text-[#a07060] md:px-6">
-        <Link href={`/?lang=${locale}`} className="font-semibold text-[#8f2e18] hover:underline">
-          {t.breadcrumbHome}
-        </Link>
-        <span className="text-[#cbb0a0]">›</span>
-        <Link href={`/products${localeQuery}`} className="font-semibold text-[#8f2e18] hover:underline">
-          {t.breadcrumbProducts}
-        </Link>
-        <span className="text-[#cbb0a0]">›</span>
-        <span>{localized.title}</span>
-      </nav>
+      <BreadcrumbNav
+        items={[
+          { label: t.breadcrumbHome, href: `/?lang=${locale}` },
+          { label: t.breadcrumbProducts, href: `/products${localeQuery}` },
+          { label: localized.title },
+        ]}
+        className="max-w-5xl"
+      />
 
-      <div className="mx-auto grid max-w-5xl grid-cols-1 gap-8 px-4 pt-10 md:grid-cols-2 md:gap-12 md:px-6">
-        <div className="relative aspect-[4/3] overflow-hidden rounded-[28px] bg-[#f0e6dc] shadow-[0_24px_64px_rgba(206,74,40,0.16)]">
+      <div className="mx-auto grid max-w-5xl grid-cols-1 gap-8 px-4 pt-6 md:grid-cols-2 md:gap-12 md:px-6">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-card-lg bg-cream-warm shadow-lift ring-1 ring-line">
           <Image
             src={product.image}
             alt={localized.title}
@@ -122,23 +120,25 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
             sizes="(max-width: 768px) 100vw, 50vw"
             className="object-cover"
           />
-          <span className="absolute top-4.5 right-4.5 rounded-full bg-[rgba(206,74,40,0.9)] px-4 py-1.5 text-[13px] font-bold text-white backdrop-blur">
+          <span className="absolute end-4 top-4 rounded-full bg-white/90 px-4 py-1.5 text-[12.5px] font-black text-leaf-700 shadow-sm backdrop-blur">
             {isFa ? "ترددیلا" : "Tordilla"}
           </span>
         </div>
 
-        <div className="pt-2">
+        <div className="pt-1">
           <SectionBadge className="mb-4">{t.heroBadge}</SectionBadge>
-          <h1 className="mb-4 text-[clamp(1.7rem,4vw,2.9rem)] font-black leading-[1.25] text-[#2c1810]">
+          <h1 className="display mb-4 text-[clamp(1.7rem,4vw,2.8rem)] text-ink">
             {localized.title}
           </h1>
-          <p className="mb-7 text-base leading-[2] text-[#7a5040]">{localized.shortDescription}</p>
+          <p className="mb-7 text-[15.5px] leading-[2.05] text-ink-soft">
+            {localized.shortDescription}
+          </p>
 
           <div className="mb-8 flex flex-wrap gap-2">
             {localized.features.map((f) => (
               <span
                 key={f}
-                className="rounded-full bg-[rgba(206,74,40,0.08)] px-4 py-1.5 text-[13px] font-semibold text-[#8f2e18]"
+                className="rounded-full bg-leaf-50 px-4 py-1.5 text-[12.5px] font-bold text-leaf-600"
               >
                 {f}
               </span>
@@ -146,13 +146,13 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
           </div>
 
           <div className="mb-9 flex flex-wrap gap-3">
-            <div className="flex min-w-[100px] flex-col rounded-2xl bg-white px-5 py-3 shadow-[0_4px_16px_rgba(206,74,40,0.08)]">
-              <span className="mb-1 text-[11px] font-semibold text-[#a07060]">{t.packagingLabel}</span>
-              <span className="text-sm font-extrabold text-[#2c1810]">{localized.packaging}</span>
+            <div className="flex min-w-[110px] flex-col rounded-card border border-line bg-surface px-5 py-3.5 shadow-soft">
+              <span className="mb-1 text-[11px] font-bold text-ink-mute">{t.packagingLabel}</span>
+              <span className="text-sm font-black text-ink">{localized.packaging}</span>
             </div>
-            <div className="flex min-w-[100px] flex-col rounded-2xl bg-white px-5 py-3 shadow-[0_4px_16px_rgba(206,74,40,0.08)]">
-              <span className="mb-1 text-[11px] font-semibold text-[#a07060]">{t.audienceLabel}</span>
-              <span className="text-sm font-extrabold text-[#2c1810]">{localized.audience}</span>
+            <div className="flex min-w-[110px] flex-col rounded-card border border-line bg-surface px-5 py-3.5 shadow-soft">
+              <span className="mb-1 text-[11px] font-bold text-ink-mute">{t.audienceLabel}</span>
+              <span className="text-sm font-black text-ink">{localized.audience}</span>
             </div>
           </div>
 
@@ -167,60 +167,62 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
         </div>
       </div>
 
-      <div className="mx-auto mt-14 flex max-w-5xl flex-col gap-7 px-4 pb-20 md:px-6">
-        <div className="rounded-[26px] bg-white p-7 shadow-[0_8px_32px_rgba(206,74,40,0.07)] md:p-9">
-          <h3 className="mb-5 flex items-center gap-2.5 text-xl font-black text-[#2c1810]">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[rgba(206,74,40,0.1)] text-lg">
+      <div className="mx-auto mt-14 flex max-w-5xl flex-col gap-6 px-4 pb-20 md:px-6 md:pb-24">
+        <div className="rounded-card-lg border border-line bg-surface p-7 shadow-soft md:p-9">
+          <h3 className="mb-5 flex items-center gap-3 text-xl font-black text-ink">
+            <span className="grid h-10 w-10 place-items-center rounded-tile bg-leaf-50 text-lg">
               📖
             </span>
             {t.descriptionHeading}
           </h3>
-          <p className="text-[15px] leading-[2] text-[#5a3728]">{localized.description}</p>
+          <p className="text-[15px] leading-[2.15] text-ink-soft">{localized.description}</p>
         </div>
 
-        <div className="grid grid-cols-1 gap-7 md:grid-cols-2">
-          <div className="rounded-[26px] bg-white p-7 shadow-[0_8px_32px_rgba(206,74,40,0.07)] md:p-9">
-            <h3 className="mb-5 flex items-center gap-2.5 text-xl font-black text-[#2c1810]">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[rgba(206,74,40,0.1)] text-lg">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="rounded-card-lg border border-line bg-surface p-7 shadow-soft md:p-9">
+            <h3 className="mb-5 flex items-center gap-3 text-xl font-black text-ink">
+              <span className="grid h-10 w-10 place-items-center rounded-tile bg-leaf-50 text-lg">
                 🥗
               </span>
               {t.nutritionHeading}
             </h3>
-            <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
               {nutritionRows.map(({ label, value, icon }) => (
                 <div
                   key={label}
-                  className="flex flex-col items-start gap-1 rounded-2xl border-[1.5px] border-[rgba(206,74,40,0.09)] bg-[#fdf8f3] px-4.5 py-4 transition-colors hover:border-[rgba(206,74,40,0.22)] hover:bg-[#fdf0e8]"
+                  className="flex flex-col items-start gap-1 rounded-tile border border-line bg-cream px-4 py-4 transition-colors hover:border-leaf-200 hover:bg-leaf-50"
                 >
                   <span className="text-xl">{icon}</span>
-                  <span className="text-xs font-semibold text-[#a07060]">{label}</span>
-                  <span className="text-base font-extrabold text-[#2c1810]">{value}</span>
+                  <span className="text-[11.5px] font-bold text-ink-mute">{label}</span>
+                  <span className="text-[15px] font-black text-ink">{value}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="rounded-[26px] bg-white p-7 shadow-[0_8px_32px_rgba(206,74,40,0.07)] md:p-9">
-            <h3 className="mb-5 flex items-center gap-2.5 text-xl font-black text-[#2c1810]">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[rgba(206,74,40,0.1)] text-lg">
+          <div className="rounded-card-lg border border-line bg-surface p-7 shadow-soft md:p-9">
+            <h3 className="mb-5 flex items-center gap-3 text-xl font-black text-ink">
+              <span className="grid h-10 w-10 place-items-center rounded-tile bg-leaf-50 text-lg">
                 🌽
               </span>
               {t.relatedHeading}
             </h3>
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2.5">
               {related.map((item) => {
                 const relatedLocalized = getLocalizedProduct(item, locale);
                 return (
                   <Link
                     key={item.slug}
                     href={`/products/${item.slug}${localeQuery}`}
-                    className="group flex items-center gap-3.5 rounded-2xl border-[1.5px] border-[rgba(206,74,40,0.09)] bg-[#fdf8f3] px-4 py-3 font-bold text-[#2c1810] transition-all hover:-translate-x-1 hover:border-[rgba(206,74,40,0.22)] hover:bg-[#fdf0e8] rtl:hover:translate-x-1"
+                    className="group flex items-center gap-3.5 rounded-tile border border-line bg-cream px-3.5 py-3 font-bold text-ink transition-all hover:border-leaf-200 hover:bg-leaf-50"
                   >
-                    <span className="relative h-13 w-13 flex-shrink-0 overflow-hidden rounded-xl">
-                      <Image src={item.image} alt={relatedLocalized.title} fill sizes="52px" className="object-cover" />
+                    <span className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-xl">
+                      <Image src={item.image} alt={relatedLocalized.title} fill sizes="48px" className="object-cover" />
                     </span>
-                    <span className="flex-1 text-sm">{relatedLocalized.title}</span>
-                    <span className="text-lg text-[#8f2e18]">‹</span>
+                    <span className="flex-1 text-[13.5px]">{relatedLocalized.title}</span>
+                    <span className="grid h-6 w-6 place-items-center rounded-full bg-leaf-50 text-leaf-600 transition-all duration-300 group-hover:bg-corn-400 group-hover:text-leaf-900 rtl:rotate-180">
+                      ›
+                    </span>
                   </Link>
                 );
               })}

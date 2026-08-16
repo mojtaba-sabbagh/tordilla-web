@@ -5,6 +5,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Save } from "lucide-react";
+import { ImageUploadField } from "@/app/admin/components/ImageUploadField";
+import { PostJsonImport } from "@/app/admin/components/PostJsonImport";
 
 export default function CreatePostPage() {
   const router = useRouter();
@@ -114,6 +116,12 @@ export default function CreatePostPage() {
       {/* Form */}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Fill the whole form from a JSON file */}
+          <PostJsonImport
+            categories={categories}
+            onImport={(patch) => setFormData((prev) => ({ ...prev, ...patch }))}
+          />
+
           {/* Title - Bilingual */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -130,15 +138,16 @@ export default function CreatePostPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 mb-1" dir="ltr">
                 Title (English) *
               </label>
               <input
                 type="text"
                 required
+                dir="ltr"
                 value={formData.titleEn}
                 onChange={(e) => handleTitleChange("en", e.target.value)}
-                className="w-full rounded-lg border border-neutral-300 px-4 py-2 focus:border-[#8f1d1d] focus:outline-none focus:ring-2 focus:ring-[#8f1d1d]/20"
+                className="w-full rounded-lg border border-neutral-300 px-4 py-2 text-left focus:border-[#8f1d1d] focus:outline-none focus:ring-2 focus:ring-[#8f1d1d]/20"
                 placeholder="English title"
               />
             </div>
@@ -152,13 +161,17 @@ export default function CreatePostPage() {
             <input
               type="text"
               required
+              dir="ltr"
               value={formData.slug}
               onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-              className="w-full rounded-lg border border-neutral-300 px-4 py-2 bg-gray-50 font-mono text-sm"
+              className="w-full rounded-lg border border-neutral-300 px-4 py-2 bg-gray-50 text-left font-mono text-sm"
               placeholder="url-address"
             />
             <p className="text-xs text-neutral-500 mt-1">
-              آدرس مطلب در سایت: /blog/{formData.slug || "..."}
+              آدرس مطلب در سایت:{" "}
+              <span dir="ltr" className="font-mono">
+                /blog/{formData.slug || "..."}
+              </span>
             </p>
           </div>
 
@@ -191,15 +204,16 @@ export default function CreatePostPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 mb-1" dir="ltr">
                 Category (English) *
               </label>
               <input
                 type="text"
                 required
+                dir="ltr"
                 value={formData.categoryEn}
                 readOnly
-                className="w-full rounded-lg border border-neutral-300 px-4 py-2 bg-gray-50"
+                className="w-full rounded-lg border border-neutral-300 px-4 py-2 bg-gray-50 text-left"
               />
             </div>
           </div>
@@ -220,36 +234,30 @@ export default function CreatePostPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 mb-1" dir="ltr">
                 Author (English) *
               </label>
               <input
                 type="text"
                 required
+                dir="ltr"
                 value={formData.authorEn}
                 onChange={(e) => setFormData({ ...formData, authorEn: e.target.value })}
-                className="w-full rounded-lg border border-neutral-300 px-4 py-2 focus:border-[#8f1d1d] focus:outline-none"
+                className="w-full rounded-lg border border-neutral-300 px-4 py-2 text-left focus:border-[#8f1d1d] focus:outline-none"
                 placeholder="Author name"
               />
             </div>
           </div>
 
           {/* Image */}
-          <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-1">
-              آدرس تصویر
-            </label>
-            <input
-              type="text"
-              value={formData.image}
-              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-              className="w-full rounded-lg border border-neutral-300 px-4 py-2 focus:border-[#8f1d1d] focus:outline-none"
-              placeholder="/home/blog/image.jpg"
-            />
-            <p className="text-xs text-neutral-500 mt-1">
-              تصویر را در پوشه public/home/blog/ قرار دهید
-            </p>
-          </div>
+          <ImageUploadField
+            value={formData.image}
+            width={formData.imageWidth}
+            height={formData.imageHeight}
+            onChange={({ image, imageWidth, imageHeight }) =>
+              setFormData((prev) => ({ ...prev, image, imageWidth, imageHeight }))
+            }
+          />
 
           {/* Image Dimensions */}
           <div className="grid grid-cols-2 gap-4">
@@ -259,9 +267,10 @@ export default function CreatePostPage() {
               </label>
               <input
                 type="number"
+                dir="ltr"
                 value={formData.imageWidth}
                 onChange={(e) => setFormData({ ...formData, imageWidth: parseInt(e.target.value) || 800 })}
-                className="w-full rounded-lg border border-neutral-300 px-4 py-2 focus:border-[#8f1d1d] focus:outline-none"
+                className="w-full rounded-lg border border-neutral-300 px-4 py-2 text-left focus:border-[#8f1d1d] focus:outline-none"
               />
             </div>
             <div>
@@ -270,9 +279,10 @@ export default function CreatePostPage() {
               </label>
               <input
                 type="number"
+                dir="ltr"
                 value={formData.imageHeight}
                 onChange={(e) => setFormData({ ...formData, imageHeight: parseInt(e.target.value) || 600 })}
-                className="w-full rounded-lg border border-neutral-300 px-4 py-2 focus:border-[#8f1d1d] focus:outline-none"
+                className="w-full rounded-lg border border-neutral-300 px-4 py-2 text-left focus:border-[#8f1d1d] focus:outline-none"
               />
             </div>
           </div>
@@ -293,15 +303,16 @@ export default function CreatePostPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 mb-1" dir="ltr">
                 Excerpt (English) *
               </label>
               <textarea
                 required
                 rows={3}
+                dir="ltr"
                 value={formData.excerptEn}
                 onChange={(e) => setFormData({ ...formData, excerptEn: e.target.value })}
-                className="w-full rounded-lg border border-neutral-300 px-4 py-2 focus:border-[#8f1d1d] focus:outline-none"
+                className="w-full rounded-lg border border-neutral-300 px-4 py-2 text-left focus:border-[#8f1d1d] focus:outline-none"
                 placeholder="English excerpt..."
               />
             </div>
@@ -318,20 +329,21 @@ export default function CreatePostPage() {
                 rows={15}
                 value={formData.contentFa}
                 onChange={(e) => setFormData({ ...formData, contentFa: e.target.value })}
-                className="w-full rounded-lg border border-neutral-300 px-4 py-2 font-mono text-sm focus:border-[#8f1d1d] focus:outline-none"
+                className="w-full rounded-lg border border-neutral-300 px-4 py-2 text-sm focus:border-[#8f1d1d] focus:outline-none"
                 placeholder="محتوای فارسی (HTML پشتیبانی می‌شود)..."
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 mb-1" dir="ltr">
                 Content (English) *
               </label>
               <textarea
                 required
                 rows={15}
+                dir="ltr"
                 value={formData.contentEn}
                 onChange={(e) => setFormData({ ...formData, contentEn: e.target.value })}
-                className="w-full rounded-lg border border-neutral-300 px-4 py-2 font-mono text-sm focus:border-[#8f1d1d] focus:outline-none"
+                className="w-full rounded-lg border border-neutral-300 px-4 py-2 text-left font-mono text-sm focus:border-[#8f1d1d] focus:outline-none"
                 placeholder="English content (HTML supported)..."
               />
             </div>
