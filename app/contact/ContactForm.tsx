@@ -82,6 +82,7 @@ export function ContactForm({ locale, content }: ContactFormProps) {
           type="tel"
           id="phone"
           name="phone"
+          required
           dir="ltr"
           placeholder={t.formPhonePlaceholder}
           className={`${inputClasses} text-left`}

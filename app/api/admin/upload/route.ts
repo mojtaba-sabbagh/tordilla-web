@@ -6,7 +6,7 @@ import { verifyAdminAuth } from '@/lib/admin-auth';
 import {
   ALLOWED_MEDIA_TYPES as ALLOWED_TYPES,
   MAX_MEDIA_FILE_BYTES as MAX_BYTES,
-  MEDIA_DIR as UPLOAD_DIR,
+  MEDIA_UPLOAD_DIR as UPLOAD_DIR,
   MEDIA_PUBLIC_PREFIX as PUBLIC_PREFIX,
 } from '@/lib/media';
 

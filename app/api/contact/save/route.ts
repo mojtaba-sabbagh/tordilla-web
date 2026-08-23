@@ -1,6 +1,36 @@
 // app/api/contact/save/route.ts
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { sendToFormsWebhook } from '@/lib/forms-webhook';
+
+/**
+ * Copies a saved message into the Tordilla Forms app. The message is already
+ * stored locally at this point, so a webhook failure is logged and the
+ * submission still counts as successful for the visitor.
+ *
+ * The telephone is required on both sides, but the database column is still
+ * nullable, so a placeholder stands in rather than sending a blank the remote
+ * form would reject.
+ */
+async function mirrorToForms(contactMessage: {
+  name: string;
+  email: string;
+  phone: string | null;
+  subject: string;
+  message: string;
+}) {
+  const result = await sendToFormsWebhook({
+    name: contactMessage.name,
+    telephone: contactMessage.phone || '-',
+    email: contactMessage.email,
+    subject: contactMessage.subject,
+    message: contactMessage.message,
+  });
+
+  if (result.status === 'delivered') {
+    console.log('Message mirrored to forms webhook:', { entryId: result.entryId });
+  }
+}
 
 export async function POST(request: Request) {
   // Initialize with default values to satisfy TypeScript
@@ -19,7 +49,7 @@ export async function POST(request: Request) {
     message = body.message;
     
     // Validate required fields
-    if (!name || !email || !subject || !message) {
+    if (!name || !email || !phone?.trim() || !subject || !message) {
       return NextResponse.json(
         { error: 'لطفاً تمام فیلدهای ضروری را پر کنید' },
         { status: 400 }
@@ -53,6 +83,9 @@ export async function POST(request: Request) {
       email: contactMessage.email,
       subject: contactMessage.subject,
     });
+    
+    await mirrorToForms(contactMessage);
+
     
     return NextResponse.json(
       { 
@@ -103,6 +136,8 @@ export async function POST(request: Request) {
           },
         });
         
+        await mirrorToForms(contactMessage);
+
         return NextResponse.json(
           { 
             success: true, 

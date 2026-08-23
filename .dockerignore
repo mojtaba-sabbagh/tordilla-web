@@ -1,0 +1,18 @@
+# Without this, `COPY . .` overwrites the Linux node_modules that `npm ci`
+# just installed with the host's (Windows) binaries, and drags the local
+# build output and git history into the image.
+node_modules
+.next
+.git
+.gitignore
+
+# Local-only files
+.env
+.env*.local
+Dockerfile.bk
+docker-compose.yml
+npm-debug.log*
+tsconfig.tsbuildinfo
+**/.DS_Store
+
+# Note: .env.docker is intentionally NOT ignored — the build copies it in.

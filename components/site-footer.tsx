@@ -62,7 +62,7 @@ export function SiteFooter() {
               </li>
               <li className="flex gap-3">
                 <Phone className="mt-0.5 h-4 w-4 flex-shrink-0 text-corn-300" />
-                <a href="tel:02191072667" className="transition hover:text-white">
+                <a href="tel:09426002408" className="transition hover:text-white">
                   {t.phone}
                 </a>
               </li>
@@ -110,7 +110,7 @@ export function SiteFooter() {
             {t.copyright} {currentYear}
           </span>
           <a
-            href="https://www.joorchin.co/"
+            href="https://www.tordilla.ir/"
             target="_blank"
             rel="noopener noreferrer"
             className="transition hover:text-corn-300"

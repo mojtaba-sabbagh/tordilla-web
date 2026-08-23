@@ -1,9 +1,9 @@
 // app/layout.tsx
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { headers } from "next/headers";
 import localFont from "next/font/local";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
+import { SiteShell } from "@/components/site-shell";
 import { siteMeta } from "@/lib/seed-content";
 import "./globals.css";
 
@@ -76,16 +76,19 @@ const organizationJsonLd = {
   ],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // `x-locale` is set by proxy.ts from the `?lang` query param.
+  const locale = (await headers()).get("x-locale") === "en" ? "en" : "fa";
+
   return (
     <html
       data-scroll-behavior="smooth"
-      dir="rtl"
-      lang="fa"
+      dir={locale === "fa" ? "rtl" : "ltr"}
+      lang={locale}
       suppressHydrationWarning
     >
       <body className={yekan.className} suppressHydrationWarning>
@@ -94,11 +97,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
         <Suspense fallback={null}>
-          <div className="site-shell min-h-screen flex flex-col">
-            <SiteHeader />
-            <main className="flex-1">{children}</main>
-            <SiteFooter />
-          </div>
+          <SiteShell>{children}</SiteShell>
         </Suspense>
       </body>
     </html>

@@ -368,7 +368,7 @@ export default function SiteContentAdminPage() {
               <p className="mt-1 text-sm text-neutral-600">در حال ویرایش محتوا برای {localeLabels[activeLanguage]}</p>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-6" dir={activeLanguage === "fa" ? "rtl" : "ltr"} lang={activeLanguage}>
               {selectedContent[activeLanguage] && typeof selectedContent[activeLanguage] === "object" ? (
                 Object.entries(selectedContent[activeLanguage] as Record<string, unknown>).map(([key, value]) => (
                   <div key={key} className="space-y-2">
