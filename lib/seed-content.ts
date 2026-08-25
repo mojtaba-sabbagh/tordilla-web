@@ -1,5 +1,5 @@
 // lib/seed-content.ts
-import { CinemaPartner, Post, Product } from "@/lib/types";
+import { CinemaPartner, PackSize, Post, Product } from "@/lib/types";
 
 export const siteMeta = {
   name: "ترددیلا",
@@ -14,6 +14,29 @@ export const heroHighlights = [
   "طعم‌های متنوع برای هر سلیقه",
   "آماده توسعه برای فروش آنلاین و محتوای کامل برند",
 ];
+
+// Pack formats Tordilla sells. The 100g and 60g bags carry the same artwork and
+// colour per flavour; the 200g restaurant format ships unprinted, so it has no pack shot.
+const packs = {
+  retail100: (image: string): PackSize => ({
+    weight: { fa: "۱۰۰ گرمی", en: "100 g" },
+    channel: { fa: "بسته خرده‌فروشی", en: "Retail pack" },
+    image,
+  }),
+  toGo60: (image: string): PackSize => ({
+    weight: { fa: "۶۰ گرمی", en: "60 g" },
+    channel: { fa: "بسته تک‌نفره Top N Go", en: "Top N Go single-serve pack" },
+    image,
+  }),
+  restaurant200: (): PackSize => ({
+    weight: { fa: "۲۰۰ گرمی", en: "200 g" },
+    channel: { fa: "مخصوص رستوران", en: "For restaurants" },
+    note: {
+      fa: "بدون بسته‌بندی چاپی؛ در کیسه پلاستیکی عرضه می‌شود.",
+      en: "No printed packaging — supplied in plain plastic bags.",
+    },
+  }),
+};
 
 // Bilingual product data
 export const products: Product[] = [
@@ -33,7 +56,11 @@ export const products: Product[] = [
       fa: ["طعم ملایم و خوش‌عطر ماست و موسیر", "بافت ترد و سبک", "مناسب میان‌وعده، مهمانی و سرو کنار دیپ"],
       en: ["Mild and aromatic yogurt & shallot flavor", "Crunchy and light texture", "Perfect for snacks, parties, and serving with dips"]
     },
-    packaging: { fa: "بسته آماده مصرف خرده‌فروشی", en: "Retail ready-to-eat package" },
+    packaging: { fa: "۱۰۰ و ۶۰ گرمی خرده‌فروشی", en: "100 g & 60 g retail" },
+    packSizes: [
+      packs.retail100("/home/flavors/mast1.jpg"),
+      packs.toGo60("/home/flavors/shallot-yogurt-60g.jpg"),
+    ],
     audience: { fa: "مصرف خانگی، فروشگاه‌ها و طرفداران طعم‌های کلاسیک", en: "Home consumption, stores, and classic flavor lovers" },
     nutrition: {
       serving: { fa: "۳۰ گرم", en: "30g" },
@@ -60,7 +87,12 @@ export const products: Product[] = [
       fa: ["طعم پنیری محبوب و همه‌پسند", "مناسب مصرف مستقیم یا همراه با سس", "انتخابی مناسب برای دورهمی و میان‌وعده"],
       en: ["Popular and crowd-pleasing cheese flavor", "Great on its own or with sauces", "Perfect for gatherings and snacks"]
     },
-    packaging: { fa: "بسته آماده مصرف خرده‌فروشی", en: "Retail ready-to-eat package" },
+    packaging: { fa: "۱۰۰ و ۶۰ گرمی خرده‌فروشی، ۲۰۰ گرمی رستورانی", en: "100 g & 60 g retail, 200 g for restaurants" },
+    packSizes: [
+      packs.retail100("/home/flavors/chees1.jpg"),
+      packs.toGo60("/home/flavors/nacho-cheese-60g.jpg"),
+      packs.restaurant200(),
+    ],
     audience: { fa: "مصرف‌کنندگان عمومی و علاقه‌مندان طعم پنیری", en: "General consumers and cheese flavor lovers" },
     nutrition: {
       serving: { fa: "۳۰ گرم", en: "30g" },
@@ -87,7 +119,10 @@ export const products: Product[] = [
       fa: ["طعم برشته و تنوری", "رایحه متفاوت و جذاب", "مناسب پذیرایی و مصرف روزانه"],
       en: ["Roasted and oven-baked flavor", "Distinct and appealing aroma", "Great for entertaining and daily snacking"]
     },
-    packaging: { fa: "بسته آماده مصرف خرده‌فروشی", en: "Retail ready-to-eat package" },
+    packaging: { fa: "۱۰۰ گرمی خرده‌فروشی", en: "100 g retail pack" },
+    packSizes: [
+      packs.retail100("/home/flavors/barbiq1.jpg"),
+    ],
     audience: { fa: "علاقه‌مندان مزه‌های برشته و طعم‌های خاص", en: "Lovers of roasted flavors and unique tastes" },
     nutrition: {
       serving: { fa: "۳۰ گرم", en: "30g" },
@@ -114,7 +149,12 @@ export const products: Product[] = [
       fa: ["طعم سالسا با حس تندی و شادابی", "مناسب سرو کنار انواع دیپ", "انتخابی جذاب برای مهمانی و دورهمی"],
       en: ["Salsa flavor with a spicy and fresh kick", "Great for serving with various dips", "An attractive choice for parties and gatherings"]
     },
-    packaging: { fa: "بسته آماده مصرف خرده‌فروشی", en: "Retail ready-to-eat package" },
+    packaging: { fa: "۱۰۰ و ۶۰ گرمی خرده‌فروشی، ۲۰۰ گرمی رستورانی", en: "100 g & 60 g retail, 200 g for restaurants" },
+    packSizes: [
+      packs.retail100("/home/flavors/salsa1.jpg"),
+      packs.toGo60("/home/flavors/salsa-60g.jpg"),
+      packs.restaurant200(),
+    ],
     audience: { fa: "طرفداران طعم‌های تند و الهام‌گرفته از مزه‌های مکزیکی", en: "Fans of spicy flavors inspired by Mexican tastes" },
     nutrition: {
       serving: { fa: "۳۰ گرم", en: "30g" },
@@ -141,7 +181,10 @@ export const products: Product[] = [
       fa: ["طعم ادویه‌ای و جسورانه", "بافت ترد و مناسب سرو مستقیم", "هماهنگ با ذائقه طرفداران طعم‌های پررنگ"],
       en: ["Spiced and bold flavor", "Crunchy texture great for eating on its own", "Perfect for fans of strong, distinctive flavors"]
     },
-    packaging: { fa: "بسته آماده مصرف خرده‌فروشی", en: "Retail ready-to-eat package" },
+    packaging: { fa: "۱۰۰ گرمی خرده‌فروشی", en: "100 g retail pack" },
+    packSizes: [
+      packs.retail100("/home/flavors/mexican1.jpg"),
+    ],
     audience: { fa: "جوانان و علاقه‌مندان طعم‌های تند و ادویه‌ای", en: "Young people and fans of spicy, seasoned flavors" },
     nutrition: {
       serving: { fa: "۳۰ گرم", en: "30g" },
@@ -168,7 +211,10 @@ export const products: Product[] = [
       fa: ["عطر خوش پیاز تازه و طعم دل‌انگیز جعفری", "طعم متعادل و ساده", "مناسب مصرف روزانه و پذیرایی سبک"],
       en: ["Fresh onion aroma and delightful parsley flavor", "Balanced and simple taste", "Great for daily snacking and light entertaining"]
     },
-    packaging: { fa: "بسته آماده مصرف خرده‌فروشی", en: "Retail ready-to-eat package" },
+    packaging: { fa: "۱۰۰ گرمی خرده‌فروشی", en: "100 g retail pack" },
+    packSizes: [
+      packs.retail100("/home/flavors/piaz1.jpg"),
+    ],
     audience: { fa: "مصرف‌کنندگان علاقه‌مند به مزه‌های ساده‌تر و متعادل‌تر", en: "Consumers who prefer simpler, more balanced flavors" },
     nutrition: {
       serving: { fa: "۳۰ گرم", en: "30g" },
@@ -195,7 +241,10 @@ export const products: Product[] = [
       fa: ["عطر و طعم متمایز کنجد", "بافت ترد با مزه‌ای متفاوت", "مناسب برای میان‌وعده و پذیرایی"],
       en: ["Distinct sesame aroma and taste", "Crunchy texture with a unique flavor", "Perfect for snacking and entertaining"]
     },
-    packaging: { fa: "بسته آماده مصرف خرده‌فروشی", en: "Retail ready-to-eat package" },
+    packaging: { fa: "۱۰۰ گرمی خرده‌فروشی", en: "100 g retail pack" },
+    packSizes: [
+      packs.retail100("/home/flavors/seseami.jpg"),
+    ],
     audience: { fa: "علاقه‌مندان طعم‌های معطر و متفاوت", en: "Fans of aromatic and distinctive flavors" },
     nutrition: {
       serving: { fa: "۳۰ گرم", en: "30g" },
@@ -217,6 +266,12 @@ export function getLocalizedProduct(product: Product, locale: string) {
     description: product.description[locale as keyof typeof product.description],
     features: product.features[locale as keyof typeof product.features],
     packaging: product.packaging[locale as keyof typeof product.packaging],
+    packSizes: product.packSizes.map((pack) => ({
+      weight: pack.weight[locale as keyof typeof pack.weight],
+      channel: pack.channel[locale as keyof typeof pack.channel],
+      image: pack.image,
+      note: pack.note?.[locale as keyof typeof pack.note],
+    })),
     audience: product.audience[locale as keyof typeof product.audience],
     nutrition: {
       serving: product.nutrition.serving[locale as keyof typeof product.nutrition.serving],

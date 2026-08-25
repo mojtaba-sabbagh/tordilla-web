@@ -178,6 +178,49 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
           <p className="text-[15px] leading-[2.15] text-ink-soft">{localized.description}</p>
         </div>
 
+        <div className="rounded-card-lg border border-line bg-surface p-7 shadow-soft md:p-9">
+          <h3 className="mb-1 flex items-center gap-3 text-xl font-black text-ink">
+            <span className="grid h-10 w-10 place-items-center rounded-tile bg-leaf-50 text-lg">
+              📦
+            </span>
+            {t.packSizesHeading}
+          </h3>
+          <p className="mb-6 text-[13.5px] text-ink-mute">{t.packSizesIntro}</p>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {localized.packSizes.map((pack) => (
+              <div
+                key={pack.weight}
+                className="flex flex-col overflow-hidden rounded-tile border border-line bg-cream transition-colors hover:border-leaf-200"
+              >
+                <div className="relative aspect-[4/3] w-full bg-cream-warm">
+                  {pack.image ? (
+                    <Image
+                      src={pack.image}
+                      alt={`${localized.title} — ${pack.weight}`}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 300px"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full flex-col items-center justify-center gap-2 text-ink-mute">
+                      <span className="text-3xl">🛍️</span>
+                      <span className="text-[11.5px] font-bold">{t.noPackShotLabel}</span>
+                    </div>
+                  )}
+                </div>
+                <div className="flex flex-1 flex-col gap-1 px-4 py-3.5">
+                  <span className="text-[15px] font-black text-ink">{pack.weight}</span>
+                  <span className="text-[12.5px] font-bold text-leaf-600">{pack.channel}</span>
+                  {pack.note && (
+                    <span className="mt-1 text-[12px] leading-[1.8] text-ink-mute">{pack.note}</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="rounded-card-lg border border-line bg-surface p-7 shadow-soft md:p-9">
             <h3 className="mb-5 flex items-center gap-3 text-xl font-black text-ink">
