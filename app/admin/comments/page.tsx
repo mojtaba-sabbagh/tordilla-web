@@ -14,12 +14,26 @@ interface Comment {
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
   createdAt: string | Date;
   blogPost?: {
-    title: string;
+    title: { fa: string; en: string } | string;
     slug: string;
   };
 }
 
 type FilterType = 'all' | 'PENDING' | 'APPROVED' | 'REJECTED';
+
+// BlogPost.title is a Json column ({ fa, en }), so it cannot be rendered directly.
+function getPersianTitle(title: NonNullable<Comment['blogPost']>['title']): string {
+  if (!title) return '';
+  if (typeof title === 'string') {
+    try {
+      const parsed = JSON.parse(title);
+      return parsed.fa || parsed.en || title;
+    } catch {
+      return title;
+    }
+  }
+  return title.fa || title.en || '';
+}
 
 export default function AdminCommentsPage() {
   const router = useRouter();
@@ -283,7 +297,7 @@ export default function AdminCommentsPage() {
                           target="_blank"
                           className="text-blue-600 hover:underline"
                         >
-                          {comment.blogPost.title}
+                          {getPersianTitle(comment.blogPost.title)}
                         </a>
                       </p>
                     )}
