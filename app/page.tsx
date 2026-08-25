@@ -14,10 +14,18 @@ import { products, getLocalizedProduct } from "@/lib/seed-content";
 import { getPaginatedBlogPosts } from "@/lib/blog-data";
 
 const sliderImages = [
-  "/home/slider/where-1024x447.jpg",
-  "/home/slider/tamas-ba-ma-small-size-min-1024x447.jpg",
-  "/home/slider/tortella-mexico-min-800x350.jpg",
-  "/home/slider/tortella-salsa-min-800x350.jpg",
+  "/home/banners/tordilla-brand.jpg",
+  "/home/banners/salsa-100g.jpg",
+  "/home/banners/nacho-cheese-100g.jpg",
+  "/home/banners/mexican-100g.jpg",
+  "/home/banners/shallot-yogurt-100g.jpg",
+  "/home/banners/sesame-cheese-100g.jpg",
+  "/home/banners/barbeque-100g.jpg",
+  "/home/banners/onion-parsley-100g.jpg",
+  "/home/banners/salsa-60g.jpg",
+  "/home/banners/nacho-cheese-60g.jpg",
+  "/home/banners/shallot-yogurt-60g.jpg",
+  "/home/banners/export-box.jpg",
 ];
 
 const retailers = [
@@ -137,9 +145,9 @@ export default async function HomePage({
             <HomeSlider
               images={sliderImages}
               alt={isFa ? "ترددیلا" : "Tordilla"}
-              className="relative aspect-[16/10] w-full lg:aspect-[4/3]"
+              className="relative aspect-[7/5] w-full"
             />
-            <div className="relative mx-auto -mt-8 w-fit rounded-full border border-white/15 bg-leaf-800/90 px-5 py-2.5 shadow-lift backdrop-blur">
+            <div className="relative mx-auto mt-2 w-fit rounded-full border border-white/15 bg-leaf-800/90 px-5 py-2.5 shadow-lift backdrop-blur">
               <Image
                 src="/home/logo.png"
                 alt={isFa ? "لوگوی ترددیلا" : "Tordilla logo"}
