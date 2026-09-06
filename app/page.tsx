@@ -15,6 +15,7 @@ import { getPaginatedBlogPosts } from "@/lib/blog-data";
 
 const sliderImages = [
   "/home/banners/tordilla-brand.jpg",
+  "/home/banners/tordilla-poster.jpg",
   "/home/banners/salsa-100g.jpg",
   "/home/banners/nacho-cheese-100g.jpg",
   "/home/banners/mexican-100g.jpg",
