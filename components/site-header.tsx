@@ -92,7 +92,7 @@ export function SiteHeader() {
               <Link
                 key={item.key}
                 href={`${item.href}?lang=${locale}`}
-                className={`relative rounded-full px-3.5 py-2 text-[13.5px] font-bold transition-all duration-200 ${
+                className={`relative rounded-full px-3.5 py-2 text-[15.5px] font-bold transition-all duration-200 ${
                   isActive(item.href)
                     ? "bg-leaf-50 text-leaf-700"
                     : "text-ink-soft hover:bg-white/70 hover:text-leaf-600"
@@ -109,7 +109,7 @@ export function SiteHeader() {
           <div className="flex items-center gap-2">
             <Link
               href={langSwitchHref}
-              className="hidden items-center gap-1.5 rounded-full border border-leaf-200 bg-white/70 px-3.5 py-2 text-[13px] font-bold text-leaf-700 transition-all hover:border-leaf-400 hover:bg-leaf-600 hover:text-white sm:inline-flex"
+              className="hidden items-center gap-1.5 rounded-full border border-leaf-200 bg-white/70 px-3.5 py-2 text-[14px] font-bold text-leaf-700 transition-all hover:border-leaf-400 hover:bg-leaf-600 hover:text-white sm:inline-flex"
             >
               <Globe className="h-3.5 w-3.5" />
               {t.languageToggle}
@@ -139,7 +139,7 @@ export function SiteHeader() {
                   key={item.key}
                   href={`${item.href}?lang=${locale}`}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`rounded-tile px-4 py-3 text-sm font-bold transition ${
+                  className={`rounded-tile px-4 py-3 text-[15.5px] font-bold transition ${
                     isActive(item.href)
                       ? "bg-leaf-600 text-white"
                       : "text-ink-soft hover:bg-leaf-50 hover:text-leaf-700"
@@ -151,7 +151,7 @@ export function SiteHeader() {
               <Link
                 href={langSwitchHref}
                 onClick={() => setMobileMenuOpen(false)}
-                className="mt-1 inline-flex items-center justify-center gap-2 rounded-full border border-leaf-200 px-5 py-2.5 text-sm font-bold text-leaf-700"
+                className="mt-1 inline-flex items-center justify-center gap-2 rounded-full border border-leaf-200 px-5 py-2.5 text-[15.5px] font-bold text-leaf-700"
               >
                 <Globe className="h-4 w-4" />
                 {t.languageToggle}
