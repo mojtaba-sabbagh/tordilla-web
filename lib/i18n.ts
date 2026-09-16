@@ -268,6 +268,11 @@ export const translations = {
         socialHeading: "ترددیلا در شبکه‌های اجتماعی",
         contactButton: "تماس با ما",
         instagramButton: "اینستاگرام ترددیلا",
+        catalogTitle: "کاتالوگ محصولات",
+        catalogIntro: "مشخصات بسته‌بندی، وزن، ابعاد کارتن و بارکد تمام طعم‌های ترددیلا برای همکاری عمده",
+        catalogCloseAria: "بستن",
+        catalogPrevAria: "تصویر قبلی",
+        catalogNextAria: "تصویر بعدی",
       },
       shop: {
         heroBadge: "🛒 خرید آسان، طعم بی‌نظیر",
@@ -579,6 +584,11 @@ export const translations = {
       socialHeading: "Tordilla on Social Media",
       contactButton: "Contact Us",
       instagramButton: "Tordilla Instagram",
+      catalogTitle: "Product Catalog",
+      catalogIntro: "Pack weights, carton dimensions, and barcodes for every Tordilla flavor, for wholesale partners",
+      catalogCloseAria: "Close",
+      catalogPrevAria: "Previous image",
+      catalogNextAria: "Next image",
     },
     shop: {
       heroBadge: "🛒 Easy Shopping, Unbeatable Taste",

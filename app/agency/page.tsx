@@ -7,6 +7,7 @@ import { PageHero } from "@/components/ui/page-hero";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { SectionCard, SectionHeading } from "@/components/ui/section-card";
 import { SocialSection } from "@/components/social-icons";
+import { CatalogGallery } from "@/components/catalog-gallery";
 
 interface AgencyPageProps {
   searchParams: Promise<{ lang?: string }>;
@@ -38,6 +39,20 @@ export default async function AgencyPage({ searchParams }: AgencyPageProps) {
     { icon: TrendingUp, title: t.benefitGrowth, desc: t.benefitGrowthDesc },
     { icon: Headset, title: t.benefitSupport, desc: t.benefitSupportDesc },
     { icon: Users, title: t.benefitStable, desc: t.benefitStableDesc },
+  ];
+
+  const catalogImages = [
+    { src: "/agency/catalog/cover-front.jpg", alt: locale === "fa" ? "روی جلد کاتالوگ ترددیلا" : "Tordilla catalog front cover" },
+    ...(locale === "fa"
+      ? [
+          { src: "/agency/catalog/spec-fa-1.jpg", alt: "مشخصات محصولات ترددیلا - صفحه ۱" },
+          { src: "/agency/catalog/spec-fa-2.jpg", alt: "مشخصات محصولات ترددیلا - صفحه ۲" },
+        ]
+      : [
+          { src: "/agency/catalog/spec-en-1.jpg", alt: "Tordilla product specifications - page 1" },
+          { src: "/agency/catalog/spec-en-2.jpg", alt: "Tordilla product specifications - page 2" },
+        ]),
+    { src: "/agency/catalog/cover-back.jpg", alt: locale === "fa" ? "پشت جلد کاتالوگ ترددیلا" : "Tordilla catalog back cover" },
   ];
 
   const contactCards = [
@@ -76,6 +91,17 @@ export default async function AgencyPage({ searchParams }: AgencyPageProps) {
               {t.instagramButton}
             </a>
           </div>
+        </SectionCard>
+
+        <SectionCard className="mb-12">
+          <SectionHeading>{t.catalogTitle}</SectionHeading>
+          <p className="-mt-4 mb-6 text-[14.5px] leading-relaxed text-ink-mute">{t.catalogIntro}</p>
+          <CatalogGallery
+            images={catalogImages}
+            closeAria={t.catalogCloseAria}
+            prevAria={t.catalogPrevAria}
+            nextAria={t.catalogNextAria}
+          />
         </SectionCard>
 
         <SectionCard className="mb-12">
