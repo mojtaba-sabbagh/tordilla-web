@@ -4,9 +4,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { 
-  Plus, Edit, Trash2, Eye, MessageSquare, LogOut, 
-  Mail, Inbox 
+import {
+  Plus, Edit, Trash2, Eye, MessageSquare, LogOut,
+  Mail, Inbox, BarChart3
 } from "lucide-react";
 import AdminNav from "./components/AdminNav";
 
@@ -57,6 +57,8 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [pendingCommentsCount, setPendingCommentsCount] = useState(0);
   const [unseenMessagesCount, setUnseenMessagesCount] = useState(0);
+  const [todayViews, setTodayViews] = useState(0);
+  const [todayVisitors, setTodayVisitors] = useState(0);
 
   useEffect(() => {
     loadData();
@@ -67,7 +69,8 @@ export default function AdminDashboard() {
       await Promise.all([
         fetchPosts(),
         fetchPendingCommentsCount(),
-        fetchUnseenMessagesCount()
+        fetchUnseenMessagesCount(),
+        fetchTodayAnalytics()
       ]);
     } catch (error) {
       console.error("Error loading data:", error);
@@ -115,6 +118,19 @@ export default function AdminDashboard() {
     }
   };
 
+  const fetchTodayAnalytics = async () => {
+    try {
+      const response = await fetch("/api/admin/analytics/today");
+      if (response.ok) {
+        const data = await response.json();
+        setTodayViews(data.views || 0);
+        setTodayVisitors(data.visitors || 0);
+      }
+    } catch (error) {
+      console.error("Error fetching today analytics:", error);
+    }
+  };
+
   const handleDelete = async (id: string) => {
     if (!confirm("آیا از حذف این مطلب اطمینان دارید؟")) return;
 
@@ -159,7 +175,31 @@ export default function AdminDashboard() {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {/* Today's Traffic Card */}
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">بازدید امروز</p>
+                <p className="text-3xl font-bold text-[#8f1d1d]">
+                  {todayViews.toLocaleString("fa-IR")}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {todayVisitors.toLocaleString("fa-IR")} بازدیدکنندهٔ یکتا
+                </p>
+              </div>
+              <div className="bg-[#8f1d1d]/10 p-3 rounded-full">
+                <BarChart3 className="h-8 w-8 text-[#8f1d1d]" />
+              </div>
+            </div>
+            <Link
+              href="/admin/analytics"
+              className="mt-4 inline-block text-sm text-[#8f1d1d] hover:underline"
+            >
+              مشاهده آمار کامل →
+            </Link>
+          </div>
+
           {/* Messages Card */}
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center justify-between">

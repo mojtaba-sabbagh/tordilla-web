@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { MessageSquare, Mail, LayoutDashboard, LogOut, FileText, Database } from 'lucide-react';
+import { MessageSquare, Mail, LayoutDashboard, LogOut, FileText, Database, BarChart3 } from 'lucide-react';
 
 interface AdminNavProps {
   unseenMessagesCount?: number;
@@ -24,6 +24,12 @@ export default function AdminNav({ unseenMessagesCount = 0, pendingCommentsCount
       href: '/admin',
       label: 'داشبورد',
       icon: LayoutDashboard,
+      badge: null,
+    },
+    {
+      href: '/admin/analytics',
+      label: 'آمار بازدید',
+      icon: BarChart3,
       badge: null,
     },
     {

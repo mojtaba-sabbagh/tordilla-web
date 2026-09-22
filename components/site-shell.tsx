@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { getLocaleFromSearchParams } from "@/lib/i18n";
+import { AnalyticsTracker } from "@/components/analytics-tracker";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
@@ -20,6 +21,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="site-shell min-h-screen flex flex-col" dir={dir} lang={locale}>
+      <AnalyticsTracker />
       <SiteHeader />
       <main className="flex-1">{children}</main>
       <SiteFooter />

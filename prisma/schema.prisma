@@ -92,3 +92,52 @@ enum Status {
   REPLIED
   ARCHIVED
 }
+/// One row per page view recorded by the client-side beacon (`/api/track`).
+/// Location is snapshotted onto the row so historical stats stay stable even
+/// if the IP is later reassigned to somewhere else.
+model PageView {
+  id           String   @id @default(cuid())
+  path         String
+  query        String?
+  title        String?
+  locale       String?
+  referrer     String?
+  referrerHost String?
+  userAgent    String?  @db.Text
+  ip           String
+  visitorId    String   // sha256(ip + user agent + salt) — stable pseudonymous id
+  sessionId    String?  // per browser-tab session, used to count visits
+  deviceType   String?  // mobile | tablet | desktop
+  browser      String?
+  os           String?
+  isBot        Boolean  @default(false)
+  country      String?
+  countryCode  String?
+  region       String?
+  city         String?
+  createdAt    DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([isBot, createdAt])
+  @@index([path])
+  @@index([ip])
+  @@index([visitorId])
+  @@index([country])
+}
+
+/// Cache for IP → location lookups so the same visitor is only resolved once.
+model IpLocation {
+  ip          String   @id
+  country     String?
+  countryCode String?
+  region      String?
+  city        String?
+  latitude    Float?
+  longitude   Float?
+  isp         String?
+  status      String   @default("OK") // OK | FAILED | PRIVATE
+  lookedUpAt  DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+}
