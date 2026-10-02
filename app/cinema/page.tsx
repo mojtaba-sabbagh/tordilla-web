@@ -74,7 +74,7 @@ export default async function CinemaPage({ searchParams }: CinemaPageProps) {
 
   return (
     <main className="min-h-screen" dir={locale === "fa" ? "rtl" : "ltr"}>
-      <PageHero title={t.heroTitle} text={t.heroText} logoAlt="Tordilla" />
+      <PageHero title={t.heroTitle} text={t.heroText} />
 
       <BreadcrumbNav
         items={[

@@ -73,7 +73,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
-      <PageHero badge={t.heroBadge} title={t.heroTitle} text={t.heroText} showLogo={false} />
+      <PageHero badge={t.heroBadge} title={t.heroTitle} text={t.heroText} />
 
       <BreadcrumbNav
         items={[

@@ -29,7 +29,7 @@ export default async function TordillaFinderPage({ searchParams }: TordillaFinde
 
   return (
     <div className="min-h-screen" dir={locale === "fa" ? "rtl" : "ltr"}>
-      <PageHero title={t.heroTitle} text={t.heroText} showLogo={false} />
+      <PageHero title={t.heroTitle} text={t.heroText} />
 
       <BreadcrumbNav
         items={[

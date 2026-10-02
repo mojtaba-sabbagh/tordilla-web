@@ -68,13 +68,13 @@ export function SiteHeader() {
             className="group flex items-center gap-2.5"
             aria-label={brandName}
           >
-            <span className="relative grid h-11 w-11 place-items-center overflow-hidden rounded-full bg-white ring-1 ring-leaf-100 transition-transform duration-300 group-hover:scale-105">
+            <span className="relative grid h-16 w-16 place-items-center overflow-hidden rounded-full bg-white ring-1 ring-leaf-100 transition-transform duration-300 group-hover:scale-105">
               <Image
                 src="/home/logo.png"
                 alt=""
-                width={38}
-                height={38}
-                className="h-8 w-8 object-contain"
+                width={56}
+                height={56}
+                className="h-7 w-14 object-contain"
                 priority
               />
             </span>
