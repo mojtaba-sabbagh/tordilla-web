@@ -19,6 +19,7 @@ import {
   X,
 } from "lucide-react";
 import AdminNav from "../components/AdminNav";
+import JalaliDatePicker from "../components/JalaliDatePicker";
 
 /* -------------------------------------------------------------------------- */
 /* Types                                                                      */
@@ -506,7 +507,12 @@ export default function AnalyticsPage() {
     // `to` is exclusive, so step back into the last covered day for the label.
     const to = new Date(new Date(summary.range.to).getTime() - 1);
     const format = (date: Date) =>
-      date.toLocaleDateString("fa-IR", { year: "numeric", month: "long", day: "numeric" });
+      date.toLocaleDateString("fa-IR-u-ca-persian", {
+        timeZone: summary.range.timeZone,
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
     return `${format(from)} تا ${format(to)}`;
   }, [summary]);
 
@@ -593,32 +599,32 @@ export default function AnalyticsPage() {
 
             <span className="mx-2 h-6 w-px bg-gray-200" />
 
-            <label className="flex items-center gap-2 text-sm text-neutral-600">
-              از
-              <input
-                type="date"
+            <div className="flex items-center gap-2 text-sm text-neutral-600">
+              <label htmlFor="analytics-from">از</label>
+              <JalaliDatePicker
+                id="analytics-from"
+                label="تاریخ شروع"
                 value={customFrom}
-                onChange={(event) => {
-                  setCustomFrom(event.target.value);
+                onChange={(value) => {
+                  setCustomFrom(value);
                   setPreset("custom");
                   setVisitsPage(1);
                 }}
-                className="border border-gray-200 rounded-lg px-2 py-1 text-sm"
               />
-            </label>
-            <label className="flex items-center gap-2 text-sm text-neutral-600">
-              تا
-              <input
-                type="date"
+            </div>
+            <div className="flex items-center gap-2 text-sm text-neutral-600">
+              <label htmlFor="analytics-to">تا</label>
+              <JalaliDatePicker
+                id="analytics-to"
+                label="تاریخ پایان"
                 value={customTo}
-                onChange={(event) => {
-                  setCustomTo(event.target.value);
+                onChange={(value) => {
+                  setCustomTo(value);
                   setPreset("custom");
                   setVisitsPage(1);
                 }}
-                className="border border-gray-200 rounded-lg px-2 py-1 text-sm"
               />
-            </label>
+            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
