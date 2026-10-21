@@ -2,7 +2,7 @@
 
 /**
  * Mirrors contact-form submissions into the Tordilla Forms app
- * (form 1041906 — «پیامهای وبسایت»), on top of saving them to our own database.
+ * (form RP-GM-030 — «پیامهای وبسایت»), on top of saving them to our own database.
  *
  * The endpoint takes a flat JSON object whose keys must be exactly the form's
  * field keys: name, telephone, email, subject, message. Unknown keys are

@@ -28,6 +28,7 @@ export async function GET(request: NextRequest) {
       includeBots: searchParams.get('includeBots') === '1',
       path: searchParams.get('path'),
       country: searchParams.get('country'),
+      locale: searchParams.get('locale'),
     };
 
     // Addresses recorded while the geo service was unreachable get a second

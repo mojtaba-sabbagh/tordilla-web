@@ -178,6 +178,7 @@ export type ViewFilters = {
   includeBots: boolean;
   path?: string | null;
   country?: string | null;
+  locale?: string | null;
   ip?: string | null;
   deviceType?: string | null;
   search?: string | null;
@@ -191,6 +192,7 @@ export function buildWhere(range: { from: Date; to: Date }, filters: ViewFilters
   if (!filters.includeBots) where.isBot = false;
   if (filters.path) where.path = filters.path;
   if (filters.country) where.country = filters.country;
+  if (filters.locale) where.locale = filters.locale;
   if (filters.ip) where.ip = { contains: filters.ip };
   if (filters.deviceType) where.deviceType = filters.deviceType;
 
@@ -252,6 +254,7 @@ export async function getSeries(
   const botFilter = filters.includeBots ? Prisma.empty : Prisma.sql` AND "isBot" = false`;
   const pathFilter = filters.path ? Prisma.sql` AND "path" = ${filters.path}` : Prisma.empty;
   const countryFilter = filters.country ? Prisma.sql` AND "country" = ${filters.country}` : Prisma.empty;
+  const localeFilter = filters.locale ? Prisma.sql` AND "locale" = ${filters.locale}` : Prisma.empty;
 
   const rows = await prisma.$queryRaw<
     { bucket: string; views: number; visitors: number; sessions: number }[]
@@ -272,7 +275,7 @@ export async function getSeries(
       FROM "PageView"
       WHERE "createdAt" >= ${fromLiteral}::timestamp
         AND "createdAt" < ${toLiteral}::timestamp
-        ${botFilter}${pathFilter}${countryFilter}
+        ${botFilter}${pathFilter}${countryFilter}${localeFilter}
     )
     SELECT
       to_char(s.bucket, 'YYYY-MM-DD HH24:MI') AS bucket,
@@ -309,6 +312,7 @@ export async function getTotals(
   const botFilter = filters.includeBots ? Prisma.empty : Prisma.sql` AND "isBot" = false`;
   const pathFilter = filters.path ? Prisma.sql` AND "path" = ${filters.path}` : Prisma.empty;
   const countryFilter = filters.country ? Prisma.sql` AND "country" = ${filters.country}` : Prisma.empty;
+  const localeFilter = filters.locale ? Prisma.sql` AND "locale" = ${filters.locale}` : Prisma.empty;
 
   const rows = await prisma.$queryRaw<
     { views: number; visitors: number; sessions: number; ips: number; countries: number }[]
@@ -322,7 +326,7 @@ export async function getTotals(
     FROM "PageView"
     WHERE "createdAt" >= ${utcLiteral(from)}::timestamp
       AND "createdAt" < ${utcLiteral(to)}::timestamp
-      ${botFilter}${pathFilter}${countryFilter}
+      ${botFilter}${pathFilter}${countryFilter}${localeFilter}
   `);
 
   const row = rows[0];
@@ -348,7 +352,7 @@ const groupByDynamic = prisma.pageView.groupBy as unknown as (
 ) => Promise<GroupedRow[]>;
 
 async function groupCount(
-  by: 'path' | 'country' | 'referrerHost' | 'deviceType' | 'browser' | 'os',
+  by: 'path' | 'country' | 'locale' | 'referrerHost' | 'deviceType' | 'browser' | 'os',
   where: Prisma.PageViewWhereInput,
   take: number,
 ): Promise<BreakdownRow[]> {
@@ -370,6 +374,7 @@ export type Breakdowns = {
   pages: BreakdownRow[];
   countries: BreakdownRow[];
   cities: BreakdownRow[];
+  languages: BreakdownRow[];
   referrers: BreakdownRow[];
   devices: BreakdownRow[];
   browsers: BreakdownRow[];
@@ -378,10 +383,11 @@ export type Breakdowns = {
 };
 
 export async function getBreakdowns(where: Prisma.PageViewWhereInput): Promise<Breakdowns> {
-  const [pages, countries, referrers, devices, browsers, operatingSystems, cityRows, ipRows] =
+  const [pages, countries, languages, referrers, devices, browsers, operatingSystems, cityRows, ipRows] =
     await Promise.all([
       groupCount('path', where, 12),
       groupCount('country', where, 12),
+      groupCount('locale', where, 8),
       groupCount('referrerHost', where, 10),
       groupCount('deviceType', where, 6),
       groupCount('browser', where, 8),
@@ -410,6 +416,7 @@ export async function getBreakdowns(where: Prisma.PageViewWhereInput): Promise<B
       extra: row.country,
       count: row._count._all,
     })),
+    languages,
     referrers,
     devices,
     browsers,

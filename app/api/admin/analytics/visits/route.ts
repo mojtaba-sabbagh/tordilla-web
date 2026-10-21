@@ -48,6 +48,7 @@ export async function GET(request: NextRequest) {
       includeBots: searchParams.get('includeBots') === '1',
       path: searchParams.get('path'),
       country: searchParams.get('country'),
+      locale: searchParams.get('locale'),
       ip: searchParams.get('ip'),
       deviceType: searchParams.get('deviceType'),
       search: searchParams.get('q'),

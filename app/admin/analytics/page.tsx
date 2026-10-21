@@ -10,6 +10,7 @@ import {
   Download,
   Eye,
   Globe,
+  Languages,
   Laptop,
   MapPin,
   Network,
@@ -41,6 +42,7 @@ type Summary = {
     pages: BreakdownRow[];
     countries: BreakdownRow[];
     cities: BreakdownRow[];
+    languages: BreakdownRow[];
     referrers: BreakdownRow[];
     devices: BreakdownRow[];
     browsers: BreakdownRow[];
@@ -96,6 +98,11 @@ const DEVICE_LABELS: Record<string, string> = {
   tablet: "تبلت",
   desktop: "دسکتاپ",
   unknown: "نامشخص",
+};
+
+const LANGUAGE_LABELS: Record<string, string> = {
+  fa: "فارسی",
+  en: "English",
 };
 
 const UNKNOWN = "نامشخص";
@@ -369,6 +376,7 @@ export default function AnalyticsPage() {
 
   const [pathFilter, setPathFilter] = useState<string | null>(null);
   const [countryFilter, setCountryFilter] = useState<string | null>(null);
+  const [localeFilter, setLocaleFilter] = useState<string | null>(null);
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [visitsPage, setVisitsPage] = useState(1);
@@ -401,9 +409,10 @@ export default function AnalyticsPage() {
     if (includeBots) params.set("includeBots", "1");
     if (pathFilter) params.set("path", pathFilter);
     if (countryFilter) params.set("country", countryFilter);
+    if (localeFilter) params.set("locale", localeFilter);
 
     return params;
-  }, [preset, customFrom, customTo, granularity, includeBots, pathFilter, countryFilter]);
+  }, [preset, customFrom, customTo, granularity, includeBots, pathFilter, countryFilter, localeFilter]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -531,12 +540,13 @@ export default function AnalyticsPage() {
   const clearFilters = () => {
     setPathFilter(null);
     setCountryFilter(null);
+    setLocaleFilter(null);
     setSearchInput("");
     setSearch("");
     setVisitsPage(1);
   };
 
-  const hasFilters = Boolean(pathFilter || countryFilter || search);
+  const hasFilters = Boolean(pathFilter || countryFilter || localeFilter || search);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -684,6 +694,15 @@ export default function AnalyticsPage() {
                   کشور: {countryFilter} <X className="h-3 w-3" />
                 </button>
               ) : null}
+              {localeFilter ? (
+                <button
+                  type="button"
+                  onClick={() => setLocaleFilter(null)}
+                  className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-[#8f1d1d]/10 text-[#8f1d1d] rounded-full"
+                >
+                  زبان: {LANGUAGE_LABELS[localeFilter] || localeFilter} <X className="h-3 w-3" />
+                </button>
+              ) : null}
               {search ? (
                 <button
                   type="button"
@@ -772,6 +791,16 @@ export default function AnalyticsPage() {
                   setVisitsPage(1);
                 }}
               />
+              <BreakdownCard
+                title="زبان بازدید"
+                icon={Languages}
+                rows={summary.breakdowns.languages}
+                renderLabel={(row) => LANGUAGE_LABELS[row.label ?? ""] || row.label || UNKNOWN}
+                onRowClick={(row) => {
+                  setLocaleFilter(row.label);
+                  setVisitsPage(1);
+                }}
+              />
               <BreakdownCard title="شهرها" icon={MapPin} rows={summary.breakdowns.cities} />
               <BreakdownCard
                 title="ارجاع‌دهنده‌ها"
@@ -833,7 +862,7 @@ export default function AnalyticsPage() {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    {["زمان", "IP", "موقعیت", "صفحه", "ارجاع‌دهنده", "دستگاه"].map((heading) => (
+                    {["زمان", "IP", "موقعیت", "صفحه", "ارجاع‌دهنده", "دستگاه", "زبان"].map((heading) => (
                       <th
                         key={heading}
                         className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap"
@@ -875,6 +904,9 @@ export default function AnalyticsPage() {
                           {" "}
                           {[visit.browser, visit.os].filter(Boolean).join(" / ")}
                         </span>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">
+                        {LANGUAGE_LABELS[visit.locale ?? ""] || visit.locale || UNKNOWN}
                       </td>
                     </tr>
                   ))}
